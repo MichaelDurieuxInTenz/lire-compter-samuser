@@ -2133,6 +2133,15 @@
   "file": "fr/161970d9a498c3a1.mp3"
  },
  {
+  "key": "fr|1|Qui joue ensemble ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Qui joue ensemble ?",
+  "voice": "estelle",
+  "file": "fr/1e28979b5a37ad4f.mp3"
+ },
+ {
   "key": "en|0.9|Blue.",
   "lang": "en",
   "rate": 0.9,
@@ -15165,6 +15174,15 @@
   "file": "fr/a95f9305469154c4.mp3"
  },
  {
+  "key": "fr|1|Touchez les portraits des joueurs.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touchez les portraits des joueurs.",
+  "voice": "estelle",
+  "file": "fr/4ef8ae117adc73d8.mp3"
+ },
+ {
   "key": "en|0.8|black",
   "lang": "en",
   "rate": 0.8,
@@ -20833,15 +20851,6 @@
   "text": "Un télescope, un microscope ou un périscope ?",
   "voice": "estelle",
   "file": "fr/3136cf19888f24d3.mp3"
- },
- {
-  "key": "fr|1|Qui joue ensemble ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Qui joue ensemble ?",
-  "voice": "estelle",
-  "file": "fr/1e28979b5a37ad4f.mp3"
  },
  {
   "key": "fr|1|Regarde : on complète les unités jusqu'à dix.",
@@ -98199,60 +98208,6 @@
   "file": "fr/c7441a5d2912805f.mp3"
  },
  {
-  "key": "en|0.9|hand!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "phrase",
-  "text": "hand!",
-  "voice": "estelle",
-  "file": "en/b54526a5be3de2cf.mp3"
- },
- {
-  "key": "en|0.9|wind!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "phrase",
-  "text": "wind!",
-  "voice": "estelle",
-  "file": "en/d092ed21aacbe574.mp3"
- },
- {
-  "key": "en|0.9|bear!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "phrase",
-  "text": "bear!",
-  "voice": "estelle",
-  "file": "en/a405fc2681d937ea.mp3"
- },
- {
-  "key": "en|0.9|pink!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "phrase",
-  "text": "pink!",
-  "voice": "estelle",
-  "file": "en/1bb26160d3938823.mp3"
- },
- {
-  "key": "en|0.9|nine!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "phrase",
-  "text": "nine!",
-  "voice": "estelle",
-  "file": "en/4193738a99214219.mp3"
- },
- {
-  "key": "fr|1|un chien gentil",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "un chien gentil",
-  "voice": "estelle",
-  "file": "fr/7c4a29b8385d64ff.mp3"
- },
- {
   "key": "fr|1|Oui,",
   "lang": "fr",
   "rate": 1,
@@ -145746,6 +145701,60 @@
   "file": "fr/2cf4d19c4eed98d5.mp3"
  },
  {
+  "key": "en|0.9|hand!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "morceau",
+  "text": "hand!",
+  "voice": "estelle",
+  "file": "en/b54526a5be3de2cf.mp3"
+ },
+ {
+  "key": "en|0.9|wind!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "morceau",
+  "text": "wind!",
+  "voice": "estelle",
+  "file": "en/d092ed21aacbe574.mp3"
+ },
+ {
+  "key": "en|0.9|bear!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "morceau",
+  "text": "bear!",
+  "voice": "estelle",
+  "file": "en/a405fc2681d937ea.mp3"
+ },
+ {
+  "key": "en|0.9|pink!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "morceau",
+  "text": "pink!",
+  "voice": "estelle",
+  "file": "en/1bb26160d3938823.mp3"
+ },
+ {
+  "key": "en|0.9|nine!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "morceau",
+  "text": "nine!",
+  "voice": "estelle",
+  "file": "en/4193738a99214219.mp3"
+ },
+ {
+  "key": "fr|1|un chien gentil",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "un chien gentil",
+  "voice": "estelle",
+  "file": "fr/7c4a29b8385d64ff.mp3"
+ },
+ {
   "key": "en|0.9|What is the opposite of white?",
   "lang": "en",
   "rate": 0.9,
@@ -148417,24 +148426,6 @@
   "text": "Touche Moscou,",
   "voice": "estelle",
   "file": "fr/45175da0700470b7.mp3"
- },
- {
-  "key": "fr|1|s chaussettes,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "s chaussettes,",
-  "voice": "estelle",
-  "file": "fr/ea8d381d0bf72059.mp3"
- },
- {
-  "key": "fr|1|Quelle forme faut-il découper ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "Quelle forme faut-il découper ?",
-  "voice": "estelle",
-  "file": "fr/8e7f37d0b99f4bd6.mp3"
  },
  {
   "key": "fr|1|frappe",
@@ -217809,6 +217800,24 @@
   "file": "fr/d74d3e908a4944f5.mp3"
  },
  {
+  "key": "fr|1|s chaussettes,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "s chaussettes,",
+  "voice": "estelle",
+  "file": "fr/ea8d381d0bf72059.mp3"
+ },
+ {
+  "key": "fr|1|Quelle forme faut-il découper ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Quelle forme faut-il découper ?",
+  "voice": "estelle",
+  "file": "fr/8e7f37d0b99f4bd6.mp3"
+ },
+ {
   "key": "fr|1|et le poussin.",
   "lang": "fr",
   "rate": 1,
@@ -229930,33 +229939,6 @@
   "text": "five plus thirteen?",
   "voice": "estelle",
   "file": "en/4bed7fe326166104.mp3"
- },
- {
-  "key": "en|0.8|thirteen minus ten?",
-  "lang": "en",
-  "rate": 0.8,
-  "type": "proposition",
-  "text": "thirteen minus ten?",
-  "voice": "estelle",
-  "file": "en/d6bc3ac0fe6c1a4b.mp3"
- },
- {
-  "key": "en|0.8|nineteen minus ten?",
-  "lang": "en",
-  "rate": 0.8,
-  "type": "proposition",
-  "text": "nineteen minus ten?",
-  "voice": "estelle",
-  "file": "en/7886af46b4e64df0.mp3"
- },
- {
-  "key": "en|0.8|thirteen minus two?",
-  "lang": "en",
-  "rate": 0.8,
-  "type": "proposition",
-  "text": "thirteen minus two?",
-  "voice": "estelle",
-  "file": "en/f3bf4dbddd623bf1.mp3"
  },
  {
   "key": "fr|1|poisson : 2 syllabes !",
@@ -264447,6 +264429,15 @@
   "file": "en/ffd7f06920879e3b.mp3"
  },
  {
+  "key": "en|0.8|thirteen minus ten?",
+  "lang": "en",
+  "rate": 0.8,
+  "type": "phrase",
+  "text": "thirteen minus ten?",
+  "voice": "estelle",
+  "file": "en/d6bc3ac0fe6c1a4b.mp3"
+ },
+ {
   "key": "en|0.8|fourteen minus four?",
   "lang": "en",
   "rate": 0.8,
@@ -264474,6 +264465,15 @@
   "file": "en/d2e16e3d4216889f.mp3"
  },
  {
+  "key": "en|0.8|nineteen minus ten?",
+  "lang": "en",
+  "rate": 0.8,
+  "type": "phrase",
+  "text": "nineteen minus ten?",
+  "voice": "estelle",
+  "file": "en/7886af46b4e64df0.mp3"
+ },
+ {
   "key": "en|0.8|fifteen minus two?",
   "lang": "en",
   "rate": 0.8,
@@ -264481,6 +264481,15 @@
   "text": "fifteen minus two?",
   "voice": "estelle",
   "file": "en/fb78fdbdd9c0c2be.mp3"
+ },
+ {
+  "key": "en|0.8|thirteen minus two?",
+  "lang": "en",
+  "rate": 0.8,
+  "type": "phrase",
+  "text": "thirteen minus two?",
+  "voice": "estelle",
+  "file": "en/f3bf4dbddd623bf1.mp3"
  },
  {
   "key": "en|0.8|eighteen minus three?",

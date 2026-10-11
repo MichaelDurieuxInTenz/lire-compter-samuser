@@ -78,14 +78,15 @@ Deux familles de tests tournent à chaque modification (intégration continue Gi
 
 ### Test de bout en bout : `PARTS=a11y npm run test:e2e`
 
-Le parcours ouvre **60 écrans** : bienvenue et création d’un profil (avec le message d’erreur),
-« Qui joue ? », jouer à deux, l’accueil d’un enfant (aussi sur petit iPhone et en paysage), les
+Le parcours ouvre **75 écrans** : bienvenue et création d’un profil (avec le message d’erreur),
+« Qui joue ? », jouer à deux et jouer ensemble (le choix des joueurs, une question), l’accueil d’un enfant (aussi sur petit iPhone et en paysage), les
 8 rubriques, le choix du niveau, la carte des paliers, **un écran de jeu par forme d’exercice**
 (choix, pavé numérique, relier, compléter, panier, entourer, tracer, ranger, droite numérique,
 fractions, partage, addition posée, puzzle, memory, coloriage, points à relier, sudoku, dessin
 caché, symétrie, labyrinthes, chemins, horloge, monnaie, carte du monde, plus une histoire, un jeu
 d’anglais et un jeu de sciences), une mauvaise puis une bonne réponse, la fin de partie, l’album,
-le personnage, et l’espace parents (multiplication, suivi, enfants, fiche d’un enfant, réglages,
+le personnage, et l’espace parents (multiplication, suivi, enfants, fiche d’un enfant avec toutes ses
+sections dépliées, réglages et chacune de leurs rubriques, vérifier l’affichage, fiches à imprimer,
 voix des histoires). Sur chaque écran :
 
 1. **Contrastes** (`scripts/a11y-audit.mjs`) : pour chaque texte visible, la couleur du texte est

@@ -116,6 +116,8 @@ const TOUJOURS = ['Bravo ! Tu as trouvé la bonne réponse.', 'Essaie encore !',
   ...EXPLAIN_SENTENCES,
   // toucher plutôt que glisser (main.js) : écris au doigt, points à relier
   'Touche le point qui brille !', 'Regarde le point jaune, puis touche les points un par un !',
+  // jouer ensemble, dès trois enfants (main.js) : l'écran du choix des joueurs
+  'Qui joue ensemble ? Touchez les portraits des joueurs.',
   // ponctuation : l'enfant choisit le signe d'après l'intonation, chaque phrase doit donc être dite d'un seul son
   ...SPOKEN_SENTENCES.flatMap(({ text, marks }) => [...marks].map((m) => (m === '.' ? `${text}.` : `${text} ${m}`)))];
 

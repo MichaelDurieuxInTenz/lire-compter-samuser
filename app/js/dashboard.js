@@ -224,8 +224,10 @@ export function fluenceCard(kid, grade, now = Date.now()) {
       benchmark ? h('p', { class: 'muted small fl-benchmark' }, benchmark) : null);
   }
   const syllables = wordsOnly.length && wordsOnly.length < all.length ? fluenceSummary(all.filter((s) => s.kind === 'syllabes')) : null;
-  return h('section', { class: 'card fluence-card' },
-    h('h2', {}, '🗣️ Lecture à voix haute'),
+  // repliée : le dernier et le meilleur score ; dépliée, le détail et l'évolution semaine par semaine
+  return h('details', { class: 'card fluence-card fold' },
+    h('summary', {}, h('span', { class: 'fold-title' }, '🗣️ Lecture à voix haute'),
+      h('span', { class: 'fold-sub' }, `Dernier score : ${summary.last.mclm} ${unit} par minute · meilleur : ${summary.best.mclm}`)),
     h('p', { class: 'muted small' }, `${unit === 'mots' ? 'Mots' : 'Syllabes'} correctement ${unit === 'mots' ? 'lus' : 'lues'} par minute, avec un adulte qui écoute.`),
     h('div', { class: 'stat-tiles' },
       // tuiles à part (fl-tile) : les « chiffres clés » de la semaine restent les quatre du haut

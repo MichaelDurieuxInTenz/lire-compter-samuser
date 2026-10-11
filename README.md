@@ -61,9 +61,10 @@ aussi : en paysage, le dessin est à gauche, la consigne et les réponses à dro
    **Temps et mesures**, **Le monde**, **Sciences**, **Anglais**. Ses autocollants sont dans **Mon album**.
 4. Chaque jeu montre le niveau atteint (les points). En touchant **Niveaux ▾**, on choisit
    directement un niveau.
-5. **👫 Jouer à deux** (sur « Qui joue ? ») : deux enfants jouent à tour de rôle sur le même
-   appareil, chacun à son niveau ; le tableau des points montre à qui c'est le tour, et chacun
-   gagne ses étoiles.
+5. **👫 Jouer à deux**, ou **Jouer ensemble** dès trois enfants (sur « Qui joue ? ») : de deux à six
+   enfants jouent à tour de rôle sur le même appareil, chacun à son niveau, dans l'ordre où l'on a
+   touché leurs portraits. Une dizaine de questions en tout (10 à deux, 9 à trois, 12 à quatre, 10 à
+   cinq, 12 à six) ; le tableau des points montre à qui c'est le tour, et chacun gagne ses étoiles.
 
 Tant que l'application n'est pas installée, « Qui joue ? » rappelle comment ajouter l'icône sur
 l'écran d'accueil (les étapes dépendent de l'appareil) ; « Plus tard » masque ce rappel.

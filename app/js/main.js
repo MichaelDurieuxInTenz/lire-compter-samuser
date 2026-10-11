@@ -16,7 +16,7 @@ import {
   FLUENCE_SECONDS, fluenceBenchmark, fluenceEntry, fluenceLevelAfter, fluenceScore, fluenceSeconds, fluenceStars, fluenceTime,
 } from './games/fluence.js';
 import { featuredGames, levelRange, MAX_FEATURED, nearestLevel, programFor, programForChild } from './programs.js';
-import { dailyPicks, dueReviews as reviewsDue, duoPlan, drawPool } from './picks.js';
+import { dailyPicks, dueReviews as reviewsDue, duoPlan, drawPool, PARTY_MAX } from './picks.js';
 import { createRng, pick, randInt, sample, shuffle } from './random.js';
 import { palierStarsAfter, PALIER_MAX_STARS, recordAnswer, starsFor } from './progress.js';
 import { newStickers, STICKERS, starsToNextSticker, stickersUnlocked } from './rewards.js';
@@ -547,19 +547,27 @@ function chooseProfile(id) {
   say(me(), `Bonjour ${me().spoken} !`);
 }
 
-// ---------------------------------------------------------------- Jouer à deux
+// ---------------------------------------------------------------- Jouer à deux, ou à plusieurs
 
-/** Sur « Qui joue ? », dès qu'il y a deux enfants : une partie de 10 questions chacun son tour. */
+const PARTY_NUMBERS = ['deux', 'trois', 'quatre', 'cinq', 'six'];
+/** « Jouer à deux », « Jouer à trois »… selon le nombre de joueurs de la partie. */
+const partyName = (n) => `Jouer à ${PARTY_NUMBERS[n - 2]}`;
+/** « Eva-Rose, Matteo et Lou ». */
+const andList = (items) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} et ${items.at(-1)}` : items[0] || '');
+
+/** Sur « Qui joue ? », dès qu'il y a deux enfants : une partie où chacun joue à son tour. */
 function duoButton() {
   if (store.order.length < 2) return h('span');
   return h('button', { class: 'duo-btn', 'data-duo': '', onclick: () => duoPickScreen() },
-    h('span', { class: 'duo-btn-icon', 'aria-hidden': 'true' }, '👫'), h('span', {}, 'Jouer à deux'));
+    h('span', { class: 'duo-btn-icon', 'aria-hidden': 'true' }, '👫'), h('span', {}, store.order.length > 2 ? 'Jouer ensemble' : partyName(2)));
 }
 
-/** On touche deux portraits (le premier commence), puis « C'est parti ! ». */
+/** On touche les portraits des joueurs, de 2 à 6, dans l'ordre où ils joueront, puis « C'est parti ! ». */
 function duoPickScreen({ picked = [], message = '', speech = message } = {}) {
   if (store.order.length < 2) return profileScreen();
-  let chosen = picked.filter((id) => store.profiles[id]).slice(0, 2);
+  const max = Math.min(PARTY_MAX, store.order.length);
+  const many = max > 2; // trois enfants ou plus : on choisit qui joue, de deux à tous
+  let chosen = picked.filter((id) => store.profiles[id]).slice(0, max);
   const hint = h('p', { class: 'duo-hint', 'aria-live': 'polite' });
   const go = h('button', { class: 'big-btn primary duo-go', onclick: () => tryDuo(chosen) }, 'C’est parti !');
   const cards = store.order.map((id) => {
@@ -579,29 +587,31 @@ function duoPickScreen({ picked = [], message = '', speech = message } = {}) {
     }
     go.disabled = chosen.length < 2;
     hint.classList.toggle('warning', Boolean(text));
-    hint.textContent = frenchSpacing(text || ['Touchez deux portraits', 'Et le deuxième joueur ?', 'Prêts ? Touchez « C’est parti ! »'][chosen.length]);
+    const ready = chosen.length < max ? 'Prêts ? Touchez « C’est parti ! », ou un autre portrait' : 'Prêts ? Touchez « C’est parti ! »';
+    hint.textContent = frenchSpacing(text || [many ? 'Touchez les portraits des joueurs' : 'Touchez deux portraits', 'Et le deuxième joueur ?'][chosen.length]
+      || (many ? ready : 'Prêts ? Touchez « C’est parti ! »'));
   };
-  // toucher un portrait le choisit (ou le retire) ; un troisième remplace le deuxième
+  // toucher un portrait le choisit (il jouera après ceux déjà choisis) ou le retire
   const choose = (id) => {
     if (chosen.includes(id)) chosen = chosen.filter((x) => x !== id);
-    else chosen = chosen.length < 2 ? [...chosen, id] : [chosen[0], id];
+    else if (chosen.length < max) chosen = [...chosen, id];
     draw();
   };
   show(h('main', { class: 'screen profiles duo-pick' },
-    topBar({ onBack: profileScreen, title: '👫 Jouer à deux' }),
+    topBar({ onBack: profileScreen, title: `👫 ${many ? 'Jouer ensemble' : partyName(2)}` }),
     hint,
     h('div', { class: `profile-list n${store.order.length}` }, cards),
     go));
   draw(message);
-  speak(speech || 'Qui joue ensemble ? Touchez deux portraits.');
+  speak(speech || (many ? 'Qui joue ensemble ? Touchez les portraits des joueurs.' : 'Qui joue ensemble ? Touchez deux portraits.'));
 }
 
-/** Avant de commencer : si l'un des deux a fini son temps du jour, on le dit simplement. */
+/** Avant de commencer : si l'un d'eux a fini son temps du jour, on le dit simplement. */
 function tryDuo(players) {
   const tired = players.filter((id) => timeIsUp(store.profiles[id]));
   if (tired.length) {
     const verb = tired.length > 1 ? 'ont' : 'a';
-    const names = (key) => tired.map((id) => me(id)[key]).join(' et ');
+    const names = (key) => andList(tired.map((id) => me(id)[key]));
     return duoPickScreen({
       picked: players,
       message: `${names('name')} ${verb} assez joué aujourd’hui : c’est l’heure de la pause !`,
@@ -613,7 +623,7 @@ function tryDuo(players) {
   beginDuo(store, players);
   sessionFlag('duo', true);
   store.active = players[0];
-  startSession(duoGame(plan), {
+  startSession(duoGame(plan, players.length), {
     total: plan.length,
     back: quitDuo,
     duo: { players, plan, scores: Object.fromEntries(players.map((id) => [id, 0])) },
@@ -629,16 +639,16 @@ function quitDuo() {
 }
 
 /**
- * La partie à deux, sur le modèle du défi du jour : chaque question vient d'un jeu de l'enfant dont
+ * La partie à plusieurs, sur le modèle du défi du jour : chaque question vient d'un jeu de l'enfant dont
  * c'est le tour, à son niveau (q.from), et les niveaux de ses jeux ne changent pas (fixedLevel).
  */
-function duoGame(plan) {
+function duoGame(plan, count) {
   return {
     id: 'duo',
     domain: 'duo',
-    title: 'Jouer à deux',
+    title: partyName(count),
     icon: '👫',
-    levels: ['Jouer à deux'],
+    levels: [partyName(count)],
     range: { min: 1, max: 1 },
     fixedLevel: true,
     generate(_level, rng, index, context) {
@@ -649,22 +659,28 @@ function duoGame(plan) {
   };
 }
 
-/** En haut de l'écran : les deux portraits et leurs bonnes réponses ; celui dont c'est le tour est mis en avant. */
+/**
+ * En haut de l'écran : les portraits des joueurs et leurs bonnes réponses ; celui dont c'est le tour est
+ * mis en avant. À trois ou plus, les autres sont plus petits, leur score dans une pastille ; à cinq ou
+ * six, sur un téléphone, ils se chevauchent sans pastille (les scores sont dans l'étiquette, lue par
+ * VoiceOver). Tout tient dans la barre du haut : le jeu garde toute sa place.
+ */
 function duoScoreboard(session, progress) {
   const { players, scores } = session.duo;
   const label = players.map((id) => `${store.profiles[id].name} : ${scores[id]}`).join(', ');
-  return h('div', { class: 'duo-score', 'aria-label': `${label}. À ${me().name} de jouer.` },
+  const size = players.length > 4 ? ' many crowd' : players.length > 2 ? ' many' : '';
+  return h('div', { class: `duo-score${size}`, 'aria-label': `${label}. À ${me().name} de jouer.` },
     h('div', { class: 'duo-players' }, players.map((id) => {
       const turn = id === store.active;
       return h('span', { class: turn ? 'duo-player turn' : 'duo-player', 'data-duo-player': id, 'aria-current': turn ? 'true' : undefined },
         avatar(id, 'avatar-xs'),
         h('span', { class: 'duo-name' }, store.profiles[id].name),
-        h('b', { class: 'duo-points', 'aria-label': `${scores[id]} bonnes réponses` }, `✓ ${scores[id]}`));
+        h('b', { class: 'duo-points', 'aria-label': `${scores[id]} bonnes réponses` }, h('span', { class: 'duo-check' }, '✓ '), String(scores[id])));
     })),
     progress);
 }
 
-/** Fin de la partie à deux : les résultats des deux, des étoiles pour chacun selon ses réponses. */
+/** Fin de la partie : les résultats de chacun, des étoiles pour chacun selon ses réponses. */
 function finishDuo(session) {
   const { players, plan, scores } = session.duo;
   const seconds = Math.round((Date.now() - session.startedAt) / 1000);
@@ -679,7 +695,7 @@ function finishDuo(session) {
     kid.games.duo = { ...stats, sessions: stats.sessions + 1, bestStars: Math.max(stats.bestStars, stars) };
     // une partie pour chacun (objectif du jour) ; le temps compte pour les deux
     logSession(kid, { at: new Date().toISOString(), game: 'duo', level: 1, correct, total, stars, seconds });
-    return { id, correct, stars, unlocked: newStickers(before, kid.stars) };
+    return { id, correct, total, stars, unlocked: newStickers(before, kid.stars) };
   });
   endDuo(store);
   clearSessionFlag('duo');
@@ -688,20 +704,26 @@ function finishDuo(session) {
   const team = results.reduce((sum, r) => sum + r.correct, 0) / session.total;
   const title = team >= 0.9 ? 'Bravo l’équipe !' : team >= 0.6 ? 'Très bien l’équipe !' : 'Bien joué l’équipe !';
   const answers = (n) => `${n} bonne${n > 1 ? 's' : ''} réponse${n > 1 ? 's' : ''}`;
+  const name = partyName(players.length);
+  // à trois ou plus, une ligne par enfant : « ✓ 2 sur 3 » et ses étoiles (gagnées, comme le « +2 ⭐ » à deux)
+  const many = players.length > 2;
   show(h('main', { class: 'screen results duo-end domain-theme-duo' },
     confetti(Math.max(...results.map((r) => r.stars))),
-    topBar({ onBack: profileScreen, backLabel: 'Qui joue ?', title: '👫 Jouer à deux' }),
+    topBar({ onBack: profileScreen, backLabel: 'Qui joue ?', title: `👫 ${name}` }),
     h('h2', { class: 'duo-team' }, frenchSpacing(title)),
-    h('div', { class: 'duo-final' }, results.map(({ id, correct, stars, unlocked }) => h('section', { class: 'duo-final-card', 'data-duo-result': id },
+    h('div', { class: many ? 'duo-final many' : 'duo-final' }, results.map(({ id, correct, total, stars, unlocked }) => h('section', { class: 'duo-final-card', 'data-duo-result': id },
       avatar(id, 'avatar-md cheer'),
       h('h3', { class: 'duo-final-name' }, frenchSpacing(store.profiles[id].name)),
-      h('p', { class: 'duo-final-detail' }, answers(correct)),
+      many
+        ? h('p', { class: 'duo-final-detail' }, h('span', { class: 'visually-hidden' }, 'Bonnes réponses : '),
+          h('span', { 'aria-hidden': 'true' }, '✓ '), frenchSpacing(`${correct} sur ${total}`))
+        : h('p', { class: 'duo-final-detail' }, answers(correct)),
       h('div', { class: 'result-stars', 'aria-label': `${stars} étoile${stars > 1 ? 's' : ''} sur 3` },
         [1, 2, 3].map((i) => h('span', { class: i <= stars ? 'big-star on' : 'big-star', style: { animationDelay: `${i * 0.25}s` } }, '⭐'))),
-      h('p', { class: 'duo-final-gain' }, `+${stars} ⭐`),
+      many ? null : h('p', { class: 'duo-final-gain' }, `+${stars} ⭐`),
       unlocked.length ? h('p', { class: 'duo-final-sticker' }, unlocked.at(-1).emoji, frenchSpacing(' Nouvel autocollant !')) : null))),
     h('div', { class: 'result-actions duo-actions' },
-      h('button', { class: 'big-btn primary', 'data-duo-again': '', onclick: () => tryDuo(players) }, '🔁 Rejouer à deux'),
+      h('button', { class: 'big-btn primary', 'data-duo-again': '', onclick: () => tryDuo(players) }, `🔁 Re${name.toLowerCase()}`),
       h('button', { class: 'big-btn', 'data-duo-home': '', onclick: profileScreen }, '👫 Qui joue ?'))));
   playSound('fanfare');
   speak([

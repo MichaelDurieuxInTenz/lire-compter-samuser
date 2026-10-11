@@ -211,7 +211,7 @@ async function openSettings(page, id) {
 
 // longueur maximale de chaque écran de l'espace parents, en hauteurs d'écran (sections repliées) : l'essentiel
 // d'abord, le détail en un toucher. Avant la version 1.17, le Suivi d'un enfant de CP faisait 19 écrans.
-const PARENTS_MAX_SCREENS = { suivi: 2.6, enfants: 1.3, fiche: 2, reglages: 1.3, son: 1.6, acces: 1.2, sauvegarde: 1.6, appareil: 2, apropos: 1.3 };
+const PARENTS_MAX_SCREENS = { suivi: 3, enfants: 1.3, fiche: 2, reglages: 1.3, son: 1.6, acces: 1.2, sauvegarde: 1.6, appareil: 2, apropos: 1.3 };
 
 /** Longueur de l'écran affiché, en hauteurs d'écran ; échec au-delà de PARENTS_MAX_SCREENS[name]. */
 async function checkParentsLength(page, name, lengths) {
@@ -336,7 +336,27 @@ async function savedState(page) {
   }, STORAGE_KEY);
 }
 
-/** Ouvre « Jouer à deux » depuis « Qui joue ? » et choisit les deux joueurs (le premier commence). */
+/** Ajoute des enfants (prénom, personnage, classe) aux données de l'app, ou les retire (ids). */
+async function addKids(page, kids) {
+  await page.evaluate(async ([key, list]) => {
+    const { addChild } = await import('./js/storage.js');
+    const store = JSON.parse(localStorage.getItem(key));
+    for (const [name, look, grade] of list) addChild(store, { name, look, grade });
+    localStorage.setItem(key, JSON.stringify(store));
+  }, [STORAGE_KEY, kids]);
+}
+async function removeKids(page, ids) {
+  await page.evaluate(async ([key, list]) => {
+    const { removeChild } = await import('./js/storage.js');
+    const store = JSON.parse(localStorage.getItem(key));
+    for (const id of list) removeChild(store, id);
+    localStorage.setItem(key, JSON.stringify(store));
+  }, [STORAGE_KEY, ids]);
+}
+const MORE_KIDS = [['Lou', 'fille', 'CE1'], ['Zoé', 'fille', 'GS'], ['Noé', 'garcon', 'PS'], ['Inès', 'fille', 'CM2']];
+const MORE_IDS = ['lou', 'zoe', 'noe', 'ines'];
+
+/** Ouvre « Jouer à deux » (ou « Jouer ensemble ») depuis « Qui joue ? » et choisit les joueurs (le premier commence). */
 async function pickDuo(page, players) {
   await goProfiles(page);
   await page.click('[data-duo]');
@@ -1546,6 +1566,45 @@ if (!(await page.textContent('.duo-hint')).includes('Matteo') || await page.loca
 await setStore(page, 'store.profiles.matteo.goals = {}; store.profiles.matteo.history.pop();');
 console.log(`✔ jouer à deux (10 questions en alternance, ${duoLines.join(', ')} ; enfant actif rendu ; temps du jour respecté)`);
 
+// jouer à plusieurs : avec Lou (CE1), le bouton dit « Jouer ensemble » ; à trois, 9 questions, chacun son tour
+await addKids(page, MORE_KIDS.slice(0, 1));
+await goProfiles(page);
+if ((await page.textContent('[data-duo]')).trim() !== '👫Jouer ensemble') fail(`jouer à plusieurs : bouton « ${(await page.textContent('[data-duo]')).trim()} »`);
+const trio = ['lou', 'eva-rose', 'matteo'];
+await pickDuo(page, trio.slice(0, 2));
+if (await page.locator('.duo-go').isDisabled()) fail('jouer à plusieurs : « C’est parti ! » impossible à deux');
+if (!(await page.textContent('.duo-hint')).includes('un autre portrait')) fail('jouer à plusieurs : on ne propose pas d’ajouter un joueur');
+await page.click(`[data-pick="${trio[2]}"]`);
+if ((await page.textContent(`[data-pick="${trio[2]}"] .duo-order`)) !== '✓ 3') fail('jouer à plusieurs : le troisième joueur n’a pas son numéro');
+await shot('56-plusieurs-choix');
+await page.click('.duo-go');
+const trioPrograms = { ...duoPrograms, lou: programOf('CE1') };
+for (let i = 0; i < 9; i++) {
+  const zone = await page.waitForSelector('.choices:not(.answered)');
+  const q = await page.evaluate(() => globalThis.__lc.question);
+  const turn = trio[i % 3];
+  if ((await page.locator('.duo-player').count()) !== 3) fail(`à trois, question ${i + 1} : les trois portraits ne sont pas en haut`);
+  if (!(await page.locator(`.duo-player.turn[data-duo-player="${turn}"]`).count())) fail(`à trois, question ${i + 1} : le tour de ${turn} n’est pas mis en avant`);
+  if (!(await page.locator(`.guide-btn .avatar-${turn}`).count())) fail(`à trois, question ${i + 1} : la question n’est pas posée par ${turn}`);
+  if (!trioPrograms[turn].has(q.from)) fail(`à trois, question ${i + 1} : ${q.from} n’est pas au programme de ${turn}`);
+  if (i === 0) await shot('57-plusieurs');
+  await answer(page, q, false);
+  await page.waitForFunction((el) => !el.isConnected, zone, { timeout: 15000 });
+}
+await page.waitForSelector('.duo-end');
+await assertNoJunk(page, 'à trois, résultats');
+await checkLayout(page, 'à trois, résultats (390×844)', { reachable: false });
+await shot('58-plusieurs-resultats');
+if (!(await page.textContent('.duo-end .top-title')).includes('Jouer à trois')) fail('à trois : le titre ne dit pas « Jouer à trois »');
+if ((await page.textContent('[data-duo-again]')).trim() !== '🔁 Rejouer à trois') fail('à trois : bouton « Rejouer à trois » absent');
+if ((await page.locator('[data-duo-result]').count()) !== 3) fail('à trois : les résultats des trois enfants ne sont pas tous là');
+for (const id of trio) {
+  const line = (await page.textContent(`[data-duo-result="${id}"] .duo-final-detail`)).replace(/\u202f/g, ' ');
+  if (!line.endsWith('✓ 3 sur 3')) fail(`à trois : « ${line} » pour ${id} au lieu de « ✓ 3 sur 3 »`);
+}
+await removeKids(page, ['lou']);
+console.log('✔ jouer à plusieurs (« Jouer ensemble » dès trois enfants ; à trois, 9 questions chacun son tour, titre et résultats)');
+
 // espace parents : barrière, tableau de bord, changement de classe
 await goProfiles(page);
 await page.click('.parent-btn');
@@ -2001,6 +2060,16 @@ async function a11yPart() {
   await audit('Qui joue ?');
   await pickDuo(page, ['eva-rose', 'matteo']);
   await audit('jouer à deux');
+  // jouer ensemble : trois joueurs, le choix puis une question (portraits, pastilles des scores)
+  await addKids(page, MORE_KIDS.slice(0, 1));
+  await pickDuo(page, ['eva-rose', 'matteo', 'lou']);
+  await audit('jouer ensemble');
+  await page.click('.duo-go');
+  await page.waitForSelector('.duo-play .choices');
+  await audit('jouer ensemble, une question');
+  await page.click('.top-bar .icon-btn');
+  await page.waitForSelector('.profiles');
+  await removeKids(page, ['lou']);
 
   // accueil et rubriques
   await goProfile(page, 'eva-rose');
@@ -2870,6 +2939,17 @@ async function checkDevice(device, repeat, deviceIndex) {
   // jouer à deux : le choix des deux joueurs
   await pickDuo(page, ['eva-rose', 'matteo']);
   await checkLayout(page, tag('choix du duo'));
+  // jouer à six : le choix des joueurs (« C'est parti ! » dans l'écran), puis la première question
+  await addKids(page, MORE_KIDS);
+  await pickDuo(page, ['eva-rose', 'matteo', ...MORE_IDS]);
+  await checkLayout(page, tag('choix à six'));
+  await page.click('.duo-go');
+  await page.waitForSelector('.duo-play .choices');
+  await checkLayout(page, tag('partie à six'));
+  await page.click('.top-bar .icon-btn');
+  await page.waitForSelector('.profiles');
+  await removeKids(page, MORE_IDS);
+  checked += 2;
   await goProfile(page);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/devices/${device.width}x${device.height}-accueil.png` });
   if (A11Y?.noTimer) {

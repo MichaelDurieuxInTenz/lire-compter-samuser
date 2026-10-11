@@ -20,6 +20,8 @@ export const CHANGELOG = [
       'Fiche d’un enfant : le profil, avec « Enregistrer » toujours visible, puis des sections repliées, chacune avec son état en une ligne (temps de jeu, accessibilité, sons vus en classe, ses jeux, effacer ou supprimer).',
       'Accessibilité : des réglages tout prêts (dyslexie, vue basse, daltonisme, motricité, surdité, attention) allument d’un toucher ceux qui vont ensemble ; la lecture facilitée y rejoint les autres réglages.',
       'Réglages : une ligne par rubrique (son et voix, accessibilité, fiches à imprimer, sauvegarde, cet appareil, à propos), chacune sur son propre écran.',
+      'Jouer ensemble : de deux à six enfants jouent chacun leur tour sur le même appareil, chacun à son niveau, dans l’ordre où l’on a touché leurs portraits (une dizaine de questions en tout, au moins deux chacun).',
+      'Texte très grand ou espacé, sur un petit téléphone : un long titre de jeu se coupe au lieu de sortir de sa carte, et les étoiles des paliers de calcul tiennent dans leur case.',
     ],
   },
   {

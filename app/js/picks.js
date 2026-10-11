@@ -1,10 +1,10 @@
 // Tirage des jeux, sans dépendance au DOM (testé dans tests/) : défi du jour, révisions et
-// partie à deux. Les rubriques et les jeux masqués par les parents ne sont jamais tirés.
+// partie à plusieurs. Les rubriques et les jeux masqués par les parents ne sont jamais tirés.
 
 import { findGame } from './games/index.js';
 import { isGameHidden, nearestLevel, programForChild } from './programs.js';
 import { createRng, sample, shuffle } from './random.js';
-import { gameStats } from './storage.js';
+import { gameStats, MAX_CHILDREN } from './storage.js';
 
 /** Empreinte d'un texte (FNV-1a) : la graine du défi du jour. */
 export function hashText(text) {
@@ -41,22 +41,32 @@ export function dueReviews(child, today) {
     .filter(([id, item]) => findGame(id) && !findGame(id).timed && !findGame(id).adult && item?.due <= today && !isGameHidden(child, id));
 }
 
-// ---------------------------------------------------------------- Jouer à deux
+// ---------------------------------------------------------------- Jouer à plusieurs (de 2 à 6)
 
 export const DUO_QUESTIONS = 10;
+/** Autant de joueurs que de profils : jusqu'à 6. */
+export const PARTY_MAX = MAX_CHILDREN;
 
-/** L'enfant dont c'est le tour : A, B, A, B… */
+/**
+ * Le nombre de questions d'une partie à `players` joueurs : une dizaine, autant pour chacun, et au
+ * moins 2 chacun (10 à deux, 9 à trois, 12 à quatre, 10 à cinq, 12 à six).
+ */
+export function partyLength(players) {
+  return Math.max(2, Math.round(DUO_QUESTIONS / players)) * players;
+}
+
+/** L'enfant dont c'est le tour : A, B, C, A, B, C… */
 export function duoTurn(players, index) {
   return players[index % players.length];
 }
 
 /**
- * Le déroulé d'une partie à deux : `total` questions en alternance. Chaque question vient d'un jeu
- * tiré au hasard dans le programme de l'enfant dont c'est le tour (pas deux fois le même jeu tant
- * qu'il en reste), à son niveau actuel. Renvoie null si l'un des deux n'a aucun jeu affiché.
+ * Le déroulé d'une partie à plusieurs : `total` questions, chacun son tour. Chaque question vient d'un
+ * jeu tiré au hasard dans le programme de l'enfant dont c'est le tour (pas deux fois le même jeu tant
+ * qu'il en reste), à son niveau actuel. Renvoie null si l'un d'eux n'a aucun jeu affiché.
  * @returns {{player: string, game: object, level: number}[] | null}
  */
-export function duoPlan(profiles, players, rng, total = DUO_QUESTIONS) {
+export function duoPlan(profiles, players, rng, total = partyLength(players.length)) {
   const pools = Object.fromEntries(players.map((id) => [id, drawPool(profiles[id])]));
   if (players.length < 2 || players.some((id) => !profiles[id] || !pools[id].length)) return null;
   const decks = Object.fromEntries(players.map((id) => [id, []]));

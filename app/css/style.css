@@ -1683,6 +1683,9 @@ html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84p
   /* trois réponses côte à côte (94 points chacune sur iPhone SE) : un mot de 9 lettres (« Amsterdam »,
      « mammifère ») y tient ; un mot plus long n'y est pas agrandi */
   .choices-answers.n3 .choice, .choices-answers.long-words .choice { font-size: 0.95rem; }
+  /* trois réponses de plus de 60 lettres, l'une sous l'autre (un nombre de neuf chiffres en lettres) :
+     deux lignes chacune au lieu de trois, pour rester dans l'écran (iPhone SE) */
+  .choices-answers.long-text .choice { font-size: 0.85rem; line-height: 1.2; padding-top: 6px; padding-bottom: 6px; }
   .stage-cubes svg { height: calc(100dvh - 110px); }
 }
 
@@ -2387,6 +2390,14 @@ body[data-season="ete"] { background: #fffbea; }
 .duo-order:empty { display: none; }
 .duo-go { align-self: center; width: min(100%, 360px); margin-top: 20px; }
 .duo-go:disabled { opacity: 0.45; cursor: default; transform: none; }
+/* trois enfants ou plus : des portraits plus petits, trois par ligne, pour que « C'est parti ! » reste
+   dans l'écran (le prénom suffit à reconnaître chacun ; la classe est sur « Qui joue ? ») */
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .profile-card { gap: 2px; padding: 12px 4px 10px; border-radius: 22px; }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .avatar-xl { width: min(84px, 22vw); height: min(84px, 22vw); }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .profile-name { font-size: 1.15rem; }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .profile-grade { display: none; }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .duo-order { top: 6px; left: 6px; padding: 0 7px; font-size: 0.9rem; }
 
 /* pendant la partie : les deux portraits et les bonnes réponses ; l'enfant dont c'est le tour est plus grand et entouré */
 .domain-theme-duo { --accent: #4f46e5; --accent-dark: #3730a3; --accent-soft: #e0e7ff; }
@@ -2413,6 +2424,24 @@ body[data-season="ete"] { background: #fffbea; }
 @media (min-width: 440px) {
   .duo-player:not(.turn) .duo-name { display: inline; }
 }
+/* à trois ou plus : les autres joueurs en plus petit, leur score dans une pastille sur leur portrait ;
+   à cinq ou six sur un téléphone, leurs portraits se chevauchent, sans pastille (tout tient dans la barre) */
+.duo-score.many .duo-players { gap: 2px; }
+.duo-score.many .duo-player.turn { margin-right: 2px; }
+.duo-score.many .duo-player.turn .avatar { width: 32px; height: 32px; }
+.duo-score.many .duo-player:not(.turn) { position: relative; padding: 0 7px 6px 0; }
+.duo-score.many .duo-player:not(.turn) .avatar { width: 24px; height: 24px; }
+.duo-score.many .duo-player:not(.turn) .duo-name, .duo-score.many .duo-player:not(.turn) .duo-check { display: none; }
+.duo-score.many .duo-player:not(.turn) .duo-points {
+  position: absolute; right: 0; bottom: 0; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
+  background: var(--ink); color: #fff; font-size: 0.75rem; line-height: 18px; text-align: center;
+}
+@media (max-width: 500px) {
+  .duo-score.crowd .duo-player:not(.turn) { padding: 0; }
+  .duo-score.crowd .duo-player:not(.turn) + .duo-player:not(.turn) { margin-left: -8px; }
+  .duo-score.crowd .duo-player:not(.turn) .avatar { box-shadow: 0 0 0 2px var(--bg); }
+  .duo-score.crowd .duo-player:not(.turn) .duo-points { display: none; }
+}
 
 /* résultats des deux enfants */
 .duo-end { justify-content: flex-start; gap: 6px; }
@@ -2431,6 +2460,26 @@ body[data-season="ete"] { background: #fffbea; }
 .duo-final-gain { margin: 0; font-weight: 700; font-size: 1.15rem; color: var(--good-dark); }
 .duo-final-sticker { margin: 0; font-weight: 700; font-size: 0.9rem; color: var(--album-dark); }
 .duo-actions { margin-top: 14px; }
+/* à trois ou plus : une ligne par enfant (portrait, prénom, « ✓ 2 sur 3 », étoiles) ; en grille sur un grand écran */
+.duo-end:has(.duo-final.many) .duo-team { font-size: 1.6rem; }
+.duo-end:has(.duo-final.many) .duo-actions { margin-top: 10px; gap: 10px; }
+.duo-end:has(.duo-final.many) .duo-actions .big-btn { min-height: 56px; }
+.duo-final.many { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+.duo-final.many .duo-final-card {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "pic name stars" "pic detail stars";
+  align-items: center; column-gap: 12px; row-gap: 0; padding: 4px 14px; text-align: left; border-radius: 16px;
+  box-shadow: 0 3px 0 var(--line);
+}
+.duo-final.many .avatar { grid-area: pic; width: 40px; height: 40px; }
+.duo-final.many .avatar-name { display: none; }
+.duo-final.many .duo-final-name { grid-area: name; margin: 0; font-size: 1.1rem; line-height: 1.25; }
+.duo-final.many .duo-final-detail { grid-area: detail; line-height: 1.25; }
+.duo-final.many .result-stars { grid-area: stars; }
+.duo-final.many .big-star { font-size: 22px; }
+.duo-final.many .duo-final-sticker { grid-column: 2 / -1; }
+@media (min-width: 700px) {
+  .duo-final.many { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+}
 
 /* accueil : « ⭐ Conseillé pour toi » (texte foncé sur fond blanc, la couleur de la rubrique n'est qu'un décor) */
 .home-featured { display: flex; flex-direction: column; gap: 6px; }
@@ -2569,6 +2618,9 @@ body[data-season="ete"] { background: #fffbea; }
   .duo-hint.warning { padding: 4px 12px; font-size: 1rem; }
   .duo-pick .avatar-xl { width: min(84px, 22dvh); height: min(84px, 22dvh); }
   .duo-go { min-height: 48px; margin-top: 10px; }
+  /* trois enfants ou plus : tous sur une ligne */
+  .duo-pick .profile-list:is(.n3, .n4, .n5, .n6) { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); }
+  .duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .avatar-xl { width: min(64px, 17dvh); height: min(64px, 17dvh); }
 
   /* pendant la partie */
   .duo-player .avatar { width: 24px; height: 24px; }
@@ -2587,6 +2639,16 @@ body[data-season="ete"] { background: #fffbea; }
   .duo-final .big-star { font-size: 26px; }
   .duo-actions { margin: 0; }
   .duo-actions .big-btn { min-height: 52px; font-size: 1.2rem; }
+  /* à trois ou plus : les enfants sur toute la largeur, trois par ligne, les deux boutons dessous */
+  .screen.duo-end:has(.duo-final.many) { grid-template-columns: minmax(0, 1fr); }
+  .duo-end:has(.duo-final.many) .duo-team { font-size: 1.4rem; }
+  .duo-final.many { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .duo-final.many .duo-final-card { padding: 4px 8px; column-gap: 8px; }
+  .duo-final.many .avatar { width: 36px; height: 36px; }
+  .duo-final.many .duo-final-name { font-size: 1rem; }
+  .duo-final.many .big-star { font-size: 16px; }
+  .duo-end:has(.duo-final.many) .duo-actions { flex-direction: row; max-width: none; justify-content: center; margin: 0; }
+  .duo-end:has(.duo-final.many) .duo-actions .big-btn { min-height: 48px; padding: 0 24px; }
 }
 
 /* =====================================================================
