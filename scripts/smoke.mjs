@@ -15,7 +15,7 @@
 //                  pour un échantillon de jeux de chaque rubrique ; A11Y=contrast,calm… ajoute d'autres réglages)
 //         ONLY=a11y   (seulement toucher sans glisser, clavier, sous-titres ; PARTS=a11y y ajoute contrastes et axe-core)
 //         ONLY=demo   (seulement la main qui montre le geste au premier lancement)
-//         ONLY=fiches   (seulement les fiches à imprimer : aperçu, impression A4 en PDF)
+//         ONLY=fiches   (seulement les fiches à imprimer : aperçu, plusieurs jeux, impression A4 en PDF)
 //         A11Y=captions,textSize=1.15 DEVICES=375x667,667x375 PARTS=layout   (ces réglages en plus, sur ces écrans seulement)
 //         PORT=8124 pour lancer plusieurs tests en même temps
 //         CHROMIUM_PATH=/chemin/vers/chrome pour un Chromium déjà installé
@@ -2684,19 +2684,40 @@ const FICHE_SAMPLE = [
   ['picross', 'CE1'], ['petits-textes', 'CE1'], ['vivant', 'CP'], ['drapeaux', 'CE1'], ['graphiques', 'CE1'], ['bon-mot', 'CP'],
 ];
 
-/** La fiche imprimée : deux feuilles A4, rien d'autre de l'écran, et rien qui dépasse. */
-async function checkPrintedFiche(page, label) {
+/** Fiches : l'aperçu est prêt (le document en préparation a remplacé l'ancien). */
+async function fichesReady(page) {
+  await page.waitForFunction(() => document.querySelector('.fiche-preview:not([aria-busy]) .fiche-sheets:not(.fiche-building) > .fiche-page'));
+}
+
+/** Fiches : coche ou décoche un jeu, en ouvrant sa rubrique s'il le faut. */
+async function toggleFiche(page, gameId) {
+  const chip = page.locator(`[data-fiche-pick="${gameId}"]`);
+  if (!(await chip.isVisible())) await page.click(`.fiche-domain:has([data-fiche-pick="${gameId}"]) > summary`);
+  await chip.click();
+}
+
+/** Fiches : coche ce seul jeu, puis décoche les autres. */
+async function pickOnlyFiche(page, gameId) {
+  if ((await page.getAttribute(`[data-fiche-pick="${gameId}"]`, 'aria-pressed')) !== 'true') await toggleFiche(page, gameId);
+  for (const id of await page.$$eval('[data-fiche-pick][aria-pressed="true"]', (bs) => bs.map((b) => b.dataset.fichePick))) {
+    if (id !== gameId) await toggleFiche(page, id);
+  }
+  await fichesReady(page);
+}
+
+/** Les fiches imprimées : des feuilles A4 (deux pour une fiche), rien d'autre de l'écran, et rien qui dépasse. */
+async function checkPrintedFiche(page, label, sheets = 2) {
   // à l'impression, la « fenêtre » a la taille de la feuille A4 (794 × 1123 points) : les règles
   // de l'écran pour les grandes tablettes (agrandissement) ne doivent rien changer
   const viewport = page.viewportSize();
   await page.setViewportSize({ width: 794, height: 1123 });
   await page.emulateMedia({ media: 'print' });
-  const problem = await page.evaluate(() => {
+  const problem = await page.evaluate((expected) => {
     const mm = 96 / 25.4;
     const visible = (el) => el && getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().height > 0;
     if (visible(document.querySelector('.top-bar')) || visible(document.querySelector('.fiche-form'))) return 'les boutons de l’écran sont imprimés';
     const pages = [...document.querySelectorAll('.fiche-page')];
-    if (pages.length !== 2) return `${pages.length} feuilles au lieu de 2`;
+    if (pages.length !== expected) return `${pages.length} feuilles au lieu de ${expected}`;
     for (const [i, p] of pages.entries()) {
       const r = p.getBoundingClientRect();
       if (Math.abs(r.width - 210 * mm) > 2 || r.height > 297 * mm + 1) return `feuille ${i + 1} : ${Math.round(r.width / mm)} × ${Math.round(r.height / mm)} mm au lieu de 210 × 297 mm`;
@@ -2710,15 +2731,15 @@ async function checkPrintedFiche(page, label) {
     }
     if (getComputedStyle(document.querySelector('.fiche-sheets')).transform !== 'none') return 'l’aperçu réduit est imprimé réduit';
     return null;
-  });
-  // le vrai PDF A4 de Chromium : exactement deux pages
+  }, sheets);
+  // le vrai PDF A4 de Chromium : une page par feuille
   const pdf = await page.pdf({ format: 'A4', preferCSSPageSize: true, printBackground: true });
   if (process.env.FICHE_PDF) writeFileSync(`${process.env.FICHE_PDF}/${label.replace(/\W+/g, '-')}.pdf`, pdf);
   const pdfPages = (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
   await page.emulateMedia({ media: 'screen' });
   await page.setViewportSize(viewport);
   if (problem) fail(`fiche ${label} : ${problem}`);
-  if (pdfPages !== 2) fail(`fiche ${label} : le PDF A4 a ${pdfPages} pages au lieu de 2`);
+  if (pdfPages !== sheets) fail(`fiche ${label} : le PDF A4 a ${pdfPages} pages au lieu de ${sheets}`);
 }
 
 async function checkFiches() {
@@ -2733,7 +2754,7 @@ async function checkFiches() {
   // depuis le Suivi d'Eva-Rose
   await page.click('[data-child="eva-rose"]');
   await page.click('[data-fiches="suivi"]');
-  await page.waitForSelector('.fiches .fiche-page');
+  await fichesReady(page);
   if ((await page.getAttribute('main.screen', 'data-title')) !== 'Fiches à imprimer') fail('fiches : titre de l’écran');
   const info = async () => page.evaluate(() => ({
     exercises: document.querySelectorAll('.fiche-exercices .fiche-list > li').length,
@@ -2742,11 +2763,14 @@ async function checkFiches() {
     date: document.querySelector('.fiche-who')?.textContent,
     consigne: document.querySelector('.fiche-consigne')?.textContent,
     text: document.querySelector('.fiche-exercices')?.textContent,
-    game: document.querySelector('[data-fiche-game]').value,
-    level: document.querySelector('[data-fiche-level]').value,
+    picks: [...document.querySelectorAll('[data-fiche-pick][aria-pressed="true"]')].map((b) => b.dataset.fichePick),
+    level: document.querySelector('[data-fiche-level]:not([hidden])')?.value,
     scale: Number(getComputedStyle(document.querySelector('.fiche-scale')).getPropertyValue('--scale')),
   }));
   let sheet = await info();
+  // à l'ouverture : le premier jeu de la liste, coché ; les rubriques fermées
+  if (sheet.picks.length !== 1) fail(`fiches : ${sheet.picks.length} jeux cochés à l’ouverture au lieu d’un`);
+  if (await page.locator('.fiche-domain[open]').count()) fail('fiches : une rubrique est ouverte à l’ouverture');
   if (sheet.exercises < 6 || sheet.exercises > 12) fail(`fiches : ${sheet.exercises} exercices au lieu de 6 à 12`);
   if (sheet.answers !== sheet.exercises) fail(`fiches : ${sheet.answers} corrigés pour ${sheet.exercises} exercices`);
   if (sheet.name !== 'Eva-Rose') fail(`fiches : prénom « ${sheet.name} » au lieu d’Eva-Rose`);
@@ -2755,20 +2779,67 @@ async function checkFiches() {
   if (!(sheet.scale > 0.3 && sheet.scale < 0.6)) fail(`fiches : l’aperçu n’est pas réduit à la largeur de l’écran (${sheet.scale})`);
   await checkLayout(page, 'fiches à imprimer (390×844)', { reachable: false });
   // le niveau proposé est celui de l'enfant (le 2e niveau de « Quelle heure est-il ? » au CE1)
-  await page.selectOption('[data-fiche-game]', 'heure');
+  await pickOnlyFiche(page, 'heure');
   await page.waitForFunction(() => document.querySelector('.fiche-exercices .ex-stage .stage-clock'));
   sheet = await info();
   const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).profiles['eva-rose'].games.heure.level, STORAGE_KEY);
+  if (sheet.picks.join() !== 'heure') fail(`fiches : jeux cochés ${sheet.picks.join()} au lieu de heure`);
   if (sheet.level !== String(saved)) fail(`fiches : niveau ${sheet.level} proposé au lieu du niveau de l’enfant (${saved})`);
   // « Autres exercices » : un nouveau tirage
   const before = sheet.text;
   await page.click('[data-fiche-new]');
   await page.waitForFunction((t) => document.querySelector('.fiche-exercices').textContent !== t, before);
-  // « Imprimer » ouvre l'impression du navigateur
-  await page.evaluate(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; }; });
+  // « Imprimer ou PDF » ouvre l'impression du navigateur ; le nom du PDF dit l'enfant et le jour
+  await page.evaluate(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; window.__printTitle = document.title; }; });
   await page.click('[data-fiche-print]');
-  if ((await page.evaluate(() => window.__printed)) !== 1) fail('fiches : « Imprimer » n’ouvre pas l’impression');
+  const printed = await page.evaluate(() => [window.__printed, window.__printTitle]);
+  if (printed[0] !== 1) fail('fiches : « Imprimer » n’ouvre pas l’impression');
+  if (!/^Eva-Rose – fiches du \d+ \S+ \d{4}$/.test(printed[1] || '')) fail(`fiches : nom du PDF « ${printed[1]} »`);
   await checkPrintedFiche(page, 'heure');
+  // plusieurs jeux : une feuille d'exercices par jeu, dans l'ordre de la liste, puis les corrigés
+  // à la suite, sur aussi peu de pages que possible (des petits et des grands corrigés)
+  const several = ['calcul', 'heure', 'labyrinthe', 'sudoku'];
+  for (const id of several) {
+    if ((await page.getAttribute(`[data-fiche-pick="${id}"]`, 'aria-pressed')) !== 'true') await toggleFiche(page, id);
+    await fichesReady(page);
+  }
+  const doc = async () => page.evaluate(() => {
+    const pages = [...document.querySelectorAll('.fiche-sheets:not(.fiche-building) > .fiche-page')];
+    return {
+      kinds: pages.map((p) => (p.matches('.fiche-exercices') ? `ex:${p.dataset.fiche}` : 'corrige')),
+      sheets: pages.filter((p) => p.matches('.fiche-exercices')).map((p) => [p.dataset.fiche, p.querySelectorAll('.fiche-list > li').length, p.textContent]),
+      parts: [...document.querySelectorAll('.fiche-corrige .corrige-part')].map((c) => [c.dataset.corrige, c.querySelectorAll('.corrige-list > li').length]),
+      picks: [...document.querySelectorAll('[data-fiche-pick][aria-pressed="true"]')].map((b) => b.dataset.fichePick),
+      chosen: document.querySelector('.fiche-domain:has([data-fiche-pick="calcul"]) .fiche-chosen')?.textContent,
+      status: document.querySelector('.fiche-status').textContent,
+    };
+  });
+  let all = await doc();
+  const order = all.picks;
+  if (order.length !== several.length || several.some((id) => !order.includes(id))) fail(`fiches : jeux cochés ${order.join()} au lieu de ${several.join()}`);
+  const corrigePages = all.kinds.filter((k) => k === 'corrige').length;
+  if (all.kinds.join() !== [...order.map((id) => `ex:${id}`), ...Array(corrigePages).fill('corrige')].join()) fail(`fiches : document dans le désordre (${all.kinds.join()})`);
+  if (!corrigePages || corrigePages >= order.length) fail(`fiches : ${corrigePages} pages de corrigés pour ${order.length} fiches`);
+  if (all.parts.map(([id]) => id).join() !== order.join()) fail(`fiches : corrigés dans le désordre (${all.parts.map(([id]) => id).join()})`);
+  for (const [id, n] of all.sheets) {
+    const part = all.parts.find(([pid]) => pid === id);
+    if (n < 6 || !part || part[1] !== n) fail(`fiches : ${id}, ${n} exercices et ${part?.[1]} corrigés`);
+  }
+  // une rubrique fermée dit ses jeux cochés
+  if (all.chosen !== `✓ ${findGame('calcul').title}`) fail(`fiches : la rubrique du calcul dit « ${all.chosen} »`);
+  if (!all.status.includes(`${order.length} fiches`) || !all.status.includes(`${all.kinds.length} pages`)) fail(`fiches : état « ${all.status} »`);
+  await checkLayout(page, 'fiches à imprimer, plusieurs jeux (390×844)', { reachable: false });
+  await checkPrintedFiche(page, 'plusieurs jeux', all.kinds.length);
+  // décocher un jeu ne refait pas les autres fiches
+  const kept = all.sheets.filter(([id]) => id !== 'labyrinthe');
+  await toggleFiche(page, 'labyrinthe');
+  await fichesReady(page);
+  all = await doc();
+  if (all.sheets.map(([id, , text]) => `${id}${text}`).join() !== kept.map(([id, , text]) => `${id}${text}`).join()) fail('fiches : les autres fiches ont changé quand un jeu a été décoché');
+  // plus aucun jeu : rien à imprimer
+  for (const id of all.picks) await toggleFiche(page, id);
+  await page.waitForFunction(() => !document.querySelector('.fiche-page') && document.querySelector('[data-fiche-print]').disabled);
+  if (!(await page.textContent('.fiche-status')).includes('Cochez au moins un jeu')) fail('fiches : aucun jeu coché, sans explication');
   // une forme d'exercice par jeu, à l'impression (classe où le jeu est au programme)
   const kinds = [];
   for (const [gameId, grade] of FICHE_SAMPLE) {
@@ -2777,12 +2848,12 @@ async function checkFiches() {
     await openParents(page);
     await page.click('[data-child="eva-rose"]');
     await page.click('[data-fiches="suivi"]');
-    await page.waitForSelector('.fiche-page');
-    await page.selectOption('[data-fiche-game]', gameId);
-    await page.waitForFunction((id) => document.querySelector('[data-fiche-game]').value === id && document.querySelector('.fiche-page'), gameId);
+    await fichesReady(page);
+    await pickOnlyFiche(page, gameId);
     // le plus haut niveau proposé (le plus chargé)
-    const last = await page.$$eval('[data-fiche-level] option', (opts) => opts.at(-1).value);
-    await page.selectOption('[data-fiche-level]', last);
+    const last = await page.$$eval(`[data-fiche-level="${gameId}"] option`, (opts) => opts.at(-1).value);
+    await page.selectOption(`[data-fiche-level="${gameId}"]`, last);
+    await fichesReady(page);
     await page.waitForTimeout(50);
     kinds.push(await page.$eval('.fiche-list > li', (li) => [...li.classList].find((c) => c.startsWith('exk-')).slice(4)));
     await checkPrintedFiche(page, `${gameId} niveau ${last}`);
@@ -2794,13 +2865,13 @@ async function checkFiches() {
   await page.setViewportSize({ width: 667, height: 375 });
   await page.click('[data-tab="reglages"]');
   await page.click('[data-fiches="reglages"]');
-  await page.waitForSelector('.fiche-page');
+  await fichesReady(page);
   await checkLayout(page, 'fiches à imprimer (667×375)', { reachable: false });
   if ((await page.locator('[data-fiche-child]').count()) !== 2) fail('fiches : le choix de l’enfant manque');
   await page.click('[data-fiche-child="matteo"]');
   await page.waitForFunction(() => document.querySelector('.fiche-name')?.textContent === 'Matteo');
   await context.close();
-  console.log(`✔ fiches à imprimer : aperçu, niveau de l’enfant, nouveau tirage, impression ; ${FICHE_SAMPLE.length + 1} fiches A4 de 2 pages (${[...new Set(kinds)].join(', ')})`);
+  console.log(`✔ fiches à imprimer : aperçu, niveau de l’enfant, nouveau tirage, impression ; ${FICHE_SAMPLE.length + 1} fiches A4 de 2 pages (${[...new Set(kinds)].join(', ')}) ; ${several.length} jeux en un document (${corrigePages} page${corrigePages > 1 ? 's' : ''} de corrigés)`);
 }
 
 if (!ONLY && PARTS.includes('scenario')) await scenario();
@@ -2871,7 +2942,7 @@ const STRESS = {
 async function checkLayout(page, label, { reachable = true } = {}) {
   const problem = await page.evaluate((mustReach) => {
     if (document.documentElement.scrollWidth > window.innerWidth) return 'la page déborde en largeur';
-    for (const el of document.querySelectorAll('.choice, .key, .match-item, .tile, .fill-row, .stage > *, .palier-tile, .game-card, .domain-btn, .profile-card, .parent-tab, .look-option, .child-row, .maze-arrow, .path-cell, .order-item, .order-slot, .level-row, .level-pick, .story-text, .text-body, .sudoku-cell, .sudoku-symbol, .sym-cell, .featured-game, .domain-tile, .kid-game, .son-chip')) {
+    for (const el of document.querySelectorAll('.choice, .key, .match-item, .tile, .fill-row, .stage > *, .palier-tile, .game-card, .domain-btn, .profile-card, .parent-tab, .look-option, .child-row, .maze-arrow, .path-cell, .order-item, .order-slot, .level-row, .level-pick, .story-text, .text-body, .sudoku-cell, .sudoku-symbol, .sym-cell, .featured-game, .domain-tile, .kid-game, .son-chip, .fiche-chip')) {
       if (el.clientWidth <= 1) continue; // caché à l'écran, gardé pour le clavier (flèches du labyrinthe rond)
       if (el.closest('.choices-seek')) continue; // cherche et trouve : l'image tourne exprès dans son rond
       if (el.scrollWidth > el.clientWidth + 1) return `contenu trop large : « ${el.textContent.trim().slice(0, 30)} »`;

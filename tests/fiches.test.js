@@ -214,3 +214,16 @@ test('fiches : feuille A4, impression en noir et blanc, rien d’autre à l’im
   const html = readFileSync(new URL('../app/index.html', import.meta.url), 'utf8');
   assert.match(html, /css\/fiches\.css/);
 });
+
+test('fiches : plusieurs jeux en un document, chaque corrigé d’un seul tenant, rien de caché à l’impression', () => {
+  const css = readFileSync(new URL('../app/css/fiches.css', import.meta.url), 'utf8');
+  // une feuille par page, les corrigés l'un sous l'autre sans être coupés
+  assert.match(css, /\.fiche-page\s*\{[^}]*break-after:\s*page/);
+  assert.match(css, /\.corrige-part\s*\{[^}]*break-inside:\s*avoid/);
+  // le document en préparation (caché à l'écran) ne s'imprime pas non plus
+  assert.match(css, /\.fiche-building\s*\{[^}]*visibility:\s*hidden/);
+  assert.match(css, /@media print\s*\{[^@]*\.fiche-building\s*\{\s*display:\s*none/);
+  // une case cochée porte un ✓ (pas seulement une couleur)
+  const source = readFileSync(new URL('../app/js/fiches-ecran.js', import.meta.url), 'utf8');
+  assert.match(source, /check\.textContent = on \? '✓'/);
+});

@@ -1,6 +1,7 @@
-// Fiches à imprimer : le dessin de la fiche A4 (exercices, puis corrigé pour l'adulte) et l'écran
-// de l'espace parents qui la prépare (enfant, jeu, niveau, aperçu, « Imprimer »). Les exercices
-// viennent de fiches.js ; la mise en page et l'impression sont dans css/fiches.css.
+// Fiches à imprimer : le dessin des fiches A4 (une page d'exercices par jeu, puis les corrigés pour
+// l'adulte) et l'écran de l'espace parents qui les prépare (enfant, jeux cochés et leur niveau,
+// aperçu, « Imprimer ou PDF »). Les exercices viennent de fiches.js ; la mise en page et
+// l'impression sont dans css/fiches.css.
 
 import { clockSvg, h, objectsGrid, renderChoiceContent, renderStage, setAides } from './render.js';
 import { answerText, choiceText, ficheLevels, isPrintable, isWide, makeFiche, FICHE_MIN } from './fiches.js';
@@ -310,34 +311,57 @@ export function longDate(date = new Date()) {
   return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-/** La fiche : page 1, les exercices ; page 2, le corrigé (pour l'adulte). */
-export function ficheElement(fiche, { name = '', date = longDate(), levelNumber = fiche.level } = {}) {
-  // sur le papier, chaque couleur est aussi écrite (impression en noir et blanc)
-  setAides({ namedColors: true, domain: findGame(fiche.gameId)?.domain ?? null });
-  const header = (corrige) => h('header', { class: 'fiche-head' },
-    h('div', { class: 'fiche-title' },
-      h('span', { class: 'fiche-icon', 'aria-hidden': 'true' }, fiche.icon),
-      h('h2', {}, corrige ? `Corrigé : ${fiche.title}` : fiche.title),
-      h('span', { class: 'fiche-level' }, `Niveau ${levelNumber} · ${fiche.levelLabel}`)),
-    corrige
-      ? h('p', { class: 'fiche-for' }, fiche.exercises.some((e) => e.kind === 'trace')
-        ? 'Pour l’adulte : regardez surtout le sens des traits (chaque trait part du point numéroté).'
-        : 'Pour l’adulte : les réponses de la fiche, dans l’ordre.')
-      : h('p', { class: 'fiche-who' },
+/** La page d'exercices d'une fiche (pour l'enfant) : titre, prénom et date, consigne, exercices. */
+function exercisePage(fiche, { name, date, levelNumber }) {
+  return h('section', { class: 'fiche-page fiche-exercices', 'data-fiche': fiche.gameId, 'aria-label': `Exercices : ${fiche.title}` },
+    h('header', { class: 'fiche-head' },
+      h('div', { class: 'fiche-title' },
+        h('span', { class: 'fiche-icon', 'aria-hidden': 'true' }, fiche.icon),
+        h('h2', {}, fiche.title),
+        h('span', { class: 'fiche-level' }, `Niveau ${levelNumber} · ${fiche.levelLabel}`)),
+      h('p', { class: 'fiche-who' },
         h('span', {}, 'Prénom : ', h('b', { class: 'fiche-name' }, name || '…………………')),
-        h('span', {}, 'Date : ', h('b', {}, date))));
-  const exercises = fiche.exercises;
-  const page1 = h('section', { class: 'fiche-page fiche-exercices', 'aria-label': 'Page 1 : les exercices' },
-    header(false),
+        h('span', {}, 'Date : ', h('b', {}, date)))),
     h('p', { class: 'fiche-consigne' }, h('b', {}, 'Consigne : '), fiche.consigne),
-    h('ol', { class: 'fiche-list' }, exercises.map((ex, i) => exerciseItem(ex, i + 1, fiche.sameText))),
+    h('ol', { class: 'fiche-list' }, fiche.exercises.map((ex, i) => exerciseItem(ex, i + 1, fiche.sameText))),
     h('footer', { class: 'fiche-foot' }, h('span', {}, 'Bravo ! ⭐ Colorie une étoile : ☆ ☆ ☆')));
-  const page2 = h('section', { class: 'fiche-page fiche-corrige', 'aria-label': 'Page 2 : le corrigé' },
-    header(true),
-    h('ol', { class: 'corrige-list' }, exercises.map((ex, i) => h('li', {
+}
+
+/** Le corrigé d'une fiche (pour l'adulte) : le jeu et son niveau, puis les réponses dans l'ordre. */
+function corrigePart(fiche, { levelNumber }) {
+  return h('section', { class: 'corrige-part', 'data-corrige': fiche.gameId },
+    h('h3', { class: 'corrige-title' },
+      h('span', { class: 'fiche-icon', 'aria-hidden': 'true' }, fiche.icon), h('span', {}, fiche.title),
+      h('span', { class: 'fiche-level' }, `Niveau ${levelNumber} · ${fiche.levelLabel}`)),
+    fiche.exercises.some((e) => e.kind === 'trace')
+      ? h('p', { class: 'fiche-for' }, 'Regardez surtout le sens des traits : chaque trait part du point numéroté.') : null,
+    h('ol', { class: 'corrige-list' }, fiche.exercises.map((ex, i) => h('li', {
       class: `ans ans-${ex.kind}${BIG_ANSWERS.has(ex.kind) ? ' big' : ''}${['match', 'fill'].includes(ex.kind) ? ' wide' : ''}`, 'data-ans': i + 1,
     }, h('span', { class: 'ex-num', 'aria-hidden': 'true' }, i + 1), h('span', { class: 'ans-body' }, answerBody(ex))))));
-  return h('div', { class: 'fiche-sheets' }, hatchDefs(), page1, page2);
+}
+
+/**
+ * Une page de corrigés, pour l'adulte : son en-tête, puis les corrigés qui y tiennent (`index` : sa
+ * place parmi les pages de corrigés ; `count` : le nombre de fiches du document).
+ */
+function corrigePage(parts = [], { index = 0, count = 1 } = {}) {
+  const title = count > 1 ? (index ? 'Corrigés (suite)' : 'Corrigés') : 'Corrigé';
+  return h('section', { class: 'fiche-page fiche-corrige', 'aria-label': index ? `Corrigés, page ${index + 1}` : title },
+    h('header', { class: 'fiche-head' },
+      h('div', { class: 'fiche-title' },
+        h('span', { class: 'fiche-icon', 'aria-hidden': 'true' }, '✅'),
+        h('h2', {}, title)),
+      h('p', { class: 'fiche-for' }, count > 1
+        ? 'Pour l’adulte : les réponses de chaque fiche, dans l’ordre des fiches.'
+        : 'Pour l’adulte : les réponses de la fiche, dans l’ordre.')),
+    parts);
+}
+
+/** Une fiche seule : page 1, les exercices ; page 2, le corrigé (pour l'adulte). */
+function fichePages(fiche, { name = '', date = longDate(), levelNumber = fiche.level } = {}) {
+  // sur le papier, chaque couleur est aussi écrite (impression en noir et blanc)
+  setAides({ namedColors: true, domain: findGame(fiche.gameId)?.domain ?? null });
+  return [exercisePage(fiche, { name, date, levelNumber }), corrigePage([corrigePart(fiche, { levelNumber })])];
 }
 
 const MM = 96 / 25.4; // pixels CSS par millimètre
@@ -360,12 +384,13 @@ function shrinkStages(sheets) {
 }
 
 /**
- * De combien (en pixels de la feuille) la liste dépasse la zone utile : la feuille moins sa marge du
+ * De combien (en pixels de la feuille) la page dépasse la zone utile : la feuille moins sa marge du
  * bas (12 mm) et 2 mm de sécurité (à l'impression, la feuille est 1 mm plus courte). Mesuré sur
  * les rectangles affichés, pour tenir compte de la réduction de l'aperçu et du zoom de la liste.
  */
 function excess(page) {
-  const list = page.querySelector('.fiche-list, .corrige-list');
+  // la dernière liste de la page (une page de corrigés en a une par fiche)
+  const list = [...page.querySelectorAll('.fiche-list, .corrige-list')].at(-1);
   if (!list) return 0;
   const box = page.getBoundingClientRect();
   if (!box.height) return 0;
@@ -397,10 +422,32 @@ export function fitFiche(fiche, render) {
   return fiche;
 }
 
+/**
+ * Les corrigés, à la suite, sur aussi peu de pages que possible : un corrigé ne se coupe pas, il
+ * passe à la page suivante s'il ne tient plus. Les pages sont ajoutées à `doc` (dans la page, pour
+ * mesurer) ; renvoie leur nombre.
+ */
+function packCorriges(doc, parts) {
+  const pages = [];
+  for (const part of parts) {
+    const last = pages.at(-1);
+    if (last) {
+      last.append(part);
+      if (excess(last) <= 0) continue;
+    }
+    const page = corrigePage([], { index: pages.length, count: parts.length });
+    doc.append(page);
+    pages.push(page);
+    page.append(part);
+  }
+  return pages.length;
+}
+
 // ---------------------------------------------------------------- L'écran (espace parents)
 
-// le dernier choix des parents, gardé tant que l'app est ouverte
-const memo = { childId: null, gameId: null, level: null };
+// les derniers choix des parents, gardés tant que l'app est ouverte : l'enfant, et pour chaque
+// enfant ses jeux cochés avec leur niveau ([[jeu, niveau], …])
+const memo = { childId: null, picks: {} };
 
 /** Les jeux du programme de la classe qui ont une fiche, rangés par rubrique, avec leurs niveaux imprimables. */
 export function ficheChoices(kid) {
@@ -419,9 +466,15 @@ function defaultLevel(kid, entry) {
   return entry.levels.reduce((best, l) => (Math.abs(l - current) < Math.abs(best - current) ? l : best), entry.levels[0]);
 }
 
+const plural = (n, one, many = `${one}s`) => `${n} ${n > 1 ? many : one}`;
+
+/** Le jour, dans le nom du PDF : « 11 octobre 2026 ». */
+const shortDate = (date = new Date()) => date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
 /**
- * L'écran « Fiches à imprimer ». `deps` : { store, show, topBar, onBack, childId, gameId }.
- * L'enfant, le jeu et le niveau se choisissent en haut ; l'aperçu de la fiche est dessous.
+ * L'écran « Fiches à imprimer ». `deps` : { store, show, topBar, onBack, childId }.
+ * En haut, l'enfant et les jeux à imprimer (cochés, rangés par rubrique, chacun à son niveau) ;
+ * dessous, l'aperçu du document : une feuille d'exercices par jeu, puis les corrigés.
  */
 export function fichesScreen(deps) {
   const { store, show, topBar, onBack } = deps;
@@ -429,44 +482,83 @@ export function fichesScreen(deps) {
   const kid = store.profiles[childId];
   const choices = ficheChoices(kid);
   const entries = choices.flatMap((d) => d.games);
-  const entry = entries.find((e) => e.game.id === (deps.gameId || memo.gameId)) || entries[0];
-  const level = entry && memo.childId === childId && memo.gameId === entry.game.id && entry.levels.includes(memo.level)
-    ? memo.level : entry ? defaultLevel(kid, entry) : null;
-  Object.assign(memo, { childId, gameId: entry?.game.id ?? null, level });
-  const again = (next) => fichesScreen({ ...deps, ...next });
+  memo.childId = childId;
 
   const childTabs = store.order.length > 1
     ? h('div', { class: 'segmented tabs child-tabs fiche-children', role: 'group', 'aria-label': 'Enfant' }, store.order.map((id) => h('button', {
       class: id === childId ? 'seg on' : 'seg', 'data-fiche-child': id, 'aria-pressed': String(id === childId),
-      onclick: () => { memo.gameId = null; again({ childId: id, gameId: null }); },
+      onclick: () => fichesScreen({ ...deps, childId: id }),
     }, store.profiles[id].name)))
     : null;
-  if (!entry) {
+  if (!entries.length) {
     show(h('main', { class: 'screen parents fiches', 'data-title': 'Fiches à imprimer' },
       topBar({ onBack, title: 'Fiches à imprimer' }), childTabs,
       h('section', { class: 'card' }, h('p', {}, `Aucun jeu de ${kid.name} ne s’imprime pour l’instant.`))));
     return;
   }
-  const { levels: classLevels } = levelRange(kid.grade, entry.game.id);
-  const gameSelect = h('select', { class: 'select', id: 'fiche-game', 'data-fiche-game': '' },
-    choices.map((d) => h('optgroup', { label: `${d.icon} ${d.title}` },
-      d.games.map((e) => h('option', { value: e.game.id, selected: e.game.id === entry.game.id }, `${e.game.icon} ${e.game.title}`)))));
-  gameSelect.addEventListener('change', () => {
-    memo.level = null;
-    again({ childId, gameId: gameSelect.value });
-  });
-  const levelSelect = h('select', { class: 'select', id: 'fiche-level', 'data-fiche-level': '' },
-    entry.levels.map((l) => h('option', { value: l, selected: l === level }, `Niveau ${classLevels.indexOf(l) + 1} : ${entry.game.levels[l - 1]}`)));
-  levelSelect.addEventListener('change', () => {
-    memo.level = Number(levelSelect.value);
-    draw();
-  });
 
+  // les jeux cochés (jeu → niveau) : ceux de la dernière fois pour cet enfant, sinon le premier jeu
+  const picks = new Map();
+  for (const [id, level] of memo.picks[childId] || [[entries[0].game.id, null]]) {
+    const entry = entries.find((e) => e.game.id === id);
+    if (entry) picks.set(id, entry.levels.includes(level) ? level : defaultLevel(kid, entry));
+  }
+  const remember = () => { memo.picks[childId] = [...picks]; };
+  remember();
+  // le niveau tel que les parents le voient : sa place parmi les niveaux de la classe
+  const levelNumber = (entry, level) => levelRange(kid.grade, entry.game.id).levels.indexOf(level) + 1;
+
+  // ---- le choix des jeux : une case par jeu, rangés par rubrique ; un jeu coché montre son niveau
+  const rows = new Map();
+  const counters = [];
+  const pickRow = (entry) => {
+    const { game } = entry;
+    const check = h('span', { class: 'fiche-check', 'aria-hidden': 'true' });
+    const chip = h('button', { type: 'button', class: 'fiche-chip', 'data-fiche-pick': game.id },
+      check, h('span', { class: 'fiche-chip-title' }, h('span', { 'aria-hidden': 'true' }, game.icon), ' ', game.title));
+    const select = h('select', { class: 'select', 'data-fiche-level': game.id, 'aria-label': `Niveau : ${game.title}` },
+      entry.levels.map((l) => h('option', { value: l }, `Niveau ${levelNumber(entry, l)} : ${game.levels[l - 1]}`)));
+    chip.addEventListener('click', () => {
+      if (picks.has(game.id)) picks.delete(game.id);
+      else picks.set(game.id, defaultLevel(kid, entry));
+      changed();
+    });
+    select.addEventListener('change', () => {
+      picks.set(game.id, Number(select.value));
+      changed();
+    });
+    rows.set(game.id, { chip, check, select });
+    return h('div', { class: 'fiche-pick' }, chip, select);
+  };
+  // les rubriques sont fermées : chacune dit, sous son nom, ses jeux cochés (ou combien elle en a)
+  const groups = choices.map((domain) => {
+    const chosen = h('span', { class: 'fiche-chosen' });
+    counters.push({ chosen, games: domain.games });
+    return h('details', { class: 'fiche-domain', 'data-fiche-domain': domain.id },
+      h('summary', {}, h('span', { class: 'fiche-domain-title' }, h('span', { 'aria-hidden': 'true' }, domain.icon), ' ', domain.title), chosen),
+      h('div', { class: 'fiche-picks' }, domain.games.map(pickRow)));
+  });
+  // les cases, les niveaux et les rubriques, d'après les jeux cochés
+  const refresh = () => {
+    for (const [id, { chip, check, select }] of rows) {
+      const on = picks.has(id);
+      chip.setAttribute('aria-pressed', String(on));
+      check.textContent = on ? '✓' : '';
+      select.hidden = !on;
+      if (on) select.value = String(picks.get(id));
+    }
+    for (const { chosen, games } of counters) {
+      const titles = games.filter((e) => picks.has(e.game.id)).map((e) => e.game.title);
+      chosen.textContent = titles.length ? `✓ ${titles.join(' · ')}` : plural(games.length, 'jeu', 'jeux');
+      chosen.classList.toggle('on', titles.length > 0);
+    }
+  };
+
+  // ---- l'aperçu : le document entier, réduit à la largeur de l'écran (les feuilles gardent leur
+  // taille A4 pour l'impression)
   const status = h('p', { class: 'muted small fiche-status', role: 'status' });
   const scaler = h('div', { class: 'fiche-scale' });
-  const preview = h('div', { class: 'fiche-preview', role: 'region', 'aria-label': 'Aperçu de la fiche' }, scaler);
-  let seed = Date.now();
-  // l'aperçu tient dans la largeur de l'écran (la feuille garde sa taille A4 pour l'impression)
+  const preview = h('div', { class: 'fiche-preview', role: 'region', 'aria-label': 'Aperçu des fiches' }, scaler);
   const rescale = () => {
     const sheets = scaler.firstElementChild;
     if (!sheets || !preview.isConnected) return;
@@ -474,38 +566,111 @@ export function fichesScreen(deps) {
     scaler.style.setProperty('--scale', String(scale));
     scaler.style.height = `${Math.ceil(sheets.offsetHeight * scale)}px`;
   };
-  const draw = () => {
-    const lvl = Number(levelSelect.value);
-    let fiche = makeFiche(entry.game, lvl, { seed, name: kid.name, season: seasonOf(new Date()).id });
-    if (!fiche) {
+  let seed = Date.now();
+  // les fiches déjà prêtes (jeu, niveau, tirage) : cocher un autre jeu ne refait pas les autres
+  const made = new Map();
+  const keyOf = (entry) => `${entry.game.id}:${picks.get(entry.game.id)}:${seed}`;
+  // une fiche : ses exercices ajustés à la feuille A4 (mesurée dans `doc`), sa page et son corrigé
+  const prepare = (entry, doc) => {
+    const level = picks.get(entry.game.id);
+    let fiche = makeFiche(entry.game, level, { seed, name: kid.name, season: seasonOf(new Date()).id });
+    if (!fiche) return null;
+    let stage = null;
+    fiche = fitFiche(fiche, (f) => {
+      stage?.remove();
+      stage = h('div', { class: 'fiche-stage' }, fichePages(f, { name: kid.name, levelNumber: levelNumber(entry, level) }));
+      doc.append(stage);
+      return stage;
+    });
+    const sheet = { page: stage.querySelector('.fiche-exercices'), part: stage.querySelector('.corrige-part'), count: fiche.exercises.length };
+    stage.remove();
+    return sheet;
+  };
+  let run = 0;
+  const build = async () => {
+    const current = ++run;
+    const chosen = entries.filter((e) => picks.has(e.game.id));
+    printBtn.disabled = true;
+    newBtn.disabled = !chosen.length;
+    if (!chosen.length) {
       scaler.replaceChildren();
-      status.textContent = 'Ce niveau ne donne pas assez d’exercices à imprimer. Choisissez un autre niveau.';
+      scaler.style.height = '0px';
+      preview.removeAttribute('aria-busy');
+      status.textContent = 'Cochez au moins un jeu.';
       return;
     }
-    const render = (f) => {
-      const sheets = ficheElement(f, { name: kid.name, levelNumber: classLevels.indexOf(lvl) + 1 });
-      scaler.replaceChildren(sheets);
-      return sheets;
-    };
-    fiche = fitFiche(fiche, render);
-    scaler.dataset.count = String(fiche.exercises.length);
-    status.textContent = `${fiche.exercises.length} exercices, et le corrigé en page 2.`;
+    preview.setAttribute('aria-busy', 'true');
+    // le document se prépare caché (il faut le mesurer), puis remplace l'aperçu d'un coup
+    const doc = h('div', { class: 'fiche-sheets fiche-building' }, hatchDefs());
+    scaler.append(doc);
+    // 1. les fiches qui manquent, une à une : l'écran reste vif s'il y en a beaucoup
+    let fresh = 0;
+    for (const entry of chosen) {
+      if (made.has(keyOf(entry))) continue;
+      if (fresh++) {
+        status.textContent = 'Préparation des fiches…';
+        await new Promise((resolve) => setTimeout(resolve));
+        if (current !== run) {
+          doc.remove();
+          return;
+        }
+      }
+      made.set(keyOf(entry), prepare(entry, doc));
+    }
+    // 2. le document : les feuilles d'exercices dans l'ordre de la liste, puis les corrigés
+    const parts = [];
+    const missing = [];
+    let exercises = 0;
+    for (const entry of chosen) {
+      const sheet = made.get(keyOf(entry));
+      if (!sheet) {
+        missing.push(`« ${entry.game.title} »`);
+        continue;
+      }
+      doc.append(sheet.page);
+      parts.push(sheet.part);
+      exercises += sheet.count;
+    }
+    const pages = parts.length + packCorriges(doc, parts);
+    doc.classList.remove('fiche-building');
+    scaler.replaceChildren(doc);
+    preview.removeAttribute('aria-busy');
+    printBtn.disabled = !parts.length;
+    status.textContent = [
+      parts.length === 1 ? `${exercises} exercices, et le corrigé en page 2.`
+        : parts.length ? `${parts.length} fiches (${exercises} exercices), puis les corrigés : ${pages} pages en tout.` : '',
+      missing.length ? `${missing.join(', ')} : pas assez d’exercices à ce niveau. Choisissez un autre niveau.` : '',
+    ].filter(Boolean).join(' ');
     rescale();
   };
+  const changed = () => {
+    remember();
+    refresh();
+    build();
+  };
+  const print = () => {
+    // le nom du PDF (« Enregistrer en PDF ») vient du titre de la page ; l'écran suivant remet le sien
+    const title = document.title;
+    document.title = `${kid.name} – fiches du ${shortDate()}`;
+    window.addEventListener('afterprint', () => { document.title = title; }, { once: true });
+    window.print();
+  };
+  const printBtn = h('button', { class: 'big-btn primary', 'data-fiche-print': '', onclick: print }, '🖨️ Imprimer ou PDF');
+  const newBtn = h('button', { class: 'big-btn', 'data-fiche-new': '', onclick: () => { seed += 7919; made.clear(); build(); } }, '🔄 Autres exercices');
   const screen = h('main', { class: 'screen parents fiches', 'data-title': 'Fiches à imprimer' },
     topBar({ onBack, title: 'Fiches à imprimer' }),
     h('section', { class: 'card fiche-form' },
-      h('p', { class: 'muted small' }, 'Pour les jours sans écran : une feuille A4 d’exercices du jeu choisi, au niveau de l’enfant, avec le corrigé en page 2.'),
+      h('p', { class: 'muted small' }, 'Pour les jours sans écran : cochez un ou plusieurs jeux. Chacun donne une feuille A4 d’exercices, au niveau de l’enfant ; les corrigés sont à la fin, pour l’adulte.'),
       childTabs,
-      h('label', { class: 'fiche-field', for: 'fiche-game' }, h('span', {}, 'Jeu'), gameSelect),
-      h('label', { class: 'fiche-field', for: 'fiche-level' }, h('span', {}, 'Niveau'), levelSelect),
-      h('div', { class: 'fiche-actions' },
-        h('button', { class: 'big-btn primary', 'data-fiche-print': '', onclick: () => window.print() }, '🖨️ Imprimer'),
-        h('button', { class: 'big-btn', 'data-fiche-new': '', onclick: () => { seed += 7919; draw(); } }, '🔄 Autres exercices'),
+      h('div', { class: 'fiche-games', role: 'group', 'aria-labelledby': 'fiche-games-label' },
+        h('p', { class: 'fiche-games-label', id: 'fiche-games-label' }, 'Jeux à imprimer'), groups),
+      h('div', { class: 'fiche-actions' }, printBtn, newBtn,
         h('button', { class: 'big-btn', 'data-fiche-back': '', onclick: onBack }, 'Retour')),
-      status),
+      status,
+      h('p', { class: 'muted small fiche-pdf' }, 'Pour garder un PDF : dans la fenêtre d’impression, choisissez « Enregistrer au format PDF » ; sur iPhone et iPad, touchez le bouton de partage, puis « Enregistrer dans Fichiers ».')),
     preview);
   show(screen);
-  draw();
+  refresh();
+  build();
   if (typeof ResizeObserver === 'function') new ResizeObserver(rescale).observe(preview);
 }

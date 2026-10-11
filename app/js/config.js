@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.17.3',
+  version: '1.18.0',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.18.0',
+    date: '2026-10-11',
+    changes: [
+      'Fiches à imprimer : plusieurs jeux d’un coup. On coche les jeux, rangés par matière, chacun au niveau de l’enfant (ou à un autre). Un seul document : une feuille d’exercices par jeu, puis les corrigés, à la suite, sur le moins de pages possible. « Imprimer ou PDF » ouvre la fenêtre d’impression, d’où l’on peut aussi enregistrer un PDF (sur iPhone et iPad : le bouton de partage, puis « Enregistrer dans Fichiers »).',
+    ],
+  },
   {
     version: '1.17.3',
     date: '2026-10-11',

@@ -1313,9 +1313,9 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
 .parents .parent-tabs { position: sticky; top: var(--safe-top); z-index: 4; } /* les onglets restent en haut */
 /* au clavier, ce qui prend le focus n'est pas caché sous les onglets */
 html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84px); }
-/* volets dans une section (accessibilité, sons, jeux d'une rubrique) : le texte à gauche, le chevron à droite */
-:is(.fold, .skill-domain, .game-row, .a11y-details, .sons-panel, .kid-domain-games) > summary { list-style: none; cursor: pointer; }
-:is(.fold, .skill-domain, .game-row, .a11y-details, .sons-panel, .kid-domain-games) > summary::-webkit-details-marker { display: none; }
+/* volets dans une section (accessibilité, sons, jeux d'une rubrique, fiches à imprimer) : le texte à gauche, le chevron à droite */
+:is(.fold, .skill-domain, .game-row, .a11y-details, .sons-panel, .kid-domain-games, .fiche-domain) > summary { list-style: none; cursor: pointer; }
+:is(.fold, .skill-domain, .game-row, .a11y-details, .sons-panel, .kid-domain-games, .fiche-domain) > summary::-webkit-details-marker { display: none; }
 :is(.a11y-details, .sons-panel, .kid-domain-games) > summary { justify-content: space-between; gap: 10px; }
 /* le titre, son état en une ligne dessous ; à droite, le chevron : vers le bas, fermé ; vers le haut,
    ouvert (la forme dit l'état, et VoiceOver aussi) */
@@ -1323,11 +1323,11 @@ html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84p
   display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; row-gap: 2px; min-height: 44px;
 }
 .fold > summary > *, .skill-domain > summary > * { grid-column: 1; }
-:is(.fold, .skill-domain, .a11y-details, .sons-panel, .kid-domain-games) > summary::after {
+:is(.fold, .skill-domain, .a11y-details, .sons-panel, .kid-domain-games, .fiche-domain) > summary::after {
   content: ''; grid-column: 2; grid-row: 1 / span 3; flex: none; width: 9px; height: 9px; margin: 0 6px 4px 0;
   border-right: 3px solid var(--muted); border-bottom: 3px solid var(--muted); transform: rotate(45deg);
 }
-:is(.fold, .skill-domain, .a11y-details, .sons-panel, .kid-domain-games)[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
+:is(.fold, .skill-domain, .a11y-details, .sons-panel, .kid-domain-games, .fiche-domain)[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
 .fold-title { font-weight: 700; font-size: 1.15rem; }
 .fold-sub { color: var(--muted); font-size: 0.9rem; }
 .fold[open] > summary { margin-bottom: 10px; }
