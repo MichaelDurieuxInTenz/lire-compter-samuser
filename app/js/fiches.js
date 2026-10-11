@@ -20,6 +20,9 @@ const FICHE_ROOM = 18;
  */
 export const NON_IMPRIMABLES = new Set([
   'histoires', 'ecoute', // à l'oreille
+  // à l'oreille aussi : la voix dit le mot du dessin, on cherche ce qu'on entend (premier son, rime,
+  // syllabes) ; sur le papier, sans le son, le dessin seul ne dit pas sûrement le mot
+  'premier-son', 'rimes', 'syllabes-rythme',
   'vite-vu', // en vue éclair
   // au doigt, en manipulant ou en coloriant
   'panier', 'patates', 'puzzle', 'memory', 'memory-anglais', 'coloriage-magique', 'colorie-anglais',
@@ -34,7 +37,6 @@ export const NON_IMPRIMABLES = new Set([
  * questions différentes pour remplir une feuille). Les autres jeux s'impriment à tous les niveaux.
  */
 export const FICHE_NIVEAUX = {
-  'syllabes-rythme': [1, 2, 3, 4, 5, 6, 8],
   lettres: [4, 5, 6, 7],
   syllabes: [7, 8],
   'petits-mots': [4, 5, 6, 7, 8],
@@ -56,7 +58,8 @@ export const FICHE_NIVEAUX = {
   'contraires-anglais': [1, 2, 4, 6],
   'ou-est': [3, 5],
   'phrase-anglais': [1, 2, 3, 4, 6, 7],
-  'parle-anglais': [1, 2, 3, 5, 6, 7, 8],
+  // « Petites conversations » et « Réponds selon l'image » : la question anglaise est dite, pas écrite
+  'parle-anglais': [1, 3, 5, 6, 7],
 };
 
 /** Les niveaux d'un jeu qui ont une fiche. */
@@ -78,6 +81,7 @@ export function paperText(text, verb = 'Entoure') {
     .replace(/\btouche-les\b/g, `${lower}-les`)
     .replace(/\btouche\b/g, lower)
     .replace(/\bGlisse les nombres\b/g, 'Écris les nombres')
+    .replace(/Écoute le calcul en anglais/g, 'Lis le calcul en anglais') // il est écrit sur la fiche
     .replace(/ avec ton doigt/g, '')
     .replace(/ en touchant les lettres/g, '');
 }

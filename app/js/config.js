@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.17.1',
+  version: '1.17.2',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.17.2',
+    date: '2026-10-11',
+    changes: [
+      'Fiches à imprimer : seulement des exercices qui se font sans le son. « Le premier son », « Les rimes », « Frappe les syllabes » et les questions anglaises à écouter ne s’impriment plus : sur le papier, sans la voix, le dessin ne dit pas sûrement le mot. « Calcule en anglais » dit « Lis le calcul en anglais ».',
+    ],
+  },
   {
     version: '1.17.1',
     date: '2026-10-11',
