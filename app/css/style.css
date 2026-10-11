@@ -3169,6 +3169,10 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
   .a11y-text-large .choices-words.n3 .choice:last-child { grid-column: 1 / -1; }
 }
 .a11y-text-large .choice, .a11y-text-large .order-item, .a11y-text-large .match-item { overflow-wrap: anywhere; hyphens: auto; }
+/* un long mot (« multiplication ») se coupe plutôt que de sortir de la carte du jeu ; les étoiles d'un
+   palier restent dans leur case (cinq étoiles plus petites) */
+:is(.a11y-text-large, .a11y-spacing) .game-title { max-width: 100%; overflow-wrap: anywhere; hyphens: auto; }
+.a11y-text-large .palier-stars { font-size: 0.8rem; gap: 0; }
 
 /* les dessins (emoji) en réponse ne grandissent pas au-delà de leur case */
 .a11y-text-large .choices-pictures .choice { font-size: min(2.8rem, 12vw); }
@@ -3176,7 +3180,7 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
 /* texte espacé : lettres, mots et lignes, partout où l'enfant lit (pas dans les dessins) */
 .a11y-spacing .screen { letter-spacing: 0.08em; word-spacing: 0.2em; }
 .a11y-spacing .screen svg, .a11y-spacing .choices-pictures .choice, .a11y-spacing .object, .a11y-spacing .stage-picture,
-.a11y-spacing .order-emoji, .a11y-spacing .game-icon, .a11y-spacing .domain-icon { letter-spacing: normal; word-spacing: normal; }
+.a11y-spacing .order-emoji, .a11y-spacing .game-icon, .a11y-spacing .domain-icon, .a11y-spacing .palier-stars { letter-spacing: normal; word-spacing: normal; }
 .a11y-spacing .bubble, .a11y-spacing .instruction .bubble, .a11y-spacing .text-body, .a11y-spacing .karaoke-text,
 .a11y-spacing .stage-sentence, .a11y-spacing .story-text, .a11y-spacing .accord-line, .a11y-spacing .schema-text,
 .a11y-spacing .choices-sentences .choice, .a11y-spacing .choices-answers .choice, .a11y-spacing .feedback p,
