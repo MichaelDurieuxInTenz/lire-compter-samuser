@@ -57,4 +57,12 @@ test('vérifier l’affichage : le rapport dit l’appareil et chaque problème,
   assert.match(ok, /Aucun problème/);
   assert.match(ok, /dans le navigateur/);
   assert.match(ok, /arrêtée avant la fin/);
+  assert.doesNotMatch(ok, /a tourné/);
+  // l'appareil a tourné pendant la vérification : le sens de chaque problème est dit
+  const tourne = rapportTexte({
+    version: '1.16.1', appareil, classes: ['CE2'], ecrans: 300, secondes: 12, interrompu: false, tourne: true,
+    problemes: [{ jeu: 'accords', titre: 'Les accords', niveau: 10, classe: 'CE2', sens: 'paysage', problemes: ['réponses sous le bas de l’écran (82 points de trop)'] }],
+  });
+  assert.match(tourne, /L'appareil a tourné pendant la vérification/);
+  assert.match(tourne, /- Les accords, niveau 10 \(CE2, en paysage\) : réponses sous le bas/);
 });

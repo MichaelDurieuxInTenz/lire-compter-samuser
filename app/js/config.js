@@ -16,6 +16,7 @@ export const CHANGELOG = [
     date: '2026-10-11',
     changes: [
       '« Qui joue ? » : le son, la voix, la version et le journal des modifications tout en bas de l’écran.',
+      'Vérifier l’affichage : un écran mesuré pendant que l’appareil tourne est revu une fois la rotation finie, et le rapport dit dans quel sens chaque problème a été vu.',
     ],
   },
   {
