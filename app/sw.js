@@ -2,7 +2,7 @@
 // (en voiture, en vacances…). Changer VERSION à chaque mise à jour publiée.
 // Tout nouveau fichier de l'app doit être ajouté à PRECACHE (vérifié par les tests).
 
-const VERSION = 'v29';
+const VERSION = 'v30';
 const CACHE = `lire-et-compter-${VERSION}`;
 // Sons de la voix naturelle (voix/fr/…, voix/en/…) : leurs noms changent avec leur contenu, on les
 // garde donc d'une version à l'autre (seuls ceux qui ne sont plus dans voix/manifest.json sont retirés).
@@ -120,7 +120,11 @@ const PRECACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  // cache: 'reload' : les fichiers de la nouvelle version viennent du serveur, jamais d'une copie
+  // gardée par le navigateur
+  event.waitUntil(caches.open(CACHE)
+    .then((cache) => cache.addAll(PRECACHE.map((file) => new Request(file, { cache: 'reload' }))))
+    .then(() => self.skipWaiting()));
 });
 
 /**
@@ -205,7 +209,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   event.respondWith(
-    fetch(event.request)
+    // cache: 'no-cache' : le serveur dit à chaque fois si le fichier a changé (« 304 » s'il n'a pas
+    // changé). Sans cela, le navigateur pouvait resservir sa copie pendant des heures : une app de
+    // l'écran d'accueil restait en 1.16.1 quand Safari montrait déjà la 1.17.1
+    fetch(event.request, { cache: 'no-cache' })
       .then((response) => {
         // seulement une vraie réponse du site lui-même : jamais une redirection (page de connexion,
         // changement d'adresse), qui prendrait sinon la place de l'app dans le cache

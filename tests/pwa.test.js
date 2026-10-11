@@ -32,6 +32,21 @@ test('hors ligne : un fichier de l’app est cherché dans le cache de l’app s
   assert.doesNotMatch(clips, /ignoreSearch/);
 });
 
+test('mises à jour : chaque fichier de l’app est redemandé au serveur, l’app se recharge au bon moment', () => {
+  const sw = readFileSync(join(APP, 'sw.js'), 'utf8');
+  // sans « no-cache », le navigateur resservait sa copie (gardée jusqu'à 4 h par le serveur) : une app
+  // de l'écran d'accueil restait sur l'ancienne version (scripts/smoke.mjs, checkUpdate, le vérifie aussi)
+  assert.match(sw, /fetch\(event\.request, \{ cache: 'no-cache' \}\)/);
+  assert.match(sw, /new Request\(file, \{ cache: 'reload' \}\)/, 'nouvelle version mise en cache depuis le serveur');
+  assert.match(sw, /self\.skipWaiting\(\)/);
+  assert.match(sw, /self\.clients\.claim\(\)/);
+  const main = readFileSync(new URL('../app/js/main.js', import.meta.url), 'utf8');
+  assert.match(main, /registration\.update\(\)/, 'au retour dans l’app, une nouvelle version est cherchée');
+  assert.match(main, /'controllerchange'/);
+  // rechargée seulement sur « Qui joue ? » ou l'accueil d'un enfant, jamais pendant une partie
+  assert.match(main, /main\.screen\.profiles:not\(\.duo-pick\), :scope > main\.screen\.home/);
+});
+
 test('le manifeste et la page d’accueil pointent vers des fichiers existants', () => {
   const manifest = JSON.parse(readFileSync(join(APP, 'manifest.webmanifest'), 'utf8'));
   for (const icon of manifest.icons) assert.ok(statSync(join(APP, icon.src)).isFile(), icon.src);

@@ -348,7 +348,11 @@ famille crée ses propres profils sur son appareil : rien n'est partagé entre l
 
 Après une première ouverture avec Internet, **tout fonctionne sans réseau** : les jeux, les
 images, les sons et les progrès sont sur l'appareil (le test automatique ouvre chaque jeu en
-mode avion). Ouvrez l'application une fois connecté après une mise à jour pour la recevoir.
+mode avion). Les mises à jour arrivent toutes seules : à chaque retour dans l'application (avec
+Internet), elle demande au serveur s'il y a une nouvelle version, puis se recharge sur « Qui joue ? »
+ou sur l'accueil d'un enfant, jamais pendant une partie (le test automatique publie une nouvelle
+version pendant qu'elle est ouverte). Elle redemande chaque fichier au serveur, sans reprendre une
+copie gardée par le téléphone.
 La voix naturelle marche hors connexion une fois ses sons téléchargés (automatiquement, après la
 première ouverture). La voix de l'appareil, pour les phrases rares, marche aussi hors connexion sur
 iPhone, iPad et Android (si la voix française est téléchargée) ; sur ordinateur, l'app choisit alors

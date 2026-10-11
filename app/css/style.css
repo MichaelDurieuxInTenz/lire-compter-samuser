@@ -1476,6 +1476,12 @@ html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84p
    l'explication après une erreur reste dans l'écran sous le pavé */
 @media (orientation: landscape) and (min-width: 1000px) and (min-height: 700px) {
   .operation-visual .objects.small .object { font-size: min(32px, calc(480px / var(--cols, 11) / 1.2)); }
+  /* quatre réponses en phrases, l'une sous l'autre, sous l'horloge (anglais du CM) : l'horloge un
+     peu plus petite leur laisse la place, sur iPad mini */
+  .play:has(> .choices-sentences.n4) .stage-clock {
+    width: min(240px, 62vw, calc(100vh / var(--zoom, 1) - 450px));
+    width: min(240px, 62vw, calc(100dvh / var(--zoom, 1) - 450px));
+  }
 }
 /* téléphone peu haut (iPhone SE, Android 740 px) : une erreur expliquée sous le pavé, avec son
    propre dessin ; celui de la question se fait petit pour lui laisser la place */
@@ -1566,6 +1572,11 @@ html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84p
   }
   .choices-sentences:has(.choice.long-text) .choice { font-size: 0.95rem; line-height: 1.2; } /* toutes à la même taille */
   .choices-sentences.n4, .choices-sentences.n5, .choices-sentences.n6 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  /* anglais du CM : des réponses en phrases à côté d'une phrase, d'une horloge ou du bouton d'écoute.
+     Elles prennent les trois cinquièmes de la largeur, en lignes plus serrées : sur iPhone SE, « The
+     stadium is in front of the swimming pool. » tient en trois lignes au lieu de quatre */
+  .screen.play[data-game="anglais-cm"]:has(> .stage):has(> .choices-sentences) { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .play[data-game="anglais-cm"] .choices-sentences .choice { line-height: 1.2; }
   .spell-picture { font-size: 52px; }
 
   /* réponses */
