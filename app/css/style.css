@@ -1553,6 +1553,13 @@ html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84p
   .stage-text.long .text-body { font-size: 0.98rem; line-height: 1.38; }
   /* réponses en phrases (jeux du CM) : plus serrées, et sur deux colonnes à partir de quatre */
   .choices-sentences .choice { min-height: 46px; padding: 6px 12px; font-size: 1.05rem; }
+  /* un nombre à lire, et trois réponses de plus de 60 signes l'une sous l'autre (ce nombre écrit en
+     lettres) : les réponses prennent les trois cinquièmes de la largeur, le nombre rapetisse d'autant */
+  .screen.play:has(> .stage .equation):has(> .choices-sentences .choice.long-text) { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .screen.play:has(> .stage .equation):has(> .choices-sentences .choice.long-text) .equation.fit {
+    font-size: min(2.8rem, calc((min(100vw, 1000px) - 80px) * 0.4 / var(--len) / 0.6));
+  }
+  .choices-sentences:has(.choice.long-text) .choice { font-size: 0.95rem; line-height: 1.2; } /* toutes à la même taille */
   .choices-sentences.n4, .choices-sentences.n5, .choices-sentences.n6 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .spell-picture { font-size: 52px; }
 
@@ -1683,9 +1690,6 @@ html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84p
   /* trois réponses côte à côte (94 points chacune sur iPhone SE) : un mot de 9 lettres (« Amsterdam »,
      « mammifère ») y tient ; un mot plus long n'y est pas agrandi */
   .choices-answers.n3 .choice, .choices-answers.long-words .choice { font-size: 0.95rem; }
-  /* trois réponses de plus de 60 lettres, l'une sous l'autre (un nombre de neuf chiffres en lettres) :
-     deux lignes chacune au lieu de trois, pour rester dans l'écran (iPhone SE) */
-  .choices-answers.long-text .choice { font-size: 0.85rem; line-height: 1.2; padding-top: 6px; padding-bottom: 6px; }
   .stage-cubes svg { height: calc(100dvh - 110px); }
 }
 
