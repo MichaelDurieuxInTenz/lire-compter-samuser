@@ -1476,6 +1476,12 @@ html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84p
    l'explication après une erreur reste dans l'écran sous le pavé */
 @media (orientation: landscape) and (min-width: 1000px) and (min-height: 700px) {
   .operation-visual .objects.small .object { font-size: min(32px, calc(480px / var(--cols, 11) / 1.2)); }
+  /* quatre réponses en phrases, l'une sous l'autre, sous l'horloge (anglais du CM) : l'horloge un
+     peu plus petite leur laisse la place, sur iPad mini */
+  .play:has(> .choices-sentences.n4) .stage-clock {
+    width: min(240px, 62vw, calc(100vh / var(--zoom, 1) - 450px));
+    width: min(240px, 62vw, calc(100dvh / var(--zoom, 1) - 450px));
+  }
 }
 /* téléphone peu haut (iPhone SE, Android 740 px) : une erreur expliquée sous le pavé, avec son
    propre dessin ; celui de la question se fait petit pour lui laisser la place */
