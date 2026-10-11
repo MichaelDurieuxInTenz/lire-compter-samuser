@@ -115,14 +115,15 @@ export function cetAppareil(win = globalThis) {
 }
 
 /** Le rapport à partager, en texte : l'appareil, ce qui a été vérifié, et chaque problème. */
-export function rapportTexte({ version, appareil, classes, ecrans, secondes, interrompu, problemes, aides = [] }) {
+export function rapportTexte({ version, appareil, classes, ecrans, secondes, interrompu, problemes, aides = [], tourne = false }) {
   const lignes = [
     `Lire, compter et s'amuser ! ${version} : vérification de l'affichage`,
     `Appareil : ${appareil.appareil}, ${appareil.navigateur}${appareil.installee ? ' (app installée)' : ' (dans le navigateur)'}`,
     `Écran : ${appareil.ecran}, ${appareil.sens}${aides.length ? ` ; réglages : ${aides.join(', ')}` : ''}`,
     `Classes : ${classes.map((c) => GRADES[c] || c).join(', ')} ; ${ecrans} écrans vérifiés en ${secondes} s${interrompu ? ' (arrêtée avant la fin)' : ''}`,
+    ...(tourne ? ['L\'appareil a tourné pendant la vérification : chaque problème dit dans quel sens il a été vu.'] : []),
     problemes.length ? `Problèmes (${problemes.length}) :` : 'Aucun problème : tout tient dans l\'écran.',
-    ...problemes.map((p) => `- ${p.titre}, niveau ${p.niveau} (${GRADES[p.classe] || p.classe}) : ${p.problemes.join(' ; ')}`),
+    ...problemes.map((p) => `- ${p.titre}, niveau ${p.niveau} (${GRADES[p.classe] || p.classe}${tourne && p.sens ? `, en ${p.sens}` : ''}) : ${p.problemes.join(' ; ')}`),
     `Navigateur : ${appareil.ua}`,
   ];
   return lignes.join('\n');

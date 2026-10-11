@@ -5881,6 +5881,19 @@ function restoreCard() {
 /** Deux images affichées : l'écran est mis en page. */
 const apresAffichage = () => new Promise((resolve) => { requestAnimationFrame(() => requestAnimationFrame(resolve)); });
 
+/** Attend que la taille de l'écran ne bouge plus (une rotation finie), 2 s au plus. */
+async function ecranStable() {
+  let avant = `${innerWidth}×${innerHeight}`;
+  for (let n = 0; n < 20; n++) {
+    await new Promise((resolve) => { setTimeout(resolve, 100); });
+    const maintenant = `${innerWidth}×${innerHeight}`;
+    if (maintenant === avant) return;
+    avant = maintenant;
+  }
+}
+
+const sensEcran = () => (innerWidth > innerHeight ? 'paysage' : 'portrait');
+
 /** Les réglages de l'enfant qui changent la mise en page (pour le rapport, sans son prénom). */
 function aidesAffichage(kid) {
   const s = a11y(kid);
@@ -5910,7 +5923,9 @@ async function verifierAffichage(classes) {
   app.inert = true;
   arreter.focus(); // au clavier, « Arrêter » est à portée (le reste de l'écran est inerte)
   const debut = Date.now();
-  const parNiveau = new Map(); // « jeu:niveau » → le problème, ses phrases réunies
+  const parNiveau = new Map(); // « jeu:niveau:sens » → le problème, ses phrases réunies
+  const sensDepart = sensEcran();
+  let tourne = false; // l'appareil a tourné pendant la vérification
   let ecrans = 0;
   try {
     for (const [i, e] of liste.entries()) {
@@ -5927,13 +5942,22 @@ async function verifierAffichage(classes) {
           });
           await apresAffichage();
           trouve = mesurerEcran();
+          // un dépassement vu pendant une rotation (mise en page d'un sens, taille de l'autre) : le
+          // même écran est mesuré à nouveau une fois la taille stable
+          if (trouve.length) {
+            await ecranStable();
+            await apresAffichage();
+            trouve = mesurerEcran();
+          }
         } catch (err) {
           trouve = [`erreur : ${err.message}`];
         }
         ecrans++;
+        const sens = sensEcran();
+        if (sens !== sensDepart) tourne = true;
         if (!trouve.length) continue;
-        const cle = `${e.jeu}:${e.niveau}`;
-        const deja = parNiveau.get(cle) || { ...e, titre: game.title, problemes: [] };
+        const cle = `${e.jeu}:${e.niveau}:${sens}`;
+        const deja = parNiveau.get(cle) || { ...e, titre: game.title, problemes: [], sens };
         for (const p of trouve) if (!deja.problemes.includes(p)) deja.problemes.push(p);
         parNiveau.set(cle, deja);
       }
@@ -5945,7 +5969,7 @@ async function verifierAffichage(classes) {
   }
   verifScreen({
     classes, ecrans, secondes: Math.round((Date.now() - debut) / 1000), interrompu: etat.arret,
-    problemes: [...parNiveau.values()], appareil: cetAppareil(), aides,
+    problemes: [...parNiveau.values()], appareil: cetAppareil(), aides, tourne,
   });
 }
 
@@ -5994,8 +6018,9 @@ function verifScreen(resultat) {
       h('h2', {}, problemes.length ? `⚠ ${problemes.length} niveau${problemes.length > 1 ? 'x' : ''} à revoir` : '✓ Tout tient dans l’écran'),
       h('p', {}, `${resultat.ecrans} écrans vérifiés en ${resultat.secondes} s${resultat.interrompu ? ' (arrêtée avant la fin)' : ''} : ${appareil.appareil}, ${appareil.navigateur}, ${appareil.ecran}, ${appareil.sens}.`),
       appareil.installee ? null : h('p', { class: 'muted small' }, 'Dans le navigateur, ses barres prennent une partie de l’écran : une réponse « sous le bas de l’écran » peut tenir dans l’app installée sur l’écran d’accueil.'),
+      resultat.tourne ? h('p', { class: 'muted small' }, 'L’appareil a tourné pendant la vérification : chaque problème dit dans quel sens il a été vu.') : null,
       problemes.length ? h('ul', { class: 'verif-list' }, problemes.map((p) => h('li', {},
-        h('b', {}, `${p.titre}, niveau ${p.niveau}`), ` (${GRADES[p.classe]}) : ${p.problemes.join(' ; ')}`))) : null,
+        h('b', {}, `${p.titre}, niveau ${p.niveau}`), ` (${GRADES[p.classe]}${resultat.tourne ? `, en ${p.sens}` : ''}) : ${p.problemes.join(' ; ')}`))) : null,
       h('div', { class: 'backup-actions' },
         h('button', { class: 'big-btn primary', type: 'button', onclick: partager }, 'Partager le rapport'),
         h('button', { class: 'big-btn', type: 'button', onclick: copier }, 'Copier'),

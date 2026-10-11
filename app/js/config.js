@@ -4,13 +4,21 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.16.0',
+  version: '1.16.1',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.16.1',
+    date: '2026-10-11',
+    changes: [
+      '« Qui joue ? » : le son, la voix, la version et le journal des modifications tout en bas de l’écran.',
+      'Vérifier l’affichage : un écran mesuré pendant que l’appareil tourne est revu une fois la rotation finie, et le rapport dit dans quel sens chaque problème a été vu.',
+    ],
+  },
   {
     version: '1.16.0',
     date: '2026-10-10',
