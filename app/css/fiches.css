@@ -13,7 +13,7 @@
 .fiche-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .fiche-actions .big-btn { flex: 1 1 150px; min-height: 52px; font-size: 1.05rem; }
 .fiche-status { margin: 0; }
-.fiche-card .fiche-open { width: 100%; }
+.fiche-card .fiche-open { flex: none; } /* à droite de son texte (style.css, .fiche-row) */
 
 .fiche-preview { margin: 4px 0 24px; overflow: hidden; border-radius: 6px; }
 .fiche-scale { --scale: 1; position: relative; }

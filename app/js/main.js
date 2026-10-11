@@ -45,7 +45,7 @@ import { squarePhoto } from './photo.js';
 import { a11y, applyA11y, cleanA11y } from './a11y.js';
 import { syllabesPermises } from './syllabes.js';
 import { contexteSons } from './graphemes.js';
-import { sonsCard } from './sons-vus.js';
+import { etatSons, sonsCard } from './sons-vus.js';
 import { explain } from './explications.js';
 import { explanationBox, fitExplanation } from './explications-rendu.js';
 import { CAPTION_HIDDEN, captionPart, gameListenOnly, playableQuestion, tapQuestion, withoutListenOnly } from './a11y-jeux.js';
@@ -4899,14 +4899,15 @@ function openFiches(childId, tab = 'suivi') {
   fichesScreen({ store, show, topBar, childId, onBack: () => parentsScreen({ tab, childId }) });
 }
 
+/** Le Suivi d'un enfant : les fiches à imprimer, sur une ligne. */
 function fichesCard(childId, tab) {
   const kid = store.profiles[childId];
   return h('section', { class: 'card fiche-card' },
-    h('h2', {}, '🖨️ Fiches à imprimer'),
-    h('p', { class: 'muted small' }, kid && tab === 'suivi'
-      ? `Pour les jours sans écran : des exercices sur papier pour ${kid.name}, à son niveau, avec le corrigé.`
-      : 'Pour les jours sans écran : des exercices sur papier, au niveau de chaque enfant, avec le corrigé.'),
-    h('button', { class: 'big-btn fiche-open', 'data-fiches': tab, onclick: () => openFiches(childId, tab) }, 'Préparer une fiche'));
+    h('div', { class: 'fiche-row' },
+      h('div', {},
+        h('h2', {}, '🖨️ Fiches à imprimer'),
+        h('p', { class: 'muted small' }, `Des exercices sur papier pour ${kid?.name || 'l’enfant'}, à son niveau, avec le corrigé.`)),
+      h('button', { class: 'pill-btn fiche-open', 'data-fiches': tab, onclick: () => openFiches(childId, tab) }, 'Préparer')));
 }
 
 function followTab(childId) {
@@ -4919,11 +4920,11 @@ function followTab(childId) {
       }, avatar(id, 'avatar-xs'), store.profiles[id].name)))
       : null,
     h('p', { class: 'muted follow-grade' }, `${kid.name} · ${GRADES[kid.grade]} · `,
-      h('button', { class: 'link-action', onclick: () => childEditScreen(selected) }, 'Modifier')),
+      h('button', { class: 'link-action', onclick: () => childEditScreen(selected, '', { from: 'suivi' }) }, 'Modifier')),
     dashboard({ kid, grade: kid.grade, onChange: save }),
     fichesCard(selected, 'suivi'),
-    h('details', { class: 'card tips' },
-      h('summary', {}, 'Conseils'),
+    h('details', { class: 'card tips fold' },
+      h('summary', {}, h('span', { class: 'fold-title' }, '💡 Conseils')),
       h('ul', {},
         h('li', {}, '10 à 15 minutes par jour valent mieux qu’une longue séance.'),
         h('li', {}, 'Le niveau s’adapte seul pour viser 80 % de réussite ; l’enfant peut aussi choisir son niveau.'),
@@ -4983,7 +4984,8 @@ function childAddScreen() {
       }))));
 }
 
-function photoRow(id) {
+/** La photo d'un enfant ; `again(message)` redessine sa fiche. */
+function photoRow(id, again) {
   const kid = store.profiles[id];
   const status = h('p', { class: 'photo-status muted small', 'aria-live': 'polite' });
   const input = h('input', { type: 'file', accept: 'image/*', class: 'visually-hidden', 'data-photo-input': id });
@@ -5000,7 +5002,7 @@ function photoRow(id) {
         return;
       }
       applySettings();
-      childEditScreen(id, `Photo de ${kid.name} enregistrée ✓`);
+      again(`Photo de ${kid.name} enregistrée ✓`);
     } catch {
       status.textContent = 'Impossible de lire cette image.';
     }
@@ -5016,25 +5018,74 @@ function photoRow(id) {
             kid.photo = null;
             save();
             applySettings();
-            childEditScreen(id, `${kid.name} retrouve son dessin.`);
+            again(`${kid.name} retrouve son dessin.`);
           },
         }, 'Revenir au dessin')
         : null,
       status));
 }
 
-function childEditScreen(id, message = '', { section } = {}) {
+/**
+ * Une section repliable de l'espace parents : son titre et, dessous, son état en une ligne ; le détail
+ * au toucher. `state()` donne cet état : il est récrit après chaque réglage changé dans la section
+ * (les réglages s'enregistrent tout de suite).
+ */
+function fold({ id, title, state, open = false }, ...content) {
+  const sub = h('span', { class: 'fold-sub' });
+  const refresh = () => {
+    sub.textContent = state?.() || '';
+    sub.hidden = !sub.textContent;
+  };
+  const details = h('details', { class: 'card fold', 'data-fold': id, open },
+    h('summary', {}, h('span', { class: 'fold-title' }, title), sub),
+    ...content);
+  // l'évènement arrive ici après le gestionnaire du bouton touché, qui a déjà changé le réglage
+  details.addEventListener('change', refresh);
+  details.addEventListener('click', refresh);
+  refresh();
+  return details;
+}
+
+const countOf = (n, one, many) => `${n} ${n > 1 ? many : one}`;
+
+/** « Objectif : 3 parties · 20 min par jour au plus ». */
+function playTimeState(kid) {
+  const parts = kid.goals?.parts || 0;
+  const limit = kid.goals?.limit || 0;
+  const list = [parts && `objectif : ${parts} parties`, limit && `${limit} min par jour au plus`].filter(Boolean);
+  const text = list.join(' · ') || 'sans objectif ni limite de temps';
+  return text[0].toUpperCase() + text.slice(1);
+}
+
+/** « 2 conseillés ⭐ · 1 rubrique masquée · 3 jeux masqués » (seulement les jeux de sa classe). */
+function kidGamesState(kid) {
+  const domains = programFor(kid.grade);
+  const ids = new Set(domains.flatMap((d) => d.games.map(({ game }) => game.id)));
+  const hiddenDomains = domains.filter((d) => (kid.hiddenDomains || []).includes(d.id)).length;
+  const hiddenGames = (kid.hiddenGames || []).filter((g) => ids.has(g)).length;
+  const featured = featuredGames(kid).length;
+  const list = [
+    featured && `${countOf(featured, 'conseillé', 'conseillés')} ⭐`,
+    hiddenDomains && countOf(hiddenDomains, 'rubrique masquée', 'rubriques masquées'),
+    hiddenGames && countOf(hiddenGames, 'jeu masqué', 'jeux masqués'),
+  ].filter(Boolean);
+  return list.join(' · ') || 'Tous ses jeux sont affichés';
+}
+
+/**
+ * La fiche d'un enfant : le profil déplié, le reste replié avec son état en une ligne. `from` : l'onglet
+ * de l'espace parents où revenir (suivi, enfants, reglages) ; `section: 'a11y'` ouvre l'accessibilité.
+ */
+function childEditScreen(id, message = '', { section, from = 'enfants' } = {}) {
   const kid = store.profiles[id];
   if (!kid) return parentsScreen({ tab: 'enfants' });
-  show(h('main', { class: 'screen parents child-edit' },
-    topBar({ onBack: () => parentsScreen({ tab: 'enfants' }), title: kid.name }),
+  const again = (text) => childEditScreen(id, text, { from });
+  show(h('main', { class: 'screen parents child-edit', 'data-title': `Espace parents : ${kid.name}` },
+    topBar({ onBack: () => parentsScreen({ tab: from, childId: id }), title: kid.name }),
     message ? h('p', { class: 'toast', role: 'status' }, message) : null,
-    h('section', { class: 'card' },
-      h('h2', {}, 'Photo'),
-      h('p', { class: 'muted small' }, 'Photothèque ou appareil photo. Enregistrement automatique ; la photo reste sur l’appareil.'),
-      photoRow(id)),
-    h('section', { class: 'card' },
-      h('h2', {}, 'Profil'),
+    fold({ id: 'profil', title: 'Profil', open: section !== 'a11y', state: () => `${GRADES[kid.grade]}${kid.photo ? ' · avec sa photo' : ''}` },
+      photoRow(id, again),
+      h('p', { class: 'muted small photo-help' }, 'Photothèque ou appareil photo : enregistrée tout de suite, elle reste sur l’appareil.'),
       childForm({
         initial: kid,
         submitLabel: 'Enregistrer',
@@ -5043,46 +5094,42 @@ function childEditScreen(id, message = '', { section } = {}) {
           Object.assign(kid, { name, look, grade });
           save();
           applySettings();
-          childEditScreen(id, 'Enregistré ✓');
+          again('Enregistré ✓');
         },
       })),
-    h('section', { class: 'card' },
-      h('h2', {}, 'Lecture et temps de jeu'),
-      toggle('Lecture facilitée (dyslexie) : texte espacé, mots en couleurs alternées', Boolean(kid.easyRead), (v) => { kid.easyRead = v; save(); }),
+    fold({ id: 'temps', title: 'Temps de jeu', state: () => playTimeState(kid) },
       choiceSetting('Objectif du jour', 'goal', [[0, 'Aucun'], [2, '2 parties'], [3, '3'], [5, '5']], kid.goals?.parts || 0,
         (v) => { kid.goals = { ...(kid.goals || {}), parts: v }; save(); }),
       choiceSetting('Temps maximum par jour', 'limit', [[0, 'Sans'], [10, '10 min'], [15, '15'], [20, '20'], [30, '30']], kid.goals?.limit || 0,
         (v) => { kid.goals = { ...(kid.goals || {}), limit: v }; save(); }),
       h('p', { class: 'muted small' }, 'Quand le temps est écoulé, la partie en cours se termine, puis une pause est proposée. Vous pouvez accorder 10 minutes de plus.')),
-    a11yCard(id),
-    sonsCard(kid, save),
-    kidGamesCard(id),
-    h('section', { class: 'card danger-zone' },
-      h('h2', {}, 'Données'),
-      h('button', {
-        class: 'big-btn danger reset-child',
-        onclick: () => {
-          if (confirm(`Effacer toute la progression de ${kid.name} ? Le prénom et la photo sont conservés.`)) {
-            resetChild(store, id);
-            save();
-            childEditScreen(id, 'Progression effacée.');
-          }
-        },
-      }, 'Effacer la progression'),
-      h('button', {
-        class: 'big-btn danger delete-child',
-        onclick: () => {
-          if (confirm(`Supprimer le profil de ${kid.name} et toute sa progression ?`)) {
-            removeChild(store, id);
-            save();
-            applySettings();
-            if (store.order.length) parentsScreen({ tab: 'enfants', message: 'Profil supprimé.' });
-            else welcomeScreen();
-          }
-        },
-      }, 'Supprimer ce profil'))));
-  // raccourci depuis les Réglages : la section Accessibilité de l'enfant
-  if (section === 'a11y') app.querySelector('[data-a11y-card]')?.scrollIntoView({ block: 'start' });
+    fold({ id: 'a11y', title: 'Accessibilité', open: section === 'a11y', state: () => a11yState(kid) }, a11yCard(id)),
+    fold({ id: 'sons', title: 'Sons vus en classe', state: () => etatSons(kid) }, sonsCard(kid, save)),
+    fold({ id: 'jeux', title: 'Ses jeux', state: () => kidGamesState(kid) }, kidGamesCard(id)),
+    fold({ id: 'donnees', title: 'Effacer ou supprimer', state: () => 'Sa progression, ou tout son profil' },
+      h('div', { class: 'danger-zone' },
+        h('button', {
+          class: 'big-btn danger reset-child',
+          onclick: () => {
+            if (confirm(`Effacer toute la progression de ${kid.name} ? Le prénom et la photo sont conservés.`)) {
+              resetChild(store, id);
+              save();
+              again('Progression effacée.');
+            }
+          },
+        }, 'Effacer la progression'),
+        h('button', {
+          class: 'big-btn danger delete-child',
+          onclick: () => {
+            if (confirm(`Supprimer le profil de ${kid.name} et toute sa progression ?`)) {
+              removeChild(store, id);
+              save();
+              applySettings();
+              if (store.order.length) parentsScreen({ tab: 'enfants', message: 'Profil supprimé.' });
+              else welcomeScreen();
+            }
+          },
+        }, 'Supprimer ce profil')))));
 }
 
 // ---- Accessibilité : les réglages de chaque enfant (profil kid.a11y, voir a11y.js)
@@ -5111,32 +5158,106 @@ const A11Y_GROUPS = [
   ]],
 ];
 const TEXT_SIZE_CHOICES = [[1, 'Normale'], [1.15, 'Grande'], [1.3, 'Très grande']];
+/** Le nom court de chaque réglage (« Couleurs nommées », sans la parenthèse). */
+const A11Y_LABELS = Object.fromEntries(A11Y_GROUPS.flatMap(([, rows]) => rows.map(([key, label]) => [key, label.replace(/ \(.*\)$/, '')])));
+/** Réglages tout prêts : [nom, libellé, réglages qu'il allume]. */
+const A11Y_PRESETS = [
+  ['dyslexie', 'Dyslexie', { spacing: true, syllables: true }],
+  ['vue', 'Vue basse', { textSize: 1.3, contrast: true, bigTargets: true }],
+  ['daltonisme', 'Daltonisme', { namedColors: true }],
+  ['motricite', 'Motricité', { bigTargets: true, tapOnly: true, noTimer: true }],
+  ['surdite', 'Surdité', { captions: true, skipListening: true }],
+  ['attention', 'Attention', { calm: true, noTimer: true }],
+];
+const presetOn = (settings, values) => Object.entries(values).every(([key, v]) => (key === 'textSize' ? settings.textSize >= v : settings[key]));
+const textSizeLabel = (size) => ({ 1.15: 'Texte grand', 1.3: 'Texte très grand' })[size];
 
-/** Accessibilité : la taille du texte, puis un interrupteur expliqué par réglage. Enregistré tout de suite. */
+/** « Texte espacé, syllabes colorées » : ce qu'allume un réglage tout prêt. */
+function presetText(values) {
+  const list = Object.keys(values).map((key) => (key === 'textSize' ? textSizeLabel(values.textSize) : A11Y_LABELS[key]));
+  return [list[0], ...list.slice(1).map((text) => text[0].toLowerCase() + text.slice(1))].join(', ');
+}
+
+/** L'état en une ligne : « Texte très grand · Fort contraste · Grands boutons », ou « Aucun réglage ». */
+function a11yState(kid) {
+  const settings = a11y(kid);
+  const list = [textSizeLabel(settings.textSize), kid.easyRead && 'Lecture facilitée',
+    ...Object.keys(A11Y_LABELS).filter((key) => settings[key]).map((key) => A11Y_LABELS[key])].filter(Boolean);
+  if (!list.length) return 'Aucun réglage';
+  return list.length > 3 ? `${list.slice(0, 2).join(' · ')} et ${list.length - 2} autres` : list.join(' · ');
+}
+
+/**
+ * Accessibilité : la taille du texte, des réglages tout prêts (un toucher allume ceux d'un besoin, un
+ * second les éteint), puis, dans un volet, un interrupteur expliqué par réglage. Enregistré tout de suite.
+ */
 function a11yCard(id) {
   const kid = store.profiles[id];
-  const set = (key, value) => {
-    kid.a11y = cleanA11y({ ...a11y(kid), [key]: value });
+  const card = h('div', { class: 'a11y-card', 'data-a11y-card': id, id: `accessibilite-${id}` });
+  const set = (patch) => {
+    kid.a11y = cleanA11y({ ...a11y(kid), ...patch });
     save();
     // l'enfant actif voit tout de suite le changement (taille du texte, contraste…)
     if (id === store.active) applyA11y(kid);
   };
-  const switchRow = ([key, label, help]) => {
+  // éteint, il allume ses réglages ; allumé, il les éteint, sauf ceux qu'un autre réglage tout prêt allumé demande aussi
+  const usePreset = (name, values) => {
+    const settings = a11y(kid);
+    if (!presetOn(settings, values)) return set(values);
+    const kept = new Set(A11Y_PRESETS.filter(([other, , v]) => other !== name && presetOn(settings, v)).flatMap(([, , v]) => Object.keys(v)));
+    return set(Object.fromEntries(Object.keys(values).filter((key) => !kept.has(key)).map((key) => [key, key === 'textSize' ? 1 : false])));
+  };
+  const presets = h('div', { class: 'a11y-presets' });
+  const drawPresets = () => presets.replaceChildren(...A11Y_PRESETS.map(([name, label, values]) => {
+    const on = presetOn(a11y(kid), values);
+    return h('button', {
+      type: 'button', class: on ? 'a11y-preset on' : 'a11y-preset', 'data-a11y-preset': name, 'aria-pressed': String(on),
+      onclick: () => {
+        usePreset(name, values);
+        draw();
+        card.querySelector(`[data-a11y-preset="${name}"]`)?.focus(); // le bouton touché a été redessiné
+      },
+    },
+    h('span', { class: 'a11y-preset-check', 'aria-hidden': 'true' }, on ? '✓' : ''),
+    h('span', { class: 'a11y-preset-text' }, h('b', {}, label), h('span', {}, presetText(values))));
+  }));
+  const switchRow = ([key, label, help], checked = a11y(kid)[key], onChange = (v) => set({ [key]: v })) => {
     const helpId = `a11y-help-${key}`;
     // nom court (le libellé) et description (l'explication), lus séparément par VoiceOver
     const box = h('input', {
-      type: 'checkbox', role: 'switch', checked: a11y(kid)[key], 'data-a11y': key, 'aria-labelledby': `a11y-label-${key}`, 'aria-describedby': helpId,
+      type: 'checkbox', role: 'switch', checked, 'data-a11y': key, 'aria-labelledby': `a11y-label-${key}`, 'aria-describedby': helpId,
     });
-    box.addEventListener('change', () => set(key, box.checked));
+    box.addEventListener('change', () => {
+      onChange(box.checked);
+      drawPresets();
+    });
     return h('label', { class: 'setting a11y-setting' },
       h('span', { class: 'a11y-setting-text' }, h('b', { id: `a11y-label-${key}` }, label), h('span', { class: 'muted small', id: helpId }, help)),
       box);
   };
-  return h('section', { class: 'card a11y-card', 'data-a11y-card': id, id: `accessibilite-${id}` },
-    h('h2', {}, 'Accessibilité'),
-    h('p', { class: 'muted small' }, `Pour adapter l’app aux besoins de ${kid.name} : chaque réglage ne concerne que son profil.`),
-    choiceSetting('Taille du texte', 'text-size', TEXT_SIZE_CHOICES, a11y(kid).textSize, (v) => set('textSize', v)),
-    A11Y_GROUPS.map(([title, rows]) => h('div', { class: 'a11y-group' }, h('h3', {}, title), rows.map(switchRow))));
+  // la lecture facilitée est gardée à part sur le profil (kid.easyRead), appliquée quand l'enfant joue
+  const easyReadRow = () => switchRow(['easyRead', 'Lecture facilitée', 'Consignes et histoires espacées, un mot sur deux en couleur.'],
+    Boolean(kid.easyRead), (v) => { kid.easyRead = v; save(); });
+  let detailsOpen = false; // « Réglage par réglage » déplié (gardé quand la section se redessine)
+  const draw = () => {
+    drawPresets();
+    const details = h('details', { class: 'a11y-details', open: detailsOpen },
+      h('summary', {}, 'Réglage par réglage'),
+      A11Y_GROUPS.map(([title, rows]) => h('div', { class: 'a11y-group' }, h('h3', {}, title), rows.map((row) => switchRow(row)),
+        title === 'Lire' ? easyReadRow() : null)));
+    details.addEventListener('toggle', () => { detailsOpen = details.open; });
+    card.replaceChildren(
+      h('p', { class: 'muted small' }, `Pour adapter l’app aux besoins de ${kid.name} : chaque réglage ne concerne que son profil.`),
+      choiceSetting('Taille du texte', 'text-size', TEXT_SIZE_CHOICES, a11y(kid).textSize, (v) => {
+        set({ textSize: v });
+        drawPresets();
+      }),
+      h('h2', {}, 'Réglages tout prêts'),
+      presets,
+      details);
+  };
+  draw();
+  return card;
 }
 
 /**
@@ -5147,7 +5268,7 @@ function a11yCard(id) {
 function kidGamesCard(id) {
   const kid = store.profiles[id];
   const open = new Set(); // rubriques dépliées (gardées ouvertes quand la carte se redessine)
-  const card = h('section', { class: 'card kid-games', 'data-kid-games': id });
+  const card = h('div', { class: 'kid-games', 'data-kid-games': id });
   const setIn = (key, value, on) => {
     const list = new Set(kid[key] || []);
     if (on) list.add(value);
@@ -5170,7 +5291,6 @@ function kidGamesCard(id) {
     const full = featured.size >= MAX_FEATURED;
     // replaceChildren(null) afficherait « null » : on ne passe que de vrais éléments
     card.replaceChildren(...[
-      h('h2', {}, 'Ses jeux'),
       h('p', { class: 'muted small' }, `Masquez une rubrique ou un jeu. Conseillez jusqu’à ${MAX_FEATURED} jeux ⭐ : ils apparaissent en haut de son accueil.`),
       ...programFor(kid.grade).map((domain) => {
         const domainHidden = hiddenDomains.has(domain.id);
@@ -5486,7 +5606,7 @@ async function voicesScreen(message = '') {
   const saved = await refreshRecorded();
   const { levels } = findGame('histoires');
   show(h('main', { class: 'screen parents voices' },
-    topBar({ onBack: () => parentsScreen({ tab: 'reglages' }), title: 'Vos voix' }),
+    topBar({ onBack: () => settingsPage('son'), title: 'Vos voix' }),
     message ? h('p', { class: 'toast', role: 'status' }, message) : null,
     h('section', { class: 'card voices-intro' },
       h('p', {}, 'Choisissez une histoire et lisez-la à voix haute. Dans « Histoires lues », votre enfant l’entendra avec votre voix et les phrases s’allumeront au fil de la lecture ; la question est ensuite posée par la voix de l’application.'),
@@ -6013,7 +6133,7 @@ function verifScreen(resultat) {
     copier();
   };
   show(h('main', { class: 'screen parents verif', 'data-title': 'Vérifier l’affichage' },
-    topBar({ onBack: () => parentsScreen({ tab: 'reglages' }), title: 'Vérifier l’affichage' }),
+    topBar({ onBack: () => settingsPage('appareil'), title: 'Vérifier l’affichage' }),
     h('section', { class: 'card verif-result', 'data-problemes': String(problemes.length) },
       h('h2', {}, problemes.length ? `⚠ ${problemes.length} niveau${problemes.length > 1 ? 'x' : ''} à revoir` : '✓ Tout tient dans l’écran'),
       h('p', {}, `${resultat.ecrans} écrans vérifiés en ${resultat.secondes} s${resultat.interrompu ? ' (arrêtée avant la fin)' : ''} : ${appareil.appareil}, ${appareil.navigateur}, ${appareil.ecran}, ${appareil.sens}.`),
@@ -6030,58 +6150,113 @@ function verifScreen(resultat) {
       h('p', { class: 'muted small' }, 'Le rapport ne contient aucun prénom : l’appareil, les classes, les jeux et les niveaux.'))));
 }
 
-/** Réglages : un raccourci vers la section Accessibilité de chaque enfant. */
+/** Réglages → Accessibilité : une ligne par enfant (ses réglages en bref), qui ouvre sa section Accessibilité. */
 function a11yShortcuts() {
-  return h('section', { class: 'card a11y-shortcuts' },
-    h('h2', {}, 'Accessibilité'),
-    h('p', { class: 'muted small' }, 'Taille du texte, contraste, grands boutons, sous-titres… se règlent pour chaque enfant.'),
-    h('div', { class: 'a11y-shortcut-list' }, store.order.map((id) => h('button', {
-      class: 'pill-btn a11y-shortcut', 'data-a11y-shortcut': id, onclick: () => childEditScreen(id, '', { section: 'a11y' }),
-    }, avatar(id, 'avatar-xs'), h('span', {}, store.profiles[id].name)))));
+  return [
+    h('p', { class: 'muted settings-intro' }, 'Taille du texte, contraste, grands boutons, sous-titres… se règlent pour chaque enfant.'),
+    h('nav', { class: 'card settings-list', 'aria-label': 'Accessibilité de chaque enfant' }, store.order.map((id) => {
+      const portrait = avatar(id, 'avatar-xs');
+      portrait.setAttribute('aria-hidden', 'true'); // le prénom est écrit à côté
+      return h('button', {
+        type: 'button', class: 'settings-row a11y-shortcut', 'data-a11y-shortcut': id,
+        onclick: () => childEditScreen(id, '', { section: 'a11y', from: 'reglages' }),
+      },
+      portrait,
+      h('span', { class: 'settings-row-text' }, h('b', {}, store.profiles[id].name), h('span', { class: 'settings-row-sub' }, a11yState(store.profiles[id]))),
+      h('span', { class: 'settings-row-chevron', 'aria-hidden': 'true' }));
+    })),
+  ];
 }
 
-function settingsTab() {
-  const lengthSelect = h('div', { class: 'segmented' }, [5, 10, 15].map((n) => {
-    const btn = h('button', { class: store.settings.sessionLength === n ? 'seg on' : 'seg' }, n);
-    btn.addEventListener('click', () => {
-      store.settings.sessionLength = n;
-      save();
-      lengthSelect.querySelectorAll('.seg').forEach((el) => el.classList.toggle('on', el === btn));
-    });
-    return btn;
-  }));
+/** Réglages → Son et voix : la voix des consignes, les petits sons, la musique. */
+function soundCard() {
   const voiceList = listFrenchVoices();
+  return h('section', { class: 'card' },
+    h('h2', {}, 'Voix et sons'),
+    toggle('Consignes lues à voix haute', store.settings.voice, (v) => { store.settings.voice = v; applySettings(); save(); }, 'voice'),
+    naturalVoiceRow(),
+    voiceList.length ? voiceRow(voiceList) : null,
+    toggle('Petits sons', store.settings.sounds, (v) => { store.settings.sounds = v; applySettings(); save(); }, 'sounds'),
+    toggle('Musique douce (accueil et menus)', Boolean(store.settings.music), (v) => { store.settings.music = v; save(); if (!v) stopMusic(); }, 'music'),
+    h('p', { class: 'muted small' }, 'Voix de l’appareil (phrases rares, ou voix naturelle coupée) : pour qu’elle soit plus naturelle, Réglages de l’iPhone → Accessibilité → Contenu énoncé → Voix → Français, puis téléchargez une voix « Premium » ou « améliorée ».'));
+}
+
+/** Réglages → Cet appareil : installer l'icône (sauf dans l'app installée). */
+function installCard() {
+  return h('section', { class: 'card install-card' },
+    h('h2', {}, 'Installer sur l’écran d’accueil'),
+    installSteps(),
+    h('p', { class: 'muted small' }, 'Les prénoms et les progrès sont gardés sur cet appareil, dans ce navigateur, d’une version de l’app à l’autre. Sur iPhone et iPad, l’app installée est en plus protégée : le navigateur ne peut pas effacer ses données. Mais elle a ses propres données : pour y retrouver les profils créés dans le navigateur, enregistrez une sauvegarde (Réglages → Sauvegarde), puis restaurez-la dans l’app.'));
+}
+
+/** Réglages → À propos : la version, le journal des modifications, le contact et les crédits. */
+function aboutCard() {
+  return h('section', { class: 'card about' },
+    h('div', { class: 'setting' }, h('span', {}, 'Version'), h('b', { 'data-version': APP.version }, APP.version)),
+    changelog(),
+    h('div', { class: 'credits' },
+      h('p', {}, h('b', {}, APP.name), ' · conçue par ', h('b', {}, APP.author)),
+      h('p', { class: 'contact' }, 'Une remarque, un bug, une idée ? Écrivez à ',
+        h('a', { class: 'link-action', href: `mailto:${APP.contact}?subject=${encodeURIComponent(APP.name)}`, 'data-contact': '' }, APP.contact), '.'),
+      h('p', { class: 'muted small' }, 'Police Andika © SIL International (licence OFL).'),
+      h('p', { class: 'muted small' }, 'Emoji de secours (quand l’appareil n’en a pas en couleur) : Twemoji © Twitter, licence CC-BY 4.0.'),
+      h('p', { class: 'muted small' }, 'Voix naturelle : Pocket TTS © Kyutai, voix « Estelle » (corpus CML-TTS, licence CC-BY 4.0).')));
+}
+
+/** « Voix d'Estelle · petits sons · musique » : l'état de Son et voix en une ligne. */
+function soundState() {
+  const { voice, naturalVoice, sounds, music } = store.settings;
+  const list = [voice ? (naturalVoice === false ? 'voix de l’appareil' : 'voix d’Estelle') : 'consignes non lues', sounds && 'petits sons', music && 'musique'];
+  const text = list.filter(Boolean).join(' · ');
+  return text[0].toUpperCase() + text.slice(1);
+}
+
+/** Les rubriques des Réglages : [id, icône, titre, état en une ligne, contenu de son écran]. */
+const SETTINGS_PAGES = [
+  ['son', '🔊', 'Son et voix', soundState, () => [soundCard(), voicesCard()]],
+  ['acces', '♿', 'Accessibilité', () => 'Taille du texte, contraste…', a11yShortcuts],
+  ['fiches', '🖨️', 'Fiches à imprimer', () => 'Exercices sur papier et corrigés'],
+  ['sauvegarde', '💾', 'Sauvegarde', () => {
+    const when = dateEnClair(store.settings.lastBackup);
+    return when ? `Dernière : le ${when}` : 'Pas encore de sauvegarde';
+  }, () => [backupCard()]],
+  ['appareil', '📱', 'Cet appareil', () => (isStandalone() ? 'Vérifier l’affichage' : 'Installer l’icône, vérifier l’affichage'),
+    () => [isStandalone() ? null : installCard(), verifCard()]],
+  ['apropos', 'ℹ️', 'À propos', () => `Version ${APP.version} · nouveautés · contact`, () => [aboutCard()]],
+];
+
+/** Une rubrique des Réglages, sur son propre écran (retour : la liste des Réglages). */
+function settingsPage(id) {
+  const [, , title, , content] = SETTINGS_PAGES.find(([page]) => page === id);
+  show(h('main', { class: 'screen parents settings settings-page', 'data-page': id, 'data-title': `Réglages : ${title}` },
+    topBar({ onBack: () => parentsScreen({ tab: 'reglages' }), title }),
+    ...content()));
+}
+
+/** Réglages : une ligne par rubrique, chacune ouvre son écran ; en dessous, les réglages des parties. */
+function settingsTab() {
+  const fichesChild = store.active && store.profiles[store.active] ? store.active : store.order[0];
+  const open = (id) => {
+    if (id === 'fiches') return openFiches(fichesChild, 'reglages');
+    // un seul enfant : directement sa section Accessibilité
+    if (id === 'acces' && store.order.length === 1) return childEditScreen(store.order[0], '', { section: 'a11y', from: 'reglages' });
+    return settingsPage(id);
+  };
   return h('div', { class: 'tab-panel settings' },
+    h('nav', { class: 'card settings-list', 'aria-label': 'Rubriques des réglages' },
+      SETTINGS_PAGES.map(([id, emoji, title, state]) => h('button', {
+        type: 'button', class: 'settings-row', 'data-settings-page': id, ...(id === 'fiches' ? { 'data-fiches': 'reglages' } : {}),
+        onclick: () => open(id),
+      },
+      h('span', { class: 'settings-row-icon', 'aria-hidden': 'true' }, emoji),
+      h('span', { class: 'settings-row-text' }, h('b', {}, title), h('span', { class: 'settings-row-sub' }, state())),
+      h('span', { class: 'settings-row-chevron', 'aria-hidden': 'true' })))),
     h('section', { class: 'card' },
-      h('h2', {}, 'Voix et sons'),
-      toggle('Consignes lues à voix haute', store.settings.voice, (v) => { store.settings.voice = v; applySettings(); save(); }, 'voice'),
-      naturalVoiceRow(),
-      voiceList.length ? voiceRow(voiceList) : null,
-      toggle('Petits sons', store.settings.sounds, (v) => { store.settings.sounds = v; applySettings(); save(); }, 'sounds'),
-      toggle('Musique douce (accueil et menus)', Boolean(store.settings.music), (v) => { store.settings.music = v; save(); if (!v) stopMusic(); }, 'music'),
-      toggle('Décors de saison (Noël, Halloween…)', store.settings.seasonal !== false, (v) => { store.settings.seasonal = v; save(); }),
-      h('div', { class: 'setting' }, h('span', {}, 'Questions par partie'), lengthSelect),
-      h('p', { class: 'muted small' }, 'Voix de l’appareil (phrases rares, ou voix naturelle coupée) : pour qu’elle soit plus naturelle, Réglages de l’iPhone → Accessibilité → Contenu énoncé → Voix → Français, puis téléchargez une voix « Premium » ou « améliorée ».')),
-    voicesCard(),
-    a11yShortcuts(),
-    fichesCard(store.active && store.profiles[store.active] ? store.active : store.order[0], 'reglages'),
-    backupCard(),
-    verifCard(),
-    isStandalone() ? null : h('section', { class: 'card' },
-      h('h2', {}, 'Installer sur l’écran d’accueil'),
-      installSteps(),
-      h('p', { class: 'muted small' }, 'Les prénoms et les progrès sont gardés sur cet appareil, dans ce navigateur, d’une version de l’app à l’autre. Sur iPhone et iPad, l’app installée est en plus protégée : le navigateur ne peut pas effacer ses données. Mais elle a ses propres données : pour y retrouver les profils créés dans le navigateur, enregistrez une sauvegarde (ci-dessus), puis restaurez-la dans l’app.')),
-    h('section', { class: 'card about' },
-      h('h2', {}, 'À propos'),
-      h('div', { class: 'setting' }, h('span', {}, 'Version'), h('b', { 'data-version': APP.version }, APP.version)),
-      changelog(),
-      h('div', { class: 'credits' },
-        h('p', {}, h('b', {}, APP.name), ' · conçue par ', h('b', {}, APP.author)),
-        h('p', { class: 'contact' }, 'Une remarque, un bug, une idée ? Écrivez à ',
-          h('a', { class: 'link-action', href: `mailto:${APP.contact}?subject=${encodeURIComponent(APP.name)}`, 'data-contact': '' }, APP.contact), '.'),
-        h('p', { class: 'muted small' }, 'Police Andika © SIL International (licence OFL).'),
-        h('p', { class: 'muted small' }, 'Emoji de secours (quand l’appareil n’en a pas en couleur) : Twemoji © Twitter, licence CC-BY 4.0.'),
-        h('p', { class: 'muted small' }, 'Voix naturelle : Pocket TTS © Kyutai, voix « Estelle » (corpus CML-TTS, licence CC-BY 4.0).'))));
+      h('h2', {}, 'Les parties'),
+      // le choix est dit par aria-checked, pas seulement par la couleur du bouton
+      choiceSetting('Questions par partie', 'session-length', [[5, '5'], [10, '10'], [15, '15']], store.settings.sessionLength,
+        (v) => { store.settings.sessionLength = v; save(); }),
+      toggle('Décors de saison (Noël, Halloween…)', store.settings.seasonal !== false, (v) => { store.settings.seasonal = v; save(); })));
 }
 
 // ---------------------------------------------------------------- Démarrage

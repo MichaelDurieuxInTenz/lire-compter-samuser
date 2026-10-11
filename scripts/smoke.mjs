@@ -201,15 +201,38 @@ async function openParents(page) {
   }
 }
 
+/** Une rubrique des Réglages (son, acces, sauvegarde, appareil, apropos) : Espace parents → Réglages → la rubrique. */
+async function openSettings(page, id) {
+  await openParents(page);
+  await page.click('[data-tab="reglages"]');
+  await page.click(`[data-settings-page="${id}"]`);
+  await page.waitForSelector(`.settings-page[data-page="${id}"]`);
+}
+
+// longueur maximale de chaque écran de l'espace parents, en hauteurs d'écran (sections repliées) : l'essentiel
+// d'abord, le détail en un toucher. Avant la version 1.17, le Suivi d'un enfant de CP faisait 19 écrans.
+const PARENTS_MAX_SCREENS = { suivi: 2.6, enfants: 1.3, fiche: 2, reglages: 1.3, son: 1.6, acces: 1.2, sauvegarde: 1.6, appareil: 2, apropos: 1.3 };
+
+/** Longueur de l'écran affiché, en hauteurs d'écran ; échec au-delà de PARENTS_MAX_SCREENS[name]. */
+async function checkParentsLength(page, name, lengths) {
+  await page.waitForTimeout(100);
+  const screens = await page.evaluate(() => document.documentElement.scrollHeight / window.innerHeight);
+  lengths.push(`${name} ${screens.toFixed(1)}`);
+  if (screens > PARENTS_MAX_SCREENS[name]) fail(`espace parents, ${name} : ${screens.toFixed(1)} écrans de haut (au plus ${PARENTS_MAX_SCREENS[name]})`);
+}
+
+/** Ouvre une section repliée de la fiche d'un enfant (profil, temps, a11y, sons, jeux, donnees). */
+async function openFold(page, id) {
+  if (!(await page.locator(`[data-fold="${id}"][open]`).count())) await page.click(`[data-fold="${id}"] > summary`);
+}
+
 /**
- * Vérifier l'affichage (Espace parents → Réglages) : l'app fait défiler chaque niveau des jeux des
+ * Vérifier l'affichage (Espace parents → Réglages → Cet appareil) : l'app fait défiler chaque niveau des jeux des
  * classes des enfants sur cet écran. Tout doit tenir ; rien n'est dit ni enregistré, un toucher
  * pendant la vérification ne répond à aucune question, et le rapport ne contient aucun prénom.
  */
 async function checkVerif(page) {
-  await openParents(page);
-  await page.click('[data-tab="reglages"]');
-  await page.waitForSelector('[data-verif="enfants"]');
+  await openSettings(page, 'appareil');
   const before = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
   const spoken = await page.evaluate(() => (window.__spoken || []).length);
   await page.click('[data-verif="enfants"]');
@@ -227,12 +250,12 @@ async function checkVerif(page) {
   const screens = /(\d+) écrans vérifiés/.exec(report)?.[1];
   if (!screens || Number(screens) < 100) fail(`vérifier l’affichage : trop peu d’écrans vérifiés (${screens})`);
   await page.click('.top-bar .icon-btn');
-  await page.waitForSelector('.settings');
+  await page.waitForSelector('.settings-page[data-page="appareil"]');
   console.log(`✔ vérifier l’affichage : ${screens} écrans des classes des enfants, tout tient ; rien n’est dit ni enregistré, rapport sans prénom`);
 }
 
 /**
- * Sauvegarde (Espace parents → Réglages) : le fichier téléchargé contient les enfants, leurs progrès
+ * Sauvegarde (Espace parents → Réglages → Sauvegarde) : le fichier téléchargé contient les enfants, leurs progrès
  * et les histoires enregistrées ; après un effacement complet (autre navigateur, données effacées),
  * il les restaure dès le premier lancement.
  */
@@ -245,6 +268,7 @@ async function checkBackup(page) {
     await rec.save(id, new Blob([new Uint8Array(bytes)], { type: 'audio/mp4' }), { mime: 'audio/mp4', duration: 2 });
   }, [storyId, sound]);
   await page.click('[data-tab="reglages"]');
+  await page.click('[data-settings-page="sauvegarde"]');
   await page.waitForSelector('.backup-save:not([disabled])');
   if (!(await page.textContent('.backup-status')).includes('Pas encore de sauvegarde')) fail('sauvegarde : « Pas encore de sauvegarde » absent');
   const [download] = await Promise.all([page.waitForEvent('download'), page.click('.backup-save')]);
@@ -282,18 +306,16 @@ async function checkBackup(page) {
   }, storyId);
   if (JSON.stringify(restored) !== JSON.stringify(sound)) fail('sauvegarde : l’histoire enregistrée n’est pas revenue');
   // un fichier qui n'est pas une sauvegarde : refusé avec un message, rien n'est changé
-  await openParents(page);
-  await page.click('[data-tab="reglages"]');
+  await openSettings(page, 'sauvegarde');
   await page.setInputFiles('.settings .backup input[type=file]', { name: 'photo.json', mimeType: 'application/json', buffer: Buffer.from('{"hello": 1}') });
   await page.waitForFunction(() => document.querySelector('.backup-status')?.textContent.includes('pas une sauvegarde'));
   await page.evaluate(async (id) => (await import('./js/recordings.js')).remove(id), storyId);
   console.log(`✔ sauvegarde : ${name} (${before.order.length} enfants, ${file.enregistrements.length} histoire enregistrée), tout restauré au premier lancement ; mauvais fichier refusé`);
 }
 
-/** Écran « Vos voix » : Espace parents → Réglages → Vos voix pour les histoires. */
+/** Écran « Vos voix » : Espace parents → Réglages → Son et voix → Vos voix pour les histoires. */
 async function openVoices(page) {
-  await openParents(page);
-  await page.click('[data-tab="reglages"]');
+  await openSettings(page, 'son');
   await page.click('[data-voices]');
   await page.waitForSelector('.voices');
 }
@@ -1542,6 +1564,37 @@ const programGames = Object.values(PROGRAMS.CP).flat().length;
 if (rows !== programGames) fail(`${rows} jeux suivis au lieu de ${programGames}`);
 if ((await page.locator('.chart-col').count()) !== 7) fail('graphique de la semaine absent');
 await shot('06-parents');
+// chaque écran de l'espace parents tient en peu d'écrans, et chacun s'ouvre en un toucher
+const lengths = [];
+await checkParentsLength(page, 'suivi', lengths);
+if (await page.locator('.game-row-body .level-select:visible').count()) fail('suivi : le choix du niveau est déplié d’emblée');
+await page.click('.skill-domain > summary');
+await page.click('.skill-domain[open] .game-row > summary');
+if (!(await page.locator('.skill-domain[open] .game-row[open] .level-select').isVisible())) fail('suivi : le choix du niveau ne s’ouvre pas');
+await page.click('[data-tab="enfants"]');
+await checkParentsLength(page, 'enfants', lengths);
+await page.click('[data-edit="eva-rose"]');
+await checkParentsLength(page, 'fiche', lengths);
+// « Enregistrer » reste visible en bas de l'écran (le profil est plus haut qu'un petit téléphone)
+await page.setViewportSize({ width: 375, height: 667 });
+if (!(await page.evaluate(() => {
+  const r = document.querySelector('.child-submit').getBoundingClientRect();
+  return r.top >= 0 && r.bottom <= window.innerHeight;
+}))) fail('fiche d’un enfant : « Enregistrer » n’est pas visible sur un petit téléphone');
+await page.setViewportSize({ width: 390, height: 844 });
+await page.click('.top-bar .icon-btn');
+await page.click('[data-tab="reglages"]');
+await checkParentsLength(page, 'reglages', lengths);
+for (const id of ['son', 'acces', 'sauvegarde', 'appareil', 'apropos']) {
+  await page.click(`[data-settings-page="${id}"]`);
+  await page.waitForSelector(`.settings-page[data-page="${id}"]`);
+  await checkParentsLength(page, id, lengths);
+  await page.click('.top-bar .icon-btn');
+  await page.waitForSelector('.settings-list');
+}
+console.log(`✔ espace parents en peu d’écrans de haut (390×844) : ${lengths.join(', ')}`);
+await page.click('[data-tab="suivi"]');
+await page.click('[data-child="eva-rose"]');
 const gamesBefore = await page.$$eval('.game-row', (els) => els.map((el) => el.textContent).join('|'));
 // onglet Enfants : changer la classe et le prénom
 await page.click('[data-tab="enfants"]');
@@ -1576,6 +1629,7 @@ await page.waitForSelector(`[data-child-card="${longId}"]`);
 const longName = await page.evaluate(([key, id]) => JSON.parse(localStorage.getItem(key)).profiles[id]?.name, [STORAGE_KEY, longId]);
 if (longName !== LONG_NAME) fail(`prénom long coupé : « ${longName} » au lieu de « ${LONG_NAME} »`);
 await page.click('[data-edit="' + longId + '"]');
+await openFold(page, 'donnees');
 await page.click('.delete-child');
 await page.waitForSelector('[data-child-card="matteo"]');
 if (await page.locator(`[data-child-card="${longId}"]`).count()) fail('le profil supprimé est toujours là');
@@ -1602,6 +1656,7 @@ for (const [name, grade, id] of [['Noé', 'PS', 'noe'], ['Inès', 'CE2', 'ines']
 }
 for (const id of ['noe', 'ines']) {
   await page.click(`[data-edit="${id}"]`);
+  await openFold(page, 'donnees');
   await page.click('.delete-child');
   await page.waitForSelector('[data-child-card="matteo"]');
   if (await page.locator(`[data-child-card="${id}"]`).count()) fail(`le profil ${id} supprimé est toujours là`);
@@ -1615,6 +1670,8 @@ await page.waitForSelector('.toast');
 console.log('✔ espace parents (barrière, suivi, classe et prénom modifiés, enfant ajouté puis supprimé)');
 
 // ses jeux : masquer un jeu et en conseiller un autre pour Eva-Rose (CE1), masquer une rubrique
+await openFold(page, 'jeux');
+if (!(await page.textContent('[data-fold="jeux"] .fold-sub')).includes('Tous ses jeux')) fail('ses jeux : état replié faux');
 await page.click('[data-domain-games="maths"] summary');
 await page.click('[data-show-game="tables"]');
 await page.waitForSelector('[data-show-game="tables"][aria-pressed="false"]');
@@ -1624,6 +1681,8 @@ await page.waitForSelector('[data-feature-game="problemes"][aria-pressed="true"]
 await page.click('[data-domain-switch="monde"]');
 await page.waitForSelector('[data-kid-domain="monde"].off');
 await shot('54-ses-jeux');
+const gamesState = await page.textContent('[data-fold="jeux"] .fold-sub');
+if (gamesState !== '1 conseillé ⭐ · 1 rubrique masquée · 1 jeu masqué') fail(`ses jeux : état replié « ${gamesState} »`);
 const kidSettings = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).profiles['eva-rose'], STORAGE_KEY);
 if (!kidSettings.hiddenGames.includes('tables') || !kidSettings.featured.includes('problemes') || !kidSettings.hiddenDomains.includes('monde')) {
   fail(`ses jeux : réglages non enregistrés (${JSON.stringify([kidSettings.hiddenGames, kidSettings.featured, kidSettings.hiddenDomains])})`);
@@ -1645,6 +1704,7 @@ await goProfiles(page);
 await page.click('.parent-btn');
 await page.click('[data-tab="enfants"]');
 await page.click('[data-edit="eva-rose"]');
+await openFold(page, 'jeux');
 await page.click('[data-domain-games="maths"] summary');
 await page.click('[data-show-game="tables"]');
 await page.click('[data-domain-switch="monde"]');
@@ -1652,16 +1712,42 @@ await page.waitForSelector('[data-show-game="tables"][aria-pressed="true"]');
 await page.waitForSelector('[data-kid-domain="monde"]:not(.off)');
 console.log('✔ ses jeux (jeu masqué, jeu conseillé en haut de l’accueil et avec un badge, rubrique masquée)');
 
+// accessibilité : un réglage tout prêt allume les siens ; éteint, il garde ceux qu'un autre, allumé, demande aussi
+await openFold(page, 'a11y');
+await page.click('[data-a11y-preset="vue"]');
+await page.click('[data-a11y-preset="motricite"]');
+await page.click('[data-a11y-preset="vue"]');
+const presetSaved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).profiles['eva-rose'].a11y, STORAGE_KEY);
+if (presetSaved.textSize !== 1 || presetSaved.contrast || !presetSaved.bigTargets || !presetSaved.tapOnly || !presetSaved.noTimer) {
+  fail(`accessibilité : réglages tout prêts mal enregistrés (${JSON.stringify(presetSaved)})`);
+}
+if ((await page.getAttribute('[data-a11y-preset="motricite"]', 'aria-pressed')) !== 'true'
+  || (await page.getAttribute('[data-a11y-preset="vue"]', 'aria-pressed')) !== 'false') fail('accessibilité : état des réglages tout prêts faux');
+const a11yLine = await page.textContent('[data-fold="a11y"] .fold-sub');
+if (a11yLine !== 'Grands boutons · Toucher plutôt que glisser · Sans chrono') fail(`accessibilité : état replié « ${a11yLine} »`);
+await page.click('[data-a11y-preset="motricite"]'); // remis comme avant
+console.log('✔ accessibilité : réglages tout prêts (allumés d’un toucher, éteints sans toucher à ceux d’un autre), état en une ligne');
+
 // réglages : photo depuis l'iPhone (enregistrée automatiquement), version, journal, crédits
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 await page.click('.top-bar .icon-btn');
 await page.click('[data-tab="reglages"]');
 await page.waitForSelector('.settings');
 await shot('07-reglages');
+// une ligne par rubrique, avec son état ; chacune ouvre son écran, d'où l'on revient à la liste
+const settingsRows = await page.$$eval('.settings-row', (els) => els.map((el) => [el.dataset.settingsPage, el.querySelector('.settings-row-sub')?.textContent]));
+if (settingsRows.map(([id]) => id).join() !== 'son,acces,fiches,sauvegarde,appareil,apropos') fail(`réglages : rubriques ${settingsRows.map(([id]) => id).join()}`);
+if (settingsRows.some(([, sub]) => !sub?.trim())) fail('réglages : une rubrique sans son état');
+await page.click('[data-settings-page="apropos"]');
+await page.waitForSelector('.settings-page[data-page="apropos"]');
 if ((await page.textContent('[data-version]')) !== pkg.version) fail('version affichée différente de package.json');
 if (!(await page.textContent('.credits')).includes('Michaël Durieux')) fail('crédits absents');
 if (!(await page.getAttribute('[data-contact]', 'href')).startsWith('mailto:')) fail('contact absent des crédits');
 if (!(await page.locator('.changelog-entry').count())) fail('journal des modifications absent');
+if (!(await page.textContent('.credits')).includes('Pocket TTS')) fail('crédits de la voix naturelle absents');
+await page.click('.top-bar .icon-btn');
+await page.click('[data-settings-page="son"]');
+await page.waitForSelector('.settings-page[data-page="son"]');
 // le bouton du son (en haut) et les interrupteurs des réglages restent d'accord, dans les deux sens
 const soundsSwitch = '.settings input[data-setting="sounds"]';
 const musicSwitch = '.settings input[data-setting="music"]';
@@ -1679,7 +1765,6 @@ const VOICE_TEST = 'Bravo ! Tu as trouvé la bonne réponse.';
 const voiceManifest = JSON.parse(readFileSync(new URL('../app/voix/manifest.json', import.meta.url), 'utf8'));
 if (!(await page.locator('.natural-voice input[type=checkbox]').isChecked())) fail('voix naturelle coupée par défaut');
 if (!(await page.textContent('.natural-voice-state')).trim()) fail('état de la voix naturelle absent');
-if (!(await page.textContent('.credits')).includes('Pocket TTS')) fail('crédits de la voix naturelle absents');
 await page.evaluate(() => { window.__spoken = []; window.__clips = []; window.__voixNaturelle = true; });
 await page.click('.natural-voice input'); // coupée : la voix de l'appareil dit la phrase d'essai
 await page.waitForFunction((text) => window.__spoken.includes(text), VOICE_TEST);
@@ -1729,6 +1814,7 @@ if (voiceManifest.paquets?.length) {
   await page.evaluate(() => { window.__telechargerVoix = false; });
   console.log(`✔ voix : ${files.size} sons téléchargés en ${voiceManifest.paquets.length} paquets (${(voiceManifest.octets / 1e6).toFixed(0)} Mo) en ${((Date.now() - started) / 1000).toFixed(0)} s, barre « ${during} » puis « ${after} »`);
 }
+await page.click('.top-bar .icon-btn'); // Son et voix → la liste des Réglages
 await page.click('[data-tab="enfants"]');
 await page.click('[data-edit="eva-rose"]');
 await page.setInputFiles('[data-photo-input="eva-rose"]', 'app/icons/icon-512.png');
@@ -1939,7 +2025,15 @@ async function a11yPart() {
     ['accueil', () => goProfile(page, 'eva-rose')],
     ['rubrique', async () => { await goProfile(page, 'eva-rose'); await page.click('[data-domain="francais"]'); }],
     ['jeu', async () => { await openGame(page, findGame('compter')); await page.waitForSelector('.choices'); }],
+    ['suivi', async () => { await openParents(page); await page.click('.skill-domain > summary'); await page.click('.skill-domain[open] .game-row > summary'); }],
+    ['fiche d’un enfant', async () => {
+      await openParents(page);
+      await page.click('[data-tab="enfants"]');
+      await page.click('[data-edit="eva-rose"]');
+      for (const id of ['temps', 'a11y', 'sons', 'jeux', 'donnees']) await openFold(page, id);
+    }],
     ['réglages', async () => { await openParents(page); await page.click('[data-tab="reglages"]'); await page.waitForSelector('.settings'); }],
+    ['réglages, son et voix', () => openSettings(page, 'son')],
   ]) {
     await open();
     const wide = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -2041,19 +2135,37 @@ async function a11yPart() {
   await page.waitForSelector('.gate');
   await audit('espace parents, multiplication');
   await openParents(page);
+  // une matière et un de ses jeux dépliés (le choix du niveau)
+  await page.click('.skill-domain > summary');
+  await page.click('.skill-domain[open] .game-row > summary');
   await audit('espace parents, suivi');
   await page.click('[data-tab="enfants"]');
   await audit('espace parents, enfants');
   await page.click('[data-edit="eva-rose"]');
+  // toutes les sections dépliées, et leurs volets
+  for (const id of ['temps', 'a11y', 'sons', 'jeux', 'donnees']) await openFold(page, id);
+  await page.click('.a11y-details > summary');
+  await page.click('[data-a11y-preset="dyslexie"]');
   await page.click('[data-domain-games="maths"] summary');
   await page.click('[data-sons-panel="sons"] summary'); // « Sons vus en classe » : les sons et les mots-outils dépliés
   await page.click('[data-son="ou"]');
   await page.click('[data-sons-panel="outils"] summary');
   await audit('espace parents, modifier un enfant');
+  await page.click('[data-a11y-preset="dyslexie"]'); // remis comme avant
   await page.click('.top-bar .icon-btn');
   await page.click('[data-tab="reglages"]');
   await page.waitForSelector('.settings');
   await audit('espace parents, réglages');
+  for (const [id, name] of [['son', 'son et voix'], ['acces', 'accessibilité'], ['sauvegarde', 'sauvegarde'], ['apropos', 'à propos']]) {
+    await page.click(`[data-settings-page="${id}"]`);
+    await page.waitForSelector(`.settings-page[data-page="${id}"]`);
+    await audit(`espace parents, réglages, ${name}`);
+    await page.click('.top-bar .icon-btn');
+    await page.waitForSelector('.settings-list');
+  }
+  await page.click('[data-settings-page="appareil"]');
+  await page.waitForSelector('.settings-page[data-page="appareil"]');
+  await audit('espace parents, réglages, cet appareil');
   // vérifier l'affichage, arrêtée aussitôt lancée : l'écran du résultat et son rapport
   await page.click('[data-verif="enfants"]');
   await page.waitForSelector('.verif-band');
@@ -2062,12 +2174,15 @@ async function a11yPart() {
   await page.waitForSelector('.verif-result');
   await audit('espace parents, vérifier l’affichage');
   await page.click('.top-bar .icon-btn');
-  await page.waitForSelector('.settings');
+  await page.waitForSelector('.settings-page[data-page="appareil"]');
+  await page.click('.top-bar .icon-btn');
+  await page.waitForSelector('.settings-list');
   await page.click('[data-fiches="reglages"]');
   await page.waitForSelector('.fiche-page');
   await audit('espace parents, fiches à imprimer');
   await page.click('[data-fiche-back]');
-  await page.waitForSelector('.settings');
+  await page.waitForSelector('.settings-list');
+  await page.click('[data-settings-page="son"]');
   await page.click('[data-voices]');
   await page.waitForSelector('.voices');
   await audit('espace parents, vos voix');
@@ -2839,6 +2954,9 @@ async function checkDevice(device, repeat, deviceIndex) {
   await page.click('[data-tab="enfants"]');
   await checkLayout(page, tag('enfants'), { reachable: false });
   await page.click('[data-edit="eva-rose"]');
+  // toutes les sections dépliées, et leurs volets
+  for (const id of ['temps', 'a11y', 'sons', 'jeux', 'donnees']) await openFold(page, id);
+  await page.click('.a11y-details > summary');
   await page.click('[data-domain-games="maths"] summary'); // « Ses jeux » : une rubrique dépliée
   await page.click('[data-sons-panel="sons"] summary'); // « Sons vus en classe » : les sons et les mots-outils dépliés
   await page.click('[data-sons-panel="outils"] summary');
@@ -2847,12 +2965,19 @@ async function checkDevice(device, repeat, deviceIndex) {
   await page.click('[data-tab="reglages"]');
   await page.waitForSelector('.settings');
   await checkLayout(page, tag('réglages'), { reachable: false });
+  for (const id of ['son', 'acces', 'sauvegarde', 'appareil', 'apropos']) {
+    await page.click(`[data-settings-page="${id}"]`);
+    await page.waitForSelector(`.settings-page[data-page="${id}"]`);
+    await checkLayout(page, tag(`réglages, ${id}`), { reachable: false });
+    await page.click('.top-bar .icon-btn');
+    await page.waitForSelector('.settings-list');
+  }
   await page.click('[data-fiches="reglages"]');
   await page.waitForSelector('.fiche-page');
   await checkLayout(page, tag('fiches à imprimer'), { reachable: false });
   await page.click('[data-fiche-back]');
   await page.waitForSelector('.settings');
-  checked += 7;
+  checked += 12;
   checked += await checkVoicesLayout(page, tag);
   await ctx.close();
   return checked;

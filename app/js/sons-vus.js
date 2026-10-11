@@ -6,9 +6,15 @@
 import { h } from './render.js';
 import { GROUPES_SONS, MOTS_OUTILS, SONS, SON_IDS, cleanOutils, cleanSons } from './graphemes.js';
 
-/** La carte « Sons vus en classe » d'un enfant ; `save()` enregistre les données de l'app. */
+/** L'état en une ligne (fiche de l'enfant, section repliée) : « 12 sons sur 37 », ou « Rien de coché ». */
+export function etatSons(kid) {
+  const n = cleanSons(kid.sons).vus.length;
+  return n ? `${n} son${n > 1 ? 's' : ''} sur ${SONS.length} : seulement des mots déchiffrables` : 'Rien de coché : tous les mots sont permis';
+}
+
+/** « Sons vus en classe » d'un enfant (dans sa section repliable) ; `save()` enregistre les données de l'app. */
 export function sonsCard(kid, save) {
-  const card = h('section', { class: 'card sons-card', 'data-sons-card': '' });
+  const card = h('div', { class: 'sons-card', 'data-sons-card': '' });
   const open = { sons: false, outils: false }; // volets dépliés (gardés ouverts quand la carte se redessine)
   const set = (patch) => {
     // le bouton touché est redessiné : on lui rend le focus (clavier, VoiceOver)
@@ -60,7 +66,6 @@ export function sonsCard(kid, save) {
     outilsPanel.addEventListener('toggle', () => { open.outils = outilsPanel.open; });
 
     card.replaceChildren(
-      h('h2', {}, 'Sons vus en classe'),
       h('p', { class: 'muted small' }, `Cochez les sons de la méthode de lecture que ${kid.name} a déjà étudiés : les jeux de lecture (le bon mot, les syllabes, les phrases, les petits textes, les histoires, la dictée) ne proposeront que des mots qui se lisent avec ces sons. Rien de coché = tout est permis.`),
       h('p', { class: 'sons-status', role: 'status' }, n
         ? `${n} son${n > 1 ? 's' : ''} sur ${SONS.length} : seulement des mots déchiffrables (s’il y en a assez dans le jeu).`

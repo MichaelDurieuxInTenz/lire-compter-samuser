@@ -106,37 +106,83 @@ function relativeDay(iso) {
   return `il y a ${diff} jours`;
 }
 
-function gameRow(kid, { game, min, max, levels }, onChange) {
+/** L'état d'un jeu pour les parents : statut, niveau, statistiques. */
+function entryState(kid, { game, min, max, levels }) {
   if (game.paliers) {
     const range = CALC_PALIERS.slice(min - 1, max);
     const done = range.filter((p) => (kid.paliers[p.id]?.stars || 0) >= 3).length;
     const started = range.some((p) => kid.paliers[p.id]);
-    const status = !started ? 'todo' : done === range.length ? 'done' : 'doing';
-    const next = range.find((p) => (kid.paliers[p.id]?.stars || 0) < 3);
-    return h('div', { class: 'game-row', 'data-game': game.id },
-      h('div', { class: 'game-row-head' },
-        h('span', { class: 'game-row-title' }, `${game.icon} ${game.title}`),
-        h('span', { class: `status status-${status}` }, STATUS[status].icon, ' ', STATUS[status].label)),
-      h('p', { class: 'muted small' }, `${done}/${range.length} paliers réussis (3 étoiles ou plus)${next ? ` · prochain : ${next.op}${next.max}` : ''}`));
+    return { status: !started ? 'todo' : done === range.length ? 'done' : 'doing', range, done };
   }
   const stats = gameStats(kid, game.id, min);
   const level = nearestLevel(levels, stats.level);
-  const status = skillStatus({ ...stats, level }, max);
+  return { status: skillStatus({ ...stats, level }, max), stats, level };
+}
+
+/**
+ * Une ligne par jeu : son nom et son état (avec le niveau, compté depuis le premier niveau de la
+ * classe). Touchée, elle s'ouvre sur le choix du niveau et la compétence travaillée.
+ */
+function gameRow(kid, entry, onChange) {
+  const { game, levels } = entry;
+  const state = entryState(kid, entry);
+  const pill = h('span', { class: `status status-${state.status}` });
+  // le niveau, sauf pour un jeu pas encore commencé, au premier niveau de sa classe
+  const showState = (st) => {
+    pill.className = `status status-${st.status}`;
+    const label = game.paliers || (st.status === 'todo' && st.level === levels[0])
+      ? STATUS[st.status].label : `${STATUS[st.status].label} · niv. ${levels.indexOf(st.level) + 1}`;
+    pill.replaceChildren(STATUS[st.status].icon, ' ', label);
+  };
+  showState(state);
+  const head = h('summary', { class: 'game-row-head' }, h('span', { class: 'game-row-title' }, `${game.icon} ${game.title}`), pill);
+  if (game.paliers) {
+    const next = state.range.find((p) => (kid.paliers[p.id]?.stars || 0) < 3);
+    return h('details', { class: 'game-row', 'data-game': game.id },
+      head,
+      h('div', { class: 'game-row-body' },
+        h('p', { class: 'muted small' }, `${state.done}/${state.range.length} paliers réussis (3 étoiles ou plus)${next ? ` · prochain : ${next.op}${next.max}` : ''}`)));
+  }
+  const { stats, level } = state;
   const rate = stats.answered ? Math.round((100 * stats.correct) / stats.answered) : null;
   const select = h('select', { class: 'select level-select', 'aria-label': `Niveau de ${game.title}` },
     levels.map((l, i) => h('option', { value: l, selected: l === level }, `${i + 1}. ${game.levels[l - 1]}`)));
   select.addEventListener('change', () => {
     kid.games[game.id] = { ...stats, level: Number(select.value), streak: 0, recent: [] };
     onChange();
+    showState(entryState(kid, entry)); // la ligne redit le niveau choisi
   });
-  return h('div', { class: 'game-row', 'data-game': game.id },
-    h('div', { class: 'game-row-head' },
-      h('span', { class: 'game-row-title' }, `${game.icon} ${game.title}`),
-      h('span', { class: `status status-${status}` }, STATUS[status].icon, ' ', STATUS[status].label)),
-    select,
-    h('p', { class: 'muted small' },
-      game.skill,
-      stats.answered ? ` · ${rate} % de réussite · ${stats.sessions} partie${stats.sessions > 1 ? 's' : ''} · ${relativeDay(stats.lastPlayed)}` : ''));
+  return h('details', { class: 'game-row', 'data-game': game.id },
+    head,
+    h('div', { class: 'game-row-body' },
+      select,
+      h('p', { class: 'muted small' },
+        game.skill,
+        stats.answered ? ` · ${rate} % de réussite · ${stats.sessions} partie${stats.sessions > 1 ? 's' : ''} · ${relativeDay(stats.lastPlayed)}` : '')));
+}
+
+/**
+ * Une matière : une ligne qui dit où en est l'enfant (jeux commencés, acquis), et qui s'ouvre sur
+ * la liste de ses jeux.
+ */
+function domainRow(kid, domain, sons, onChange) {
+  const states = domain.games.map((entry) => entryState(kid, entry).status);
+  const total = states.length;
+  const done = states.filter((st) => st === 'done').length;
+  const started = states.filter((st) => st !== 'todo').length;
+  const count = started
+    ? `${started} jeu${started > 1 ? 'x' : ''} sur ${total} commencé${started > 1 ? 's' : ''}${done ? ` · ${done} acquis` : ''}`
+    : `${total} jeu${total > 1 ? 'x' : ''}, pas encore commencé${total > 1 ? 's' : ''}`;
+  return h('details', { class: 'skill-domain', 'data-skill-domain': domain.id },
+    h('summary', {},
+      h('span', { class: 'skill-domain-title' }, `${domain.icon} ${domain.title}`),
+      h('span', { class: 'skill-domain-count' }, count),
+      // la barre redit le compte (jamais l'information par la couleur seule)
+      h('span', { class: 'skill-bar', 'aria-hidden': 'true' },
+        h('span', { class: 'skill-bar-done', style: { width: `${(100 * done) / total}%` } }),
+        h('span', { class: 'skill-bar-doing', style: { width: `${(100 * (started - done)) / total}%` } }))),
+    domain.id === 'francais' && sons ? h('p', { class: 'muted small sons-vus-line', 'data-sons-vus': '' }, h('b', {}, 'Sons vus en classe : '), sons) : null,
+    domain.games.map((entry) => gameRow(kid, entry, onChange)));
 }
 
 // ---- Lecture à voix haute (jeu « Lire à voix haute ») : dernier et meilleur score, évolution par semaine
@@ -171,9 +217,10 @@ export function fluenceCard(kid, grade, now = Date.now()) {
   const summary = fluenceSummary(scores);
   const benchmark = fluenceBenchmark(grade);
   if (!summary) {
-    return h('section', { class: 'card fluence-card' },
-      h('h2', {}, '🗣️ Lecture à voix haute'),
-      h('p', { class: 'muted' }, 'Pas encore de lecture. Dans « Lire et écrire », lancez « Lire à voix haute » et asseyez-vous à côté de l’enfant : il lit pendant 1 minute, vous touchez les mots ratés.'),
+    // pas encore de lecture : une ligne, le mode d'emploi s'ouvre au toucher
+    return h('details', { class: 'card fluence-card fold' },
+      h('summary', {}, h('span', { class: 'fold-title' }, '🗣️ Lecture à voix haute'), h('span', { class: 'fold-sub' }, 'Pas encore de lecture')),
+      h('p', { class: 'muted' }, 'Dans « Lire et écrire », lancez « Lire à voix haute » et asseyez-vous à côté de l’enfant : il lit pendant 1 minute, vous touchez les mots ratés.'),
       benchmark ? h('p', { class: 'muted small fl-benchmark' }, benchmark) : null);
   }
   const syllables = wordsOnly.length && wordsOnly.length < all.length ? fluenceSummary(all.filter((s) => s.kind === 'syllabes')) : null;
@@ -220,32 +267,31 @@ export function dashboard({ kid, grade, onChange }) {
   // la lecture à voix haute : pour les classes où le jeu est au programme, ou s'il y a déjà des lectures
   const fluenceShown = domains.some((d) => d.games.some(({ game }) => game.id === 'fluence')) || kid.fluence?.length > 0;
 
+  const played = week.sessions > 0;
   return [
-    h('section', { class: 'card' },
+    h('section', { class: 'card week-card' },
       h('h2', {}, 'Cette semaine'),
       h('div', { class: 'stat-tiles' },
         statTile('Parties', String(week.sessions)),
         statTile('Temps de jeu', `${week.minutes} min`),
         statTile('Réussite', week.total ? `${Math.round((100 * week.correct) / week.total)} %` : '–'),
         statTile('Jours d’affilée', String(streak))),
-      activityChart(days)),
+      // le graphique, seulement s'il y a eu des parties (sinon sept barres vides)
+      played ? activityChart(days) : h('p', { class: 'muted small week-empty' }, 'Pas encore de partie cette semaine.')),
     fluenceShown ? fluenceCard(kid, grade) : null,
-    h('section', { class: 'card' },
+    // seulement s'il y a quelque chose à signaler
+    toRework.length || mistakes.length ? h('section', { class: 'card rework-card' },
       h('h2', {}, 'À retravailler'),
-      toRework.length
-        ? h('ul', { class: 'plain-list' }, toRework.map((g) => h('li', {}, `${g.icon} ${g.title} : moins de 60 % de réussite`)))
-        : h('p', { class: 'muted' }, 'Rien à signaler pour le moment.'),
-      h('h3', {}, 'Erreurs fréquentes'),
-      mistakes.length
-        ? h('ul', { class: 'plain-list' }, mistakes.map((m) => h('li', {}, describeMistake(m), h('span', { class: 'muted' }, ` (${m.count} fois)`))))
-        : h('p', { class: 'muted' }, 'Aucune erreur répétée.')),
-    // les attendus de fin d'année de sa classe, en quelques mots
-    GRADE_GOALS[grade] ? h('section', { class: 'card grade-goals', 'data-grade-goals': grade },
-      h('h2', {}, `Attendus de fin d’année (${GRADES[grade]})`),
+      toRework.length ? h('ul', { class: 'plain-list' }, toRework.map((g) => h('li', {}, `${g.icon} ${g.title} : moins de 60 % de réussite`))) : null,
+      mistakes.length ? h('h3', {}, 'Erreurs fréquentes') : null,
+      mistakes.length ? h('ul', { class: 'plain-list' }, mistakes.map((m) => h('li', {}, describeMistake(m), h('span', { class: 'muted' }, ` (${m.count} fois)`)))) : null) : null,
+    // les compétences : une ligne par matière, ses jeux au toucher
+    h('section', { class: 'card skills-card' },
+      h('h2', {}, 'Compétences'),
+      domains.map((d) => domainRow(kid, d, sons, onChange))),
+    // les attendus de fin d'année de sa classe, en quelques mots, repliés
+    GRADE_GOALS[grade] ? h('details', { class: 'card fold grade-goals', 'data-grade-goals': grade },
+      h('summary', {}, h('span', { class: 'fold-title' }, `🎯 Attendus de fin d’année (${GRADES[grade]})`)),
       h('p', { class: 'muted' }, GRADE_GOALS[grade])) : null,
-    ...domains.map((d) => h('section', { class: 'card' },
-      h('h2', {}, `${d.icon} ${d.title} : compétences`),
-      d.id === 'francais' && sons ? h('p', { class: 'muted small sons-vus-line', 'data-sons-vus': '' }, h('b', {}, 'Sons vus en classe : '), sons) : null,
-      d.games.map((entry) => gameRow(kid, entry, onChange)))),
   ];
 }

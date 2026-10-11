@@ -169,9 +169,11 @@ ou en paysage : 16 à 17,6 px, ce qui n’est plus du « gros texte »).
 
 ## Les réglages d’accessibilité de l’app
 
-Ils se règlent pour chaque enfant dans **Espace parents → Enfants → (prénom)**. Ils restent
-enregistrés avec le profil, même si on efface sa progression. Un enfant sans réglage voit l’app
-comme avant.
+Ils se règlent pour chaque enfant dans **Espace parents → Réglages → Accessibilité** (ou **Enfants →
+Modifier → Accessibilité**). Des réglages tout prêts (Dyslexie, Vue basse, Daltonisme, Motricité,
+Surdité, Attention) allument d’un toucher ceux qui vont ensemble ; un second toucher les éteint. Ils
+restent enregistrés avec le profil, même si on efface sa progression. Un enfant sans réglage voit
+l’app comme avant.
 
 | Réglage | Ce qu’il fait | Pour qui |
 |---|---|---|
