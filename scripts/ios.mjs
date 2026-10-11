@@ -358,8 +358,8 @@ async function main() {
     }
   }
 
-  /** Espace parents → Réglages (la question de la barrière est calculée). */
-  async function reglages() {
+  /** Espace parents (la question de la barrière est calculée). */
+  async function espaceParents() {
     await pilote.ouvrir(BASE);
     await attendre(pilote, '.profiles, .home');
     if (await pilote.evaluer(() => Boolean(document.querySelector('.home')))) await pilote.toucher('.profile-chip');
@@ -376,8 +376,16 @@ async function main() {
       await pilote.toucher('.gate-form button');
     }
     await attendre(pilote, '.parents');
+  }
+
+  /** Espace parents → Réglages, puis une rubrique (son, sauvegarde, appareil…) si elle est donnée. */
+  async function reglages(rubrique) {
+    await espaceParents();
     await pilote.toucher('[data-tab="reglages"]');
     await attendre(pilote, '.settings');
+    if (!rubrique) return;
+    await pilote.toucher(`[data-settings-page="${rubrique}"]`);
+    await attendre(pilote, `.settings-page[data-page="${rubrique}"]`);
   }
 
   async function parcourir(suffixe = '') {
@@ -432,11 +440,20 @@ async function main() {
       await reglages();
       await capturer(`réglages des parents${suffixe}`);
     });
+    // la fiche d'un enfant : le profil déplié, « Enregistrer » collé en bas de l'écran
+    await etape(`fiche d'un enfant${suffixe}`, async () => {
+      await espaceParents();
+      await pilote.toucher('[data-tab="enfants"]');
+      await attendre(pilote, '[data-edit="eva-rose"]');
+      await pilote.toucher('[data-edit="eva-rose"]');
+      await attendre(pilote, '.child-edit');
+      await capturer(`fiche d'un enfant${suffixe}`);
+    });
     // la vérification de l'app elle-même (espace parents) : chaque niveau de chaque jeu, dans ce Safari.
     // Dans le navigateur, ses barres prennent le bas de l'écran : une réponse « sous le bas de
     // l'écran » est un avertissement (l'app installée a cette place) ; le reste est un échec.
     await etape(`vérifier l'affichage, toutes les classes${suffixe}`, async () => {
-      await reglages();
+      await reglages('appareil');
       await pilote.toucher('[data-verif="toutes"]');
       await attendre(pilote, '.verif-result', 30 * 60 * 1000, 3000);
       const r = await pilote.evaluer(() => ({

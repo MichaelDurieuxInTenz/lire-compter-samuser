@@ -4,13 +4,29 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.16.1',
+  version: '1.17.0',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.17.0',
+    date: '2026-10-11',
+    changes: [
+      'Espace parents plus simple à parcourir : chaque écran montre l’essentiel, le détail s’ouvre d’un toucher, et les onglets Suivi, Enfants et Réglages restent en haut de l’écran.',
+      'Suivi : la semaine en quatre chiffres, puis une ligne par matière (jeux commencés et acquis), qui se déplie en une ligne par jeu ; le niveau d’un jeu se choisit en le touchant. Pour un enfant de CP, deux écrans de haut au lieu de dix-neuf.',
+      'Fiche d’un enfant : le profil, avec « Enregistrer » toujours visible, puis des sections repliées, chacune avec son état en une ligne (temps de jeu, accessibilité, sons vus en classe, ses jeux, effacer ou supprimer).',
+      'Accessibilité : des réglages tout prêts (dyslexie, vue basse, daltonisme, motricité, surdité, attention) allument d’un toucher ceux qui vont ensemble ; la lecture facilitée y rejoint les autres réglages.',
+      'Réglages : une ligne par rubrique (son et voix, accessibilité, fiches à imprimer, sauvegarde, cet appareil, à propos), chacune sur son propre écran.',
+      'Jouer ensemble : de deux à six enfants jouent chacun leur tour sur le même appareil, chacun à son niveau, dans l’ordre où l’on a touché leurs portraits (une dizaine de questions en tout, au moins deux chacun).',
+      'Texte très grand ou espacé, sur un petit téléphone : un long titre de jeu se coupe au lieu de sortir de sa carte, et les étoiles des paliers de calcul tiennent dans leur case.',
+      'Très grands nombres (CM), sur un téléphone en paysage : les trois réponses écrites en lettres (« huit cent six millions… ») tiennent dans l’écran.',
+      'Cherche et trouve : les images du bord restent dans la carte ; sur iPad mini en portrait, l’une d’elles pouvait sortir de l’écran.',
+      'Suivi : la lecture à voix haute tient sur une ligne (dernier et meilleur score) ; son détail et son évolution s’ouvrent d’un toucher.',
+    ],
+  },
   {
     version: '1.16.1',
     date: '2026-10-11',

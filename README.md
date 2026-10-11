@@ -61,9 +61,10 @@ aussi : en paysage, le dessin est à gauche, la consigne et les réponses à dro
    **Temps et mesures**, **Le monde**, **Sciences**, **Anglais**. Ses autocollants sont dans **Mon album**.
 4. Chaque jeu montre le niveau atteint (les points). En touchant **Niveaux ▾**, on choisit
    directement un niveau.
-5. **👫 Jouer à deux** (sur « Qui joue ? ») : deux enfants jouent à tour de rôle sur le même
-   appareil, chacun à son niveau ; le tableau des points montre à qui c'est le tour, et chacun
-   gagne ses étoiles.
+5. **👫 Jouer à deux**, ou **Jouer ensemble** dès trois enfants (sur « Qui joue ? ») : de deux à six
+   enfants jouent à tour de rôle sur le même appareil, chacun à son niveau, dans l'ordre où l'on a
+   touché leurs portraits. Une dizaine de questions en tout (10 à deux, 9 à trois, 12 à quatre, 10 à
+   cinq, 12 à six) ; le tableau des points montre à qui c'est le tour, et chacun gagne ses étoiles.
 
 Tant que l'application n'est pas installée, « Qui joue ? » rappelle comment ajouter l'icône sur
 l'écran d'accueil (les étapes dépendent de l'appareil) ; « Plus tard » masque ce rappel.
@@ -247,8 +248,10 @@ bonus et un jour de plus dans la série 🔥.
 
 ## Accessibilité
 
-Chaque enfant a son **profil d'accessibilité**, réglé par ses parents (*Parents → Enfants →
-Accessibilité*) et gardé sur l'appareil :
+Chaque enfant a son **profil d'accessibilité**, réglé par ses parents (*Parents → Réglages →
+Accessibilité*, ou *Enfants → Modifier → Accessibilité*) et gardé sur l'appareil. Des **réglages tout
+prêts** (Dyslexie, Vue basse, Daltonisme, Motricité, Surdité, Attention) allument d'un toucher ceux
+qui vont ensemble ; chacun se règle aussi un par un :
 
 | Réglage | Pour qui | Ce qui change |
 |---|---|---|
@@ -274,35 +277,45 @@ contrôlés automatiquement à chaque modification. La déclaration d'accessibil
 ## Espace parents
 
 Le bouton **Parents** de l'écran « Qui joue ? » est protégé par une petite multiplication.
-Il ouvre trois onglets :
+Il ouvre trois onglets, qui restent en haut de l'écran. Chaque écran montre l'essentiel ; le détail
+s'ouvre d'un toucher (un chevron le signale), pour ne pas faire défiler longtemps :
 
-- **Suivi** : pour chaque enfant, l'activité de la semaine (parties, minutes, réussite, jours
-  d'affilée), l'état de chaque compétence, le niveau de chaque jeu (réglable), ce qui est à
-  retravailler et les erreurs fréquentes ; les attendus de fin d'année de sa classe ; les scores de
-  lecture à voix haute semaine par semaine. **Fiches à imprimer** : une feuille A4 d'exercices au niveau
-  de l'enfant (le jeu et le niveau au choix), avec son corrigé en page 2, pour les jours sans écran.
-- **Enfants** : ajouter un enfant, changer son prénom (jusqu'à 30 caractères), son personnage,
-  sa classe ou sa photo (photothèque ou appareil photo, enregistrée automatiquement), effacer sa
-  progression ou supprimer son profil. **Ses jeux** : masquer une rubrique ou un jeu, et
-  conseiller jusqu'à 3 jeux (en haut de son accueil). **Sons vus en classe** (CP) : les sons et les
-  mots-outils déjà étudiés, pour des textes déchiffrables. On y trouve aussi **Partager le lien**.
-- **Réglages** : consignes lues ou non, voix naturelle (et état du téléchargement des sons), choix
-  de la voix de l'appareil avec un bouton d'essai, petits sons,
-  musique douce, décors de saison, nombre de questions par partie, installation, version,
-  journal des modifications, et le contact pour vos remarques.
-- **Sauvegarder la progression** (dans Réglages) : les prénoms, photos, étoiles, niveaux, réglages
-  et histoires enregistrées dans un fichier (sur iPhone et iPad : « Enregistrer dans Fichiers », par
-  e-mail…), à restaurer dans un autre navigateur, sur un autre appareil ou dans l'app installée sur
-  l'écran d'accueil. Au premier lancement, « Déjà une sauvegarde ? » évite de recréer les enfants.
-- **Vérifier l'affichage sur cet appareil** (dans Réglages) : l'app fait défiler chaque niveau des jeux
-  des classes des enfants (ou de toutes les classes) sur ce téléphone, cette tablette ou cet ordinateur,
-  dans le sens où on le tient, et signale ce qui dépasse (texte plus large que sa case, réponses sous le
-  bas de l'écran). Rien n'est dit ni enregistré pendant la vérification ; le rapport (appareil,
-  classes, jeux, niveaux, sans aucun prénom) se partage ou s'envoie par e-mail.
-- **Vos voix pour les histoires** (dans Réglages) : enregistrez-vous en lisant une histoire
-  (le texte s'affiche en gros, 3 minutes au plus) ; dans « Histoires », l'enfant entend votre
-  voix pendant que les phrases s'allument, puis la question est posée. On peut réécouter,
-  recommencer ou supprimer. Les enregistrements restent sur l'appareil (jamais envoyés).
+- **Suivi** : pour chaque enfant, la semaine en quatre chiffres (parties, minutes, réussite, jours
+  d'affilée) et son graphique ; ce qui est à retravailler et les erreurs fréquentes, quand il y en a ;
+  une ligne par matière (jeux commencés et acquis, avec une barre), qui se déplie en une ligne par jeu
+  (son état et son niveau) ; le choix du niveau s'ouvre en touchant le jeu. Puis les scores de lecture
+  à voix haute semaine par semaine, et les attendus de fin d'année de sa classe. **Fiches à imprimer** :
+  une feuille A4 d'exercices au niveau de l'enfant (le jeu et le niveau au choix), avec son corrigé en
+  page 2, pour les jours sans écran.
+- **Enfants** : la liste des enfants, **Ajouter un enfant** et **Partager le lien**. *Modifier* ouvre la
+  fiche de l'enfant : son profil (prénom jusqu'à 30 caractères, personnage, classe, photo de la
+  photothèque ou de l'appareil photo, enregistrée tout de suite), avec « Enregistrer » toujours visible
+  en bas de l'écran ; puis des sections repliées, chacune avec son état en une ligne :
+  **Temps de jeu** (objectif du jour, temps maximum), **Accessibilité** (voir plus haut),
+  **Sons vus en classe** (CP : les sons et les mots-outils déjà étudiés, pour des textes déchiffrables),
+  **Ses jeux** (masquer une rubrique ou un jeu, conseiller jusqu'à 3 jeux, en haut de son accueil) et
+  **Effacer ou supprimer** (sa progression, ou tout son profil).
+- **Réglages** : une ligne par rubrique, avec son état ; chacune ouvre son écran, comme les Réglages de
+  l'iPhone. Dessous, le nombre de questions par partie et les décors de saison.
+  - **Son et voix** : consignes lues ou non, voix naturelle (et état du téléchargement des sons), choix
+    de la voix de l'appareil avec un bouton d'essai, petits sons, musique douce. **Vos voix pour les
+    histoires** : enregistrez-vous en lisant une histoire (le texte s'affiche en gros, 3 minutes au
+    plus) ; dans « Histoires », l'enfant entend votre voix pendant que les phrases s'allument, puis la
+    question est posée. On peut réécouter, recommencer ou supprimer. Les enregistrements restent sur
+    l'appareil (jamais envoyés).
+  - **Accessibilité** : une ligne par enfant, avec ses réglages en bref, qui ouvre sa section Accessibilité.
+  - **Fiches à imprimer** (voir le Suivi).
+  - **Sauvegarde** : les prénoms, photos, étoiles, niveaux, réglages et histoires enregistrées dans un
+    fichier (sur iPhone et iPad : « Enregistrer dans Fichiers », par e-mail…), à restaurer dans un autre
+    navigateur, sur un autre appareil ou dans l'app installée sur l'écran d'accueil. Au premier
+    lancement, « Déjà une sauvegarde ? » évite de recréer les enfants.
+  - **Cet appareil** : installer l'icône sur l'écran d'accueil, et **Vérifier l'affichage sur cet
+    appareil** : l'app fait défiler chaque niveau des jeux des classes des enfants (ou de toutes les
+    classes) sur ce téléphone, cette tablette ou cet ordinateur, dans le sens où on le tient, et signale
+    ce qui dépasse (texte plus large que sa case, réponses sous le bas de l'écran). Rien n'est dit ni
+    enregistré pendant la vérification ; le rapport (appareil, classes, jeux, niveaux, sans aucun
+    prénom) se partage ou s'envoie par e-mail.
+  - **À propos** : version, journal des modifications, crédits, et le contact pour vos remarques.
 
 ### La voix naturelle
 
@@ -311,9 +324,9 @@ dits par une **voix enregistrée à l'avance** avec Pocket TTS (Kyutai), bien pl
 voix de synthèse : une seule voix, Estelle, en français comme en anglais. Chaque phrase est dite d'un
 seul tenant, avec une petite pause entre les phrases ; les phrases rares sont dites par morceaux, mais
 toujours par Estelle. Les sons se téléchargent en arrière-plan après la première ouverture ;
-*Réglages* montre où en est le téléchargement. Ensuite, la voix marche aussi en mode avion. Un prénom
+*Réglages → Son et voix* montre où en est le téléchargement. Ensuite, la voix marche aussi en mode avion. Un prénom
 peu courant, ou un son pas encore téléchargé, est dit par la voix de l'appareil, comme quand on coupe
-*Réglages → Voix naturelle*.
+*Réglages → Son et voix → Voix naturelle*.
 
 Pour que la voix de l'appareil soit, elle aussi, plus naturelle :
 
@@ -345,7 +358,7 @@ une voix installée.
 - Aucune inscription, aucune publicité, aucun traceur ; l'application n'envoie rien sur Internet.
 - Les prénoms, photos, progrès et voix enregistrées restent dans le navigateur de l'appareil (stockage local).
 - Effacer les données du site dans le navigateur supprime les profils : gardez une sauvegarde
-  (*Espace parents → Réglages → Sauvegarder la progression*), qui reste chez vous.
+  (*Espace parents → Réglages → Sauvegarde*), qui reste chez vous.
 - Aucune bibliothèque extérieure ; la page n'accepte que ses propres fichiers (règle CSP).
 
 ---

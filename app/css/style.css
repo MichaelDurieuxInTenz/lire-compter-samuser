@@ -775,9 +775,14 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
   background: var(--card); border-radius: 20px; box-shadow: 0 0 0 3px var(--line) inset;
 }
 .choices-seek .choice {
-  /* un rond (le côté le plus court de la case), centré sur sa place : la carte peut s'étirer en hauteur */
-  position: absolute; width: min(calc(100cqw / var(--cols)), calc(100cqh / var(--rows))); height: auto; aspect-ratio: 1;
-  left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); translate: -50% -50%;
+  /* un rond (--d : le côté le plus court de la case), centré sur sa place : la carte peut s'étirer en
+     hauteur. Le rond reste dans la carte : sur iPad mini en portrait, la carte prend toute la largeur,
+     et une image du bord, décalée vers l'extérieur, sortait de l'écran */
+  --d: min(calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
+  position: absolute; width: var(--d); height: auto; aspect-ratio: 1;
+  left: clamp(var(--d) / 2, var(--x) * 1%, 100% - var(--d) / 2);
+  top: clamp(var(--d) / 2, var(--y) * 1%, 100% - var(--d) / 2);
+  translate: -50% -50%;
   min-height: 0; padding: 0; border-radius: 50%; background: none; box-shadow: none; line-height: 1;
   font-size: min(calc(100cqw / var(--cols) * 0.56), calc(100cqh / var(--rows) * 0.56));
   transform: scale(var(--s));
@@ -1304,6 +1309,90 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
 }
 .parent-tab.on { background: var(--lecture); color: #fff; }
 .tab-panel { display: flex; flex-direction: column; gap: 14px; }
+/* espace parents : l'essentiel d'abord, le détail en un toucher (details / summary) */
+.parents .parent-tabs { position: sticky; top: var(--safe-top); z-index: 4; } /* les onglets restent en haut */
+/* au clavier, ce qui prend le focus n'est pas caché sous les onglets */
+html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84px); }
+/* volets dans une section (accessibilité, sons, jeux d'une rubrique) : le texte à gauche, le chevron à droite */
+:is(.fold, .skill-domain, .game-row, .a11y-details, .sons-panel, .kid-domain-games) > summary { list-style: none; cursor: pointer; }
+:is(.fold, .skill-domain, .game-row, .a11y-details, .sons-panel, .kid-domain-games) > summary::-webkit-details-marker { display: none; }
+:is(.a11y-details, .sons-panel, .kid-domain-games) > summary { justify-content: space-between; gap: 10px; }
+/* le titre, son état en une ligne dessous ; à droite, le chevron : vers le bas, fermé ; vers le haut,
+   ouvert (la forme dit l'état, et VoiceOver aussi) */
+.fold > summary, .skill-domain > summary {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; row-gap: 2px; min-height: 44px;
+}
+.fold > summary > *, .skill-domain > summary > * { grid-column: 1; }
+:is(.fold, .skill-domain, .a11y-details, .sons-panel, .kid-domain-games) > summary::after {
+  content: ''; grid-column: 2; grid-row: 1 / span 3; flex: none; width: 9px; height: 9px; margin: 0 6px 4px 0;
+  border-right: 3px solid var(--muted); border-bottom: 3px solid var(--muted); transform: rotate(45deg);
+}
+:is(.fold, .skill-domain, .a11y-details, .sons-panel, .kid-domain-games)[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
+.fold-title { font-weight: 700; font-size: 1.15rem; }
+.fold-sub { color: var(--muted); font-size: 0.9rem; }
+.fold[open] > summary { margin-bottom: 10px; }
+.fold[open] > summary .fold-sub { display: none; } /* ouverte, la section montre le détail */
+.fold > summary:focus-visible { outline: 4px solid var(--ink); outline-offset: 4px; border-radius: 8px; }
+/* Suivi : la semaine en quatre chiffres sur une ligne, le graphique plus bas */
+.week-card .stat-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.week-card .stat-tile { padding: 8px 4px; align-items: center; text-align: center; }
+.week-card .stat-label { font-size: 0.78rem; line-height: 1.2; }
+.week-card .stat-value { font-size: 1.3rem; }
+.week-card .chart-cols { height: 100px; }
+.week-empty { margin: 10px 0 0; }
+@media (max-width: 359px) { .week-card .stat-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Suivi : une ligne par matière (jeux commencés, acquis), ses jeux au toucher */
+.skills-card h2 { margin-bottom: 0; }
+.skill-domain { border-top: 1px solid var(--line); }
+.skills-card h2 + .skill-domain { border-top: 0; }
+.skill-domain > summary { row-gap: 4px; padding: 10px 0; }
+.skill-domain-title { font-weight: 700; font-size: 1.05rem; }
+.skill-domain-count { color: var(--muted); font-size: 0.9rem; }
+.skill-bar { display: flex; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.skill-bar-done { background: #2e9e6b; }
+.skill-bar-doing { background: #e8b923; }
+.skill-domain[open] { padding-bottom: 6px; }
+.skill-domain .sons-vus-line { margin: 0 0 6px; }
+/* un jeu : son nom et son état ; touché, son niveau et sa compétence */
+.skill-domain .game-row { padding: 0 0 0 10px; }
+.game-row > summary { min-height: 44px; padding: 6px 0; }
+.game-row[open] > summary .game-row-title { text-decoration: underline; text-underline-offset: 3px; }
+.game-row-body { padding: 0 0 10px; }
+.game-row-body .level-select { margin-top: 0; }
+/* Réglages : une ligne par rubrique, qui ouvre son écran (comme les Réglages de l'iPhone) */
+.settings-list { display: flex; flex-direction: column; padding-top: 4px; padding-bottom: 4px; }
+.settings-row {
+  display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  min-height: 60px; padding: 10px 0; text-align: left; color: var(--ink); border-top: 1px solid var(--line);
+}
+.settings-row:first-child { border-top: 0; }
+.settings-row-icon { font-size: 1.5rem; line-height: 1; text-align: center; }
+.settings-row-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.settings-row-text b { font-size: 1.1rem; }
+.settings-row-sub { color: var(--muted); font-size: 0.9rem; overflow-wrap: break-word; }
+.settings-row-chevron {
+  width: 9px; height: 9px; margin-right: 8px;
+  border-right: 3px solid var(--muted); border-top: 3px solid var(--muted); transform: rotate(45deg);
+}
+.settings-row:focus-visible { outline: 4px solid var(--ink); outline-offset: 2px; border-radius: 8px; }
+.settings-row > .avatar { justify-self: center; }
+.settings-intro { margin: 0 4px; }
+/* fiche d'un enfant : « Enregistrer » reste en bas de l'écran tant que le formulaire y est */
+.child-edit .child-submit {
+  position: sticky; bottom: calc(var(--safe-bottom) + 10px); z-index: 3;
+  box-shadow: 0 5px 0 var(--accent-dark), 0 8px 20px rgba(43, 45, 66, 0.28);
+}
+.child-edit .photo-row { padding-top: 0; }
+.photo-help { margin: -2px 0 14px; }
+/* le choix du personnage sur une ligne : la photo, juste au-dessus, le montre déjà en grand */
+.child-edit .look-option { flex-direction: row; justify-content: center; gap: 10px; padding: 8px; }
+.child-edit .look-option .avatar-md { width: 56px; height: 56px; }
+.child-edit .look-option .avatar-name { display: none; }
+/* fiches à imprimer : sur une ligne */
+.fiche-row { display: flex; align-items: center; gap: 12px; }
+.fiche-row > div { flex: 1; min-width: 0; }
+.fiche-row h2 { margin: 0; font-size: 1.1rem; }
+.fiche-row .muted { margin-top: 2px; }
 .follow-grade { margin: 0; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .child-tabs { flex-wrap: wrap; justify-content: center; }
 .child-list { display: flex; flex-direction: column; gap: 4px; }
@@ -1469,6 +1558,13 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
   .stage-text.long .text-body { font-size: 0.98rem; line-height: 1.38; }
   /* réponses en phrases (jeux du CM) : plus serrées, et sur deux colonnes à partir de quatre */
   .choices-sentences .choice { min-height: 46px; padding: 6px 12px; font-size: 1.05rem; }
+  /* un nombre à lire, et trois réponses de plus de 60 signes l'une sous l'autre (ce nombre écrit en
+     lettres) : les réponses prennent les trois cinquièmes de la largeur, le nombre rapetisse d'autant */
+  .screen.play:has(> .stage .equation):has(> .choices-sentences .choice.long-text) { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .screen.play:has(> .stage .equation):has(> .choices-sentences .choice.long-text) .equation.fit {
+    font-size: min(2.8rem, calc((min(100vw, 1000px) - 80px) * 0.4 / var(--len) / 0.6));
+  }
+  .choices-sentences:has(.choice.long-text) .choice { font-size: 0.95rem; line-height: 1.2; } /* toutes à la même taille */
   .choices-sentences.n4, .choices-sentences.n5, .choices-sentences.n6 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .spell-picture { font-size: 52px; }
 
@@ -2303,6 +2399,14 @@ body[data-season="ete"] { background: #fffbea; }
 .duo-order:empty { display: none; }
 .duo-go { align-self: center; width: min(100%, 360px); margin-top: 20px; }
 .duo-go:disabled { opacity: 0.45; cursor: default; transform: none; }
+/* trois enfants ou plus : des portraits plus petits, trois par ligne, pour que « C'est parti ! » reste
+   dans l'écran (le prénom suffit à reconnaître chacun ; la classe est sur « Qui joue ? ») */
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .profile-card { gap: 2px; padding: 12px 4px 10px; border-radius: 22px; }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .avatar-xl { width: min(84px, 22vw); height: min(84px, 22vw); }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .profile-name { font-size: 1.15rem; }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .profile-grade { display: none; }
+.duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .duo-order { top: 6px; left: 6px; padding: 0 7px; font-size: 0.9rem; }
 
 /* pendant la partie : les deux portraits et les bonnes réponses ; l'enfant dont c'est le tour est plus grand et entouré */
 .domain-theme-duo { --accent: #4f46e5; --accent-dark: #3730a3; --accent-soft: #e0e7ff; }
@@ -2329,6 +2433,24 @@ body[data-season="ete"] { background: #fffbea; }
 @media (min-width: 440px) {
   .duo-player:not(.turn) .duo-name { display: inline; }
 }
+/* à trois ou plus : les autres joueurs en plus petit, leur score dans une pastille sur leur portrait ;
+   à cinq ou six sur un téléphone, leurs portraits se chevauchent, sans pastille (tout tient dans la barre) */
+.duo-score.many .duo-players { gap: 2px; }
+.duo-score.many .duo-player.turn { margin-right: 2px; }
+.duo-score.many .duo-player.turn .avatar { width: 32px; height: 32px; }
+.duo-score.many .duo-player:not(.turn) { position: relative; padding: 0 7px 6px 0; }
+.duo-score.many .duo-player:not(.turn) .avatar { width: 24px; height: 24px; }
+.duo-score.many .duo-player:not(.turn) .duo-name, .duo-score.many .duo-player:not(.turn) .duo-check { display: none; }
+.duo-score.many .duo-player:not(.turn) .duo-points {
+  position: absolute; right: 0; bottom: 0; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
+  background: var(--ink); color: #fff; font-size: 0.75rem; line-height: 18px; text-align: center;
+}
+@media (max-width: 500px) {
+  .duo-score.crowd .duo-player:not(.turn) { padding: 0; }
+  .duo-score.crowd .duo-player:not(.turn) + .duo-player:not(.turn) { margin-left: -8px; }
+  .duo-score.crowd .duo-player:not(.turn) .avatar { box-shadow: 0 0 0 2px var(--bg); }
+  .duo-score.crowd .duo-player:not(.turn) .duo-points { display: none; }
+}
 
 /* résultats des deux enfants */
 .duo-end { justify-content: flex-start; gap: 6px; }
@@ -2347,6 +2469,26 @@ body[data-season="ete"] { background: #fffbea; }
 .duo-final-gain { margin: 0; font-weight: 700; font-size: 1.15rem; color: var(--good-dark); }
 .duo-final-sticker { margin: 0; font-weight: 700; font-size: 0.9rem; color: var(--album-dark); }
 .duo-actions { margin-top: 14px; }
+/* à trois ou plus : une ligne par enfant (portrait, prénom, « ✓ 2 sur 3 », étoiles) ; en grille sur un grand écran */
+.duo-end:has(.duo-final.many) .duo-team { font-size: 1.6rem; }
+.duo-end:has(.duo-final.many) .duo-actions { margin-top: 10px; gap: 10px; }
+.duo-end:has(.duo-final.many) .duo-actions .big-btn { min-height: 56px; }
+.duo-final.many { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+.duo-final.many .duo-final-card {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "pic name stars" "pic detail stars";
+  align-items: center; column-gap: 12px; row-gap: 0; padding: 4px 14px; text-align: left; border-radius: 16px;
+  box-shadow: 0 3px 0 var(--line);
+}
+.duo-final.many .avatar { grid-area: pic; width: 40px; height: 40px; }
+.duo-final.many .avatar-name { display: none; }
+.duo-final.many .duo-final-name { grid-area: name; margin: 0; font-size: 1.1rem; line-height: 1.25; }
+.duo-final.many .duo-final-detail { grid-area: detail; line-height: 1.25; }
+.duo-final.many .result-stars { grid-area: stars; }
+.duo-final.many .big-star { font-size: 22px; }
+.duo-final.many .duo-final-sticker { grid-column: 2 / -1; }
+@media (min-width: 700px) {
+  .duo-final.many { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+}
 
 /* accueil : « ⭐ Conseillé pour toi » (texte foncé sur fond blanc, la couleur de la rubrique n'est qu'un décor) */
 .home-featured { display: flex; flex-direction: column; gap: 6px; }
@@ -2485,6 +2627,9 @@ body[data-season="ete"] { background: #fffbea; }
   .duo-hint.warning { padding: 4px 12px; font-size: 1rem; }
   .duo-pick .avatar-xl { width: min(84px, 22dvh); height: min(84px, 22dvh); }
   .duo-go { min-height: 48px; margin-top: 10px; }
+  /* trois enfants ou plus : tous sur une ligne */
+  .duo-pick .profile-list:is(.n3, .n4, .n5, .n6) { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); }
+  .duo-pick .profile-list:is(.n3, .n4, .n5, .n6) .avatar-xl { width: min(64px, 17dvh); height: min(64px, 17dvh); }
 
   /* pendant la partie */
   .duo-player .avatar { width: 24px; height: 24px; }
@@ -2503,6 +2648,16 @@ body[data-season="ete"] { background: #fffbea; }
   .duo-final .big-star { font-size: 26px; }
   .duo-actions { margin: 0; }
   .duo-actions .big-btn { min-height: 52px; font-size: 1.2rem; }
+  /* à trois ou plus : les enfants sur toute la largeur, trois par ligne, les deux boutons dessous */
+  .screen.duo-end:has(.duo-final.many) { grid-template-columns: minmax(0, 1fr); }
+  .duo-end:has(.duo-final.many) .duo-team { font-size: 1.4rem; }
+  .duo-final.many { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .duo-final.many .duo-final-card { padding: 4px 8px; column-gap: 8px; }
+  .duo-final.many .avatar { width: 36px; height: 36px; }
+  .duo-final.many .duo-final-name { font-size: 1rem; }
+  .duo-final.many .big-star { font-size: 16px; }
+  .duo-end:has(.duo-final.many) .duo-actions { flex-direction: row; max-width: none; justify-content: center; margin: 0; }
+  .duo-end:has(.duo-final.many) .duo-actions .big-btn { min-height: 48px; padding: 0 24px; }
 }
 
 /* =====================================================================
@@ -3085,6 +3240,10 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
   .a11y-text-large .choices-words.n3 .choice:last-child { grid-column: 1 / -1; }
 }
 .a11y-text-large .choice, .a11y-text-large .order-item, .a11y-text-large .match-item { overflow-wrap: anywhere; hyphens: auto; }
+/* un long mot (« multiplication ») se coupe plutôt que de sortir de la carte du jeu ; les étoiles d'un
+   palier restent dans leur case (cinq étoiles plus petites) */
+:is(.a11y-text-large, .a11y-spacing) .game-title { max-width: 100%; overflow-wrap: anywhere; hyphens: auto; }
+.a11y-text-large .palier-stars { font-size: 0.8rem; gap: 0; }
 
 /* les dessins (emoji) en réponse ne grandissent pas au-delà de leur case */
 .a11y-text-large .choices-pictures .choice { font-size: min(2.8rem, 12vw); }
@@ -3092,7 +3251,7 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
 /* texte espacé : lettres, mots et lignes, partout où l'enfant lit (pas dans les dessins) */
 .a11y-spacing .screen { letter-spacing: 0.08em; word-spacing: 0.2em; }
 .a11y-spacing .screen svg, .a11y-spacing .choices-pictures .choice, .a11y-spacing .object, .a11y-spacing .stage-picture,
-.a11y-spacing .order-emoji, .a11y-spacing .game-icon, .a11y-spacing .domain-icon { letter-spacing: normal; word-spacing: normal; }
+.a11y-spacing .order-emoji, .a11y-spacing .game-icon, .a11y-spacing .domain-icon, .a11y-spacing .palier-stars { letter-spacing: normal; word-spacing: normal; }
 .a11y-spacing .bubble, .a11y-spacing .instruction .bubble, .a11y-spacing .text-body, .a11y-spacing .karaoke-text,
 .a11y-spacing .stage-sentence, .a11y-spacing .story-text, .a11y-spacing .accord-line, .a11y-spacing .schema-text,
 .a11y-spacing .choices-sentences .choice, .a11y-spacing .choices-answers .choice, .a11y-spacing .feedback p,
@@ -3358,16 +3517,35 @@ body.a11y-contrast { background: #fff !important; color: #000; }
 .a11y-no-timer .chrono-clock { display: none; }
 
 /* espace parents : la section Accessibilité */
+.a11y-card h2 { margin: 10px 0 8px; font-size: 1.1rem; }
+.a11y-card .muted + .setting { border-top: 0; }
 .a11y-card h3 { margin: 14px 0 0; font-size: 1.05rem; }
+.a11y-details { margin-top: 12px; border-top: 1px solid var(--line); }
+.a11y-details > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px;
+  font-weight: 700; color: var(--lecture-dark);
+}
 .a11y-group .setting:first-of-type { border-top: 0; }
+/* réglages tout prêts : un ✓ (et aria-pressed) dit qu'il est allumé, pas seulement la couleur */
+.a11y-presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr)); gap: 8px; }
+.a11y-preset {
+  display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 8px 10px; border-radius: 14px; text-align: left;
+  background: var(--card); color: var(--ink); box-shadow: inset 0 0 0 2px var(--field-line);
+}
+.a11y-preset.on { background: #d8f5e6; box-shadow: inset 0 0 0 3px var(--good); }
+.a11y-preset-check {
+  flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+  border-radius: 50%; font-weight: 700; box-shadow: inset 0 0 0 2px var(--field-line);
+}
+.a11y-preset.on .a11y-preset-check { background: var(--good); color: #fff; box-shadow: none; }
+.a11y-preset-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow-wrap: break-word; }
+.a11y-preset-text > span { font-size: 0.82rem; line-height: 1.25; }
+.a11y-preset:focus-visible { outline: 4px solid var(--ink); outline-offset: 2px; }
 .a11y-setting { align-items: center; }
 .a11y-setting-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .a11y-setting-text .muted { margin: 0; }
 .a11y-card .setting-choice { flex-wrap: wrap; }
 .a11y-card .segmented { flex-wrap: wrap; }
-.a11y-shortcut-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.a11y-shortcut { display: inline-flex; align-items: center; gap: 8px; padding: 0 14px 0 6px; max-width: 100%; }
-.a11y-shortcut > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* =====================================================================
    Lire à voix haute (fluence) : la consigne pour l'adulte, puis la feuille de lecture

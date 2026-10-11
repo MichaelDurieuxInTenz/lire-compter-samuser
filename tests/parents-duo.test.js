@@ -2,10 +2,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { findGame } from '../app/js/games/index.js';
 import { featuredGames, isGameHidden, MAX_FEATURED, programFor, programForChild } from '../app/js/programs.js';
-import { currentLevel, dailyPicks, drawPool, dueReviews, DUO_QUESTIONS, duoPlan, duoTurn, hashText } from '../app/js/picks.js';
+import {
+  currentLevel, dailyPicks, drawPool, dueReviews, DUO_QUESTIONS, duoPlan, duoTurn, hashText, PARTY_MAX, partyLength,
+} from '../app/js/picks.js';
 import { createRng, sample } from '../app/js/random.js';
 import {
-  addChild, beginDuo, defaultStore, endDuo, loadStore, resetChild, saveStore, STORAGE_KEY,
+  addChild, beginDuo, defaultStore, endDuo, loadStore, MAX_CHILDREN, resetChild, saveStore, STORAGE_KEY,
 } from '../app/js/storage.js';
 
 function memoryStorage(initial = {}) {
@@ -217,6 +219,35 @@ test('duo : 10 questions en alternance A, B, A, B…, chacune du programme de l�
   assert.equal(currentLevel(eva, { game: findGame('rimes'), min: 2, levels: [2, 3, 4, 5] }), 2);
   // un niveau retiré pour la classe : le plus proche parmi ceux de la classe (à égalité, le plus facile)
   assert.equal(currentLevel(eva, { game: findGame('compter'), min: 1, levels: [1, 2, 3, 5, 6] }), 3);
+});
+
+test('jouer à plusieurs : de 2 à 6 joueurs, une dizaine de questions, autant pour chacun et au moins 2', () => {
+  assert.equal(PARTY_MAX, MAX_CHILDREN);
+  assert.deepEqual([2, 3, 4, 5, 6].map(partyLength), [10, 9, 12, 10, 12]);
+  assert.equal(partyLength(2), DUO_QUESTIONS);
+  const store = family();
+  for (const [name, look, grade] of [['Lou', 'fille', 'CE1'], ['Zoé', 'fille', 'GS'], ['Noé', 'garcon', 'PS'], ['Inès', 'fille', 'CM2']]) {
+    addChild(store, { name, look, grade });
+  }
+  assert.equal(store.order.length, 6);
+  for (let n = 3; n <= 6; n++) {
+    const players = store.order.slice(0, n).reverse(); // l'ordre des touchers : le premier touché commence
+    for (let seed = 1; seed <= 20; seed++) {
+      const plan = duoPlan(store.profiles, players, createRng(seed));
+      assert.equal(plan.length, partyLength(n));
+      plan.forEach(({ player, game, level }, i) => {
+        assert.equal(player, players[i % n], `${n} joueurs, question ${i + 1}`);
+        const entry = drawPool(store.profiles[player]).find((e) => e.game.id === game.id);
+        assert.ok(entry, `${game.id} n’est pas dans le programme de ${player}`);
+        assert.equal(level, currentLevel(store.profiles[player], entry));
+      });
+      for (const id of players) {
+        const games = plan.filter((t) => t.player === id).map((t) => t.game.id);
+        assert.equal(games.length, partyLength(n) / n);
+        assert.equal(new Set(games).size, games.length, `${id} : pas deux fois le même jeu`);
+      }
+    }
+  }
 });
 
 test('duo : impossible si l’un des deux n’a plus aucun jeu affiché', () => {
