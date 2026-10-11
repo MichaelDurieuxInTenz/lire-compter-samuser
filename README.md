@@ -286,7 +286,8 @@ s'ouvre d'un toucher (un chevron le signale), pour ne pas faire défiler longtem
   (son état et son niveau) ; le choix du niveau s'ouvre en touchant le jeu. Puis les scores de lecture
   à voix haute semaine par semaine, et les attendus de fin d'année de sa classe. **Fiches à imprimer** :
   une feuille A4 d'exercices au niveau de l'enfant (le jeu et le niveau au choix), avec son corrigé en
-  page 2, pour les jours sans écran.
+  page 2, pour les jours sans écran. Seuls les exercices qui se font sans le son s'impriment : pas de
+  premier son, de rimes ni de syllabes à entendre, pas de question anglaise à écouter.
 - **Enfants** : la liste des enfants, **Ajouter un enfant** et **Partager le lien**. *Modifier* ouvre la
   fiche de l'enfant : son profil (prénom jusqu'à 30 caractères, personnage, classe, photo de la
   photothèque ou de l'appareil photo, enregistrée tout de suite), avec « Enregistrer » toujours visible

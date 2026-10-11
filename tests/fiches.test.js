@@ -171,11 +171,28 @@ test('fiches : les consignes sont dites pour le papier (entourer, cocher, écrir
   assert.equal(paperText('Touche le nombre le plus grand.'), 'Entoure le nombre le plus grand.');
   assert.equal(paperText('Lis les mots, et touche le bon.', 'Coche'), 'Lis les mots, et coche le bon.');
   assert.equal(paperText('Trace un trait avec ton doigt.'), 'Trace un trait.');
+  assert.equal(paperText('Écoute le calcul en anglais.'), 'Lis le calcul en anglais.');
   for (const game of ficheGames()) {
     for (const level of [ficheLevels(game)[0], ficheLevels(game).at(-1)]) {
       const fiche = makeFiche(game, level, { seed: 9, name: 'Léa' });
       const texts = [fiche.consigne, ...fiche.exercises.map((e) => e.text)].join(' ');
-      assert.doesNotMatch(texts, /\b[Tt]ouche\b|\b[Gg]lisse\b|ton doigt|\b[Éé]coute\b/, `${game.id} niveau ${level} : ${texts.slice(0, 200)}`);
+      // (?<!\p{L}) plutôt que \b : \b ne voit pas le début d'un mot qui commence par « É »
+      assert.doesNotMatch(texts, /\b[Tt]ouche\b|\b[Gg]lisse\b|ton doigt|(?<!\p{L})[Éé]coute(?!\p{L})/u, `${game.id} niveau ${level} : ${texts.slice(0, 200)}`);
+    }
+  }
+});
+
+test('fiches : rien à écouter ni à entendre sur le papier (sans le son, le dessin ne dit pas sûrement le mot)', () => {
+  for (const id of ['ecoute', 'premier-son', 'rimes', 'syllabes-rythme']) assert.equal(isPrintable(id), false, id);
+  // chaque niveau imprimable : aucune consigne qui demande d'écouter, ou ce qu'on entend dans un mot
+  const HEARD = /(?<!\p{L})[Éé]coute(?!\p{L})|son entends-tu|sons entends-tu|syllabes entends-tu|Où entends-tu|rime avec|riment|finit par le son/u;
+  for (const game of ficheGames()) {
+    for (const level of ficheLevels(game)) {
+      for (const seed of [3, 11]) {
+        const fiche = makeFiche(game, level, { seed, name: 'Léa' });
+        const texts = [fiche.consigne, ...fiche.exercises.map((e) => e.text)].join(' ');
+        assert.doesNotMatch(texts, HEARD, `${game.id} niveau ${level} : ${texts.slice(0, 200)}`);
+      }
     }
   }
 });
