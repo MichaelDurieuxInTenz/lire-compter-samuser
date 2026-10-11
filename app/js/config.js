@@ -16,6 +16,7 @@ export const CHANGELOG = [
     date: '2026-10-11',
     changes: [
       'Mises à jour : l’app installée sur l’écran d’accueil se met à jour toute seule. À chaque retour dans l’app, elle demande s’il y a une nouvelle version, et se recharge sur « Qui joue ? » ou l’accueil, jamais pendant une partie. Elle ne reprend plus d’anciens fichiers gardés par le téléphone : une app installée pouvait rester des heures sur l’ancienne version. Une app installée avant cette version reçoit la nouvelle, en principe, à sa deuxième ouverture.',
+      'Anglais du CM, sur un téléphone en paysage et sur iPad mini en paysage : les réponses en phrases restent dans l’écran. Elles prennent plus de largeur, et l’horloge rapetisse un peu.',
     ],
   },
   {

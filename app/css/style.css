@@ -1572,6 +1572,11 @@ html:has(.parents .parent-tabs) { scroll-padding-top: calc(var(--safe-top) + 84p
   }
   .choices-sentences:has(.choice.long-text) .choice { font-size: 0.95rem; line-height: 1.2; } /* toutes à la même taille */
   .choices-sentences.n4, .choices-sentences.n5, .choices-sentences.n6 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  /* anglais du CM : des réponses en phrases à côté d'une phrase, d'une horloge ou du bouton d'écoute.
+     Elles prennent les trois cinquièmes de la largeur, en lignes plus serrées : sur iPhone SE, « The
+     stadium is in front of the swimming pool. » tient en trois lignes au lieu de quatre */
+  .screen.play[data-game="anglais-cm"]:has(> .stage):has(> .choices-sentences) { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .play[data-game="anglais-cm"] .choices-sentences .choice { line-height: 1.2; }
   .spell-picture { font-size: 52px; }
 
   /* réponses */
