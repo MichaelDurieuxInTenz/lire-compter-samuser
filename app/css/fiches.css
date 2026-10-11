@@ -1,6 +1,6 @@
-/* Fiches à imprimer (espace parents, voir js/fiches-ecran.js) : une feuille A4 d'exercices et
-   son corrigé. À l'écran, un aperçu réduit ; à l'impression, seulement les deux feuilles, en noir
-   sur blanc (les couleurs sont aussi écrites, rien n'est dit par la couleur seule). */
+/* Fiches à imprimer (espace parents, voir js/fiches-ecran.js) : une feuille A4 d'exercices par jeu
+   coché, puis les corrigés. À l'écran, un aperçu réduit ; à l'impression, seulement les feuilles, en
+   noir sur blanc (les couleurs sont aussi écrites, rien n'est dit par la couleur seule). */
 
 /* ---------------------------------------------------------------- L'écran */
 
@@ -8,11 +8,45 @@
 .fiches .fiche-form > p { margin: 0; }
 .fiche-children { align-self: stretch; flex-wrap: wrap; }
 .fiche-children .seg { flex: 1 1 auto; justify-content: center; padding: 6px 12px; min-height: 44px; }
-.fiche-field { display: flex; flex-direction: column; gap: 4px; font-weight: 700; }
-.fiche-field .select { width: 100%; min-height: 44px; font-weight: 400; }
 .fiche-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .fiche-actions .big-btn { flex: 1 1 150px; min-height: 52px; font-size: 1.05rem; }
-.fiche-status { margin: 0; }
+.fiche-actions .big-btn.primary { flex-basis: 100%; } /* « Imprimer ou PDF » sur toute la ligne */
+.fiche-status, .fiche-pdf { margin: 0; }
+.fiche-actions .big-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* les jeux à imprimer : une case par jeu, rangés par rubrique (cochée : un ✓, pas seulement une couleur) */
+.fiche-games { display: flex; flex-direction: column; }
+.fiche-games-label { margin: 0 0 4px; font-weight: 700; }
+.fiche-domain { border-top: 1px solid var(--line); }
+.fiche-domain:last-child { border-bottom: 1px solid var(--line); }
+/* le nom de la rubrique, ses jeux cochés dessous (fermée) ; à droite, le chevron (style.css) */
+.fiche-domain > summary {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; row-gap: 2px;
+  min-height: 44px; padding: 6px 0;
+}
+.fiche-domain > summary > * { grid-column: 1; min-width: 0; overflow-wrap: anywhere; }
+.fiche-domain > summary:focus-visible { outline: 4px solid var(--ink); outline-offset: 2px; border-radius: 8px; }
+.fiche-domain-title { font-weight: 700; }
+.fiche-chosen { font-size: 0.9rem; color: var(--muted); }
+.fiche-chosen.on { color: var(--good-dark); font-weight: 700; }
+.fiche-domain[open] > summary .fiche-chosen { display: none; } /* ouverte, ses cases le disent */
+.fiche-picks { display: flex; flex-direction: column; gap: 8px; padding: 2px 0 12px; }
+.fiche-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.fiche-chip {
+  flex: 1 1 240px; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 12px 6px 8px;
+  border-radius: 14px; background: var(--card); color: var(--ink); text-align: left; font-weight: 700;
+  box-shadow: inset 0 0 0 2px var(--field-line);
+}
+.fiche-chip[aria-pressed="true"] { background: #d8f5e6; box-shadow: inset 0 0 0 3px var(--good); }
+.fiche-chip:focus-visible { outline: 4px solid var(--ink); outline-offset: 2px; }
+.fiche-chip-title { min-width: 0; overflow-wrap: anywhere; }
+.fiche-check {
+  flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+  border-radius: 6px; box-shadow: inset 0 0 0 2px var(--field-line);
+}
+.fiche-chip[aria-pressed="true"] .fiche-check { background: var(--good); color: #fff; box-shadow: none; }
+.fiche-pick .select { flex: 2 1 240px; min-width: 0; min-height: 44px; } /* à côté du jeu sur un grand écran : le niveau a plus à dire */
+.fiche-pick .select[hidden] { display: none; }
 .fiche-card .fiche-open { flex: none; } /* à droite de son texte (style.css, .fiche-row) */
 
 .fiche-preview { margin: 4px 0 24px; overflow: hidden; border-radius: 6px; }
@@ -22,6 +56,8 @@
   transform: scale(var(--scale)); transform-origin: top left;
 }
 .fiche-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+/* le document en préparation (il faut le mesurer), caché jusqu'à ce qu'il remplace l'aperçu */
+.fiche-building { position: absolute; top: 0; left: 0; visibility: hidden; pointer-events: none; }
 
 /* ---------------------------------------------------------------- La feuille A4 */
 
@@ -232,6 +268,11 @@
   list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 2.5mm 4mm; align-content: start; font-size: 12pt;
 }
+/* une page de corrigés : un corrigé par fiche, l'un sous l'autre (un corrigé ne se coupe pas) */
+.corrige-part { display: flex; flex-direction: column; gap: 2mm; break-inside: avoid; }
+.corrige-part + .corrige-part { border-top: 0.3mm solid #777; padding-top: 3mm; }
+.corrige-title { margin: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: 1mm 3mm; font-size: 14pt; line-height: 1.15; }
+.corrige-title .fiche-icon { font-size: 14pt; }
 .ans { display: flex; gap: 2mm; align-items: flex-start; break-inside: avoid; min-width: 0; }
 .ans.wide { grid-column: 1 / -1; }
 .ans-body { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5mm 2mm; min-width: 0; }
@@ -263,6 +304,7 @@
   .fiche-preview { margin: 0; overflow: visible; border-radius: 0; }
   .fiche-scale { height: auto !important; }
   .fiche-sheets { transform: none !important; gap: 0; display: block; }
+  .fiche-building { display: none !important; }
   /* un rien plus courte que la feuille : sinon l'arrondi ajoute une page blanche */
   .fiche-page { box-shadow: none; height: 296mm; break-after: page; page-break-after: always; }
   .fiche-page:last-child { break-after: auto; page-break-after: auto; }
