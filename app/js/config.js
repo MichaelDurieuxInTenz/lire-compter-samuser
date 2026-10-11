@@ -23,6 +23,7 @@ export const CHANGELOG = [
       'Jouer ensemble : de deux à six enfants jouent chacun leur tour sur le même appareil, chacun à son niveau, dans l’ordre où l’on a touché leurs portraits (une dizaine de questions en tout, au moins deux chacun).',
       'Texte très grand ou espacé, sur un petit téléphone : un long titre de jeu se coupe au lieu de sortir de sa carte, et les étoiles des paliers de calcul tiennent dans leur case.',
       'Très grands nombres (CM), sur un téléphone en paysage : les trois réponses écrites en lettres (« huit cent six millions… ») tiennent dans l’écran.',
+      'Cherche et trouve : les images du bord restent dans la carte ; sur iPad mini en portrait, l’une d’elles pouvait sortir de l’écran.',
       'Suivi : la lecture à voix haute tient sur une ligne (dernier et meilleur score) ; son détail et son évolution s’ouvrent d’un toucher.',
     ],
   },

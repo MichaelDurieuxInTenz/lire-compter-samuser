@@ -775,9 +775,14 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
   background: var(--card); border-radius: 20px; box-shadow: 0 0 0 3px var(--line) inset;
 }
 .choices-seek .choice {
-  /* un rond (le côté le plus court de la case), centré sur sa place : la carte peut s'étirer en hauteur */
-  position: absolute; width: min(calc(100cqw / var(--cols)), calc(100cqh / var(--rows))); height: auto; aspect-ratio: 1;
-  left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); translate: -50% -50%;
+  /* un rond (--d : le côté le plus court de la case), centré sur sa place : la carte peut s'étirer en
+     hauteur. Le rond reste dans la carte : sur iPad mini en portrait, la carte prend toute la largeur,
+     et une image du bord, décalée vers l'extérieur, sortait de l'écran */
+  --d: min(calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
+  position: absolute; width: var(--d); height: auto; aspect-ratio: 1;
+  left: clamp(var(--d) / 2, var(--x) * 1%, 100% - var(--d) / 2);
+  top: clamp(var(--d) / 2, var(--y) * 1%, 100% - var(--d) / 2);
+  translate: -50% -50%;
   min-height: 0; padding: 0; border-radius: 50%; background: none; box-shadow: none; line-height: 1;
   font-size: min(calc(100cqw / var(--cols) * 0.56), calc(100cqh / var(--rows) * 0.56));
   transform: scale(var(--s));
