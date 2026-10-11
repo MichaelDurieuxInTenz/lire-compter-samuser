@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.17.0',
+  version: '1.17.1',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.17.1',
+    date: '2026-10-11',
+    changes: [
+      'Calcul, avec un texte très grand ou de grandes cibles, sur un petit téléphone (iPhone SE) : « Essaie encore ! », « Bravo ! » et la bonne réponse après deux erreurs restent dans l’écran sous le pavé, et le pavé aussi, même sous un dessin de deux rangées. Les chiffres et les touches gardent leur taille.',
+    ],
+  },
   {
     version: '1.17.0',
     date: '2026-10-11',

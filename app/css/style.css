@@ -3275,6 +3275,17 @@ html { font-size: calc(100% * var(--text-scale, 1)); }
       calc((100dvh / var(--zoom, 1) - 380px) / (var(--rows) + var(--ch) * var(--k))));
   }
   .a11y-big-targets .play .keypad { gap: 10px 12px; }
+  /* calcul au pavé : les chiffres de l'égalité, le « + » du dessin et ceux des touches gardent leur
+     taille, sans la hauteur de ligne de la police (100 points de haut pour des chiffres de 62) ; le
+     dessin se rapproche de l'égalité : « Essaie encore ! » et l'explication tiennent sous le pavé */
+  :is(.a11y-text-large, .a11y-big-targets) .play-keypad :is(.equation, .operation-visual .op, .key) { line-height: 1.1; }
+  :is(.a11y-text-large, .a11y-big-targets) .play-keypad .stage-operation { gap: 6px; }
+  /* la réponse donnée (« Bravo ! », ou « C’est 6 ! » après deux erreurs) : le dessin se fait petit,
+     comme pour l'explication, et « Bravo Marie-Charlotte ! » tient en deux lignes sous le pavé */
+  :is(.a11y-text-large, .a11y-big-targets) .play-keypad:has(> .feedback > *) .operation-visual { padding-block: 6px; }
+  :is(.a11y-text-large, .a11y-big-targets) .play-keypad:has(> .feedback > *) .operation-visual .objects.small .object { font-size: min(24px, 5.4vw); }
+  :is(.a11y-text-large, .a11y-big-targets) .play-keypad .feedback p { margin: 2px 0; }
+  :is(.a11y-text-large, .a11y-big-targets) .play-keypad .feedback .praise { font-size: 1.4rem; line-height: 1.15; }
   /* schéma et pavé numérique ensemble : le pavé sur quatre colonnes (trois rangées au lieu de quatre) */
   .a11y-big-targets .play[data-game="schemas"] .keypad, .a11y-text-large .play[data-game="schemas"] .keypad { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   /* problèmes en schémas : l'histoire et les trois schémas, un peu moins agrandis */
