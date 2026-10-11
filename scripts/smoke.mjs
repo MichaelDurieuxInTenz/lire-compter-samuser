@@ -4,6 +4,7 @@
 // Usage : npm run test:e2e   (SCREENSHOTS=dossier pour enregistrer des captures)
 //         ONLY=memory,points npm run test:e2e   (seulement la mise en page de ces jeux, sur tous les appareils)
 //         ONLY=hors-ligne npm run test:e2e      (seulement le mode avion : chaque jeu sans réseau)
+//         ONLY=mise-a-jour npm run test:e2e     (seulement la mise à jour d'une app déjà ouverte : nouvelle version publiée)
 //         ONLY=ecrans npm run test:e2e          (seulement la mise en page des écrans fixes : accueil, listes, duo, parents)
 //         PLAY=memory,points npm run test:e2e   (seulement une partie de ces jeux, sur iPhone)
 //         PLAY=compter,sauvegarde npm run test:e2e   (… puis la sauvegarde : fichier, effacement, restauration)
@@ -1944,6 +1945,76 @@ async function checkOffline(context, page) {
     + (clipsMissing ? ` (${clipsMissing} sons pas encore téléchargés : voix de l'appareil)` : ''));
 }
 
+/**
+ * Mise à jour : une app installée (iPhone, écran d'accueil) reçoit une nouvelle version sans être
+ * réinstallée, même si le serveur laisse le navigateur garder ses fichiers 4 heures (comme un CDN :
+ * Cache-Control: max-age=14400) ; au retour dans l'app, elle se recharge sur « Qui joue ? » ou
+ * l'accueil, jamais au milieu d'une partie.
+ */
+async function checkUpdate() {
+  const port = PORT + 11;
+  const base = `http://localhost:${port}/`;
+  const replaced = new Map();
+  const server = await startServer(port, undefined, { cacheControl: 'public, max-age=14400', replaced });
+  // une nouvelle version publiée : le service worker et le numéro de version changent
+  const publish = (tag, version) => {
+    const sw = readFileSync(new URL('../app/sw.js', import.meta.url), 'utf8');
+    const config = readFileSync(new URL('../app/js/config.js', import.meta.url), 'utf8');
+    replaced.set('/sw.js', sw.replace(/const VERSION = '[^']+';/, `const VERSION = '${tag}';`));
+    replaced.set('/js/config.js', config.replace(`version: '${APP.version}',`, `version: '${version}',`));
+  };
+  const context = await newContext({ width: 390, height: 844 });
+  const page = await context.newPage();
+  page.on('pageerror', (e) => errors.push(`mise à jour : ${e.message}`));
+  await page.goto(base);
+  await page.evaluate(async (key) => {
+    const { defaultStore, addChild, storeSnapshot } = await import('./js/storage.js');
+    const store = defaultStore();
+    addChild(store, { name: 'Lou', look: 'fille', grade: 'CP' });
+    localStorage.setItem(key, JSON.stringify(storeSnapshot(store)));
+  }, STORAGE_KEY);
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.reload(); // la page est maintenant servie par le service worker
+  await page.waitForSelector('.profiles');
+  const shown = () => page.getAttribute('.profiles [data-version]', 'data-version');
+  if ((await shown()) !== APP.version) fail(`mise à jour : version ${await shown()} au lieu de ${APP.version}`);
+  // retour dans l'app (elle était en arrière-plan) : elle demande au serveur s'il y a du nouveau
+  const backInApp = () => page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+
+  // 1. sur « Qui joue ? » : la nouvelle version s'affiche toute seule
+  publish('v-essai-1', '9.9.1');
+  await backInApp();
+  await page.waitForFunction(() => document.querySelector('.profiles [data-version]')?.dataset.version === '9.9.1', null, { timeout: 20000 })
+    .catch(async () => fail(`mise à jour : au retour dans l'app, toujours la version ${await shown()} (9.9.1 publiée)`));
+
+  // 2. pendant une partie : pas de rechargement ; il attend le retour à l'accueil
+  await page.click('.profile-card, [data-profile]');
+  await page.waitForSelector('.home');
+  await page.click('[data-domain="maths"]');
+  await page.click('[data-game="compter"]');
+  await page.waitForSelector('.screen.play');
+  await page.evaluate(() => { window.__avantMiseAJour = true; });
+  const changed = page.evaluate(() => new Promise((resolve) => navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true })));
+  publish('v-essai-2', '9.9.2');
+  await backInApp();
+  await changed;
+  await page.waitForTimeout(1500);
+  if (!(await page.evaluate(() => window.__avantMiseAJour === true && Boolean(document.querySelector('.screen.play'))))) {
+    fail('mise à jour : l’app s’est rechargée au milieu d’une partie');
+  }
+  await page.click('.top-bar .icon-btn'); // fin de la partie : la liste des jeux, toujours pas rechargée
+  await page.waitForSelector('.screen:not(.play) .game-card, [data-game]');
+  if (!(await page.evaluate(() => window.__avantMiseAJour === true))) fail('mise à jour : l’app s’est rechargée sur la liste des jeux');
+  await page.click('.top-bar .icon-btn'); // puis l'accueil, où l'app se recharge (et y revient)
+  await page.waitForFunction(() => !window.__avantMiseAJour && document.querySelector('.home'), null, { timeout: 20000 })
+    .catch(() => fail('mise à jour : l’app ne s’est pas rechargée au retour à l’accueil'));
+  const version = await page.evaluate(async () => (await import('./js/config.js')).APP.version);
+  if (version !== '9.9.2') fail(`mise à jour : version ${version} après le retour à l'accueil (9.9.2 publiée)`);
+  await context.close();
+  server.close();
+  console.log('✔ mise à jour : une nouvelle version publiée est prise au retour dans l’app (fichiers gardés 4 h par le navigateur), jamais pendant une partie');
+}
+
 // ---------------------------------------------------------------- Accessibilité (PARTS=a11y)
 
 // Sur les écrans principaux : contrastes de chaque texte et des champs (scripts/a11y-audit.mjs),
@@ -2740,6 +2811,7 @@ else if (ONLY?.includes('hors-ligne')) {
   await checkOffline(context, page);
   await context.close();
 }
+if ((!ONLY && PARTS.includes('scenario')) || ONLY?.includes('mise-a-jour')) await checkUpdate();
 if ((!ONLY && PARTS.includes('scenario')) || ONLY?.includes('fiches')) await checkFiches();
 // accessibilité : avec le parcours complet (PARTS=scenario), ou seule (PARTS=a11y, ou ONLY=a11y)
 if ((!ONLY && (PARTS.includes('scenario') || PARTS.includes('a11y'))) || ONLY?.includes('a11y')) await a11yChecks();

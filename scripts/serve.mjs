@@ -22,7 +22,12 @@ const TYPES = {
   '.json': 'application/json',
 };
 
-export function startServer(port = PORT, root = ROOT) {
+/**
+ * Options (test de mise à jour, scripts/smoke.mjs) : `cacheControl`, l'en-tête envoyé (par défaut, le
+ * navigateur redemande chaque fichier) ; `replaced`, des fichiers servis à la place de ceux du disque
+ * (adresse → contenu), comme une nouvelle version publiée.
+ */
+export function startServer(port = PORT, root = ROOT, { cacheControl = 'no-cache', replaced = null } = {}) {
   const server = createServer(async (req, res) => {
     const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     const file = normalize(join(root, path.endsWith('/') ? `${path}index.html` : path));
@@ -31,7 +36,7 @@ export function startServer(port = PORT, root = ROOT) {
       return;
     }
     try {
-      const body = await readFile(file);
+      const body = replaced?.has(path) ? Buffer.from(replaced.get(path)) : await readFile(file);
       const type = TYPES[extname(file)] || 'application/octet-stream';
       // une partie du fichier (« Range: bytes=a-b ») : un son pris dans un paquet de sons, comme sur GitHub Pages
       const range = /^bytes=(\d+)-(\d*)$/.exec(req.headers.range || '');
@@ -42,11 +47,11 @@ export function startServer(port = PORT, root = ROOT) {
           res.writeHead(416, { 'Content-Range': `bytes */${body.length}` }).end();
           return;
         }
-        res.writeHead(206, { 'Content-Type': type, 'Content-Range': `bytes ${start}-${end}/${body.length}`, 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-cache' });
+        res.writeHead(206, { 'Content-Type': type, 'Content-Range': `bytes ${start}-${end}/${body.length}`, 'Accept-Ranges': 'bytes', 'Cache-Control': cacheControl });
         res.end(body.subarray(start, end + 1));
         return;
       }
-      res.writeHead(200, { 'Content-Type': type, 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-cache' });
+      res.writeHead(200, { 'Content-Type': type, 'Accept-Ranges': 'bytes', 'Cache-Control': cacheControl });
       res.end(body);
     } catch {
       res.writeHead(404).end('Introuvable');

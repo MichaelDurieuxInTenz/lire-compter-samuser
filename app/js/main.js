@@ -93,6 +93,19 @@ function save() {
   return saveStore(store);
 }
 
+/**
+ * Une nouvelle version de l'app a pris la main (service worker) : la page se recharge sur « Qui joue ? »
+ * ou sur l'accueil d'un enfant (on y revient au même endroit), jamais pendant une partie ni dans
+ * l'espace parents : alors, dès qu'on revient à l'un de ces deux écrans.
+ */
+let reloadPending = false;
+const safeToReload = () => Boolean(app.querySelector(':scope > main.screen.profiles:not(.duo-pick), :scope > main.screen.home'));
+
+function reloadWhenSafe() {
+  reloadPending = true;
+  if (safeToReload()) location.reload();
+}
+
 function show(...children) {
   stopSpeaking();
   stopStoryAudio();
@@ -113,6 +126,7 @@ function show(...children) {
   screenAccess();
   window.scrollTo(0, 0);
   musicForScreen();
+  if (reloadPending && safeToReload()) location.reload();
 }
 
 /**
@@ -6303,7 +6317,19 @@ document.addEventListener('pointerdown', (e) => {
 });
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  // la page était déjà servie par un service worker : un nouveau qui prend la main est une mise à jour
+  let controlled = Boolean(navigator.serviceWorker.controller);
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (controlled) reloadWhenSafe();
+    controlled = true;
+  });
+  navigator.serviceWorker.register('./sw.js').then((registration) => {
+    // une app de l'écran d'accueil reste souvent ouverte en arrière-plan, sans recharger sa page :
+    // à chaque retour dans l'app, on demande au serveur s'il y a une nouvelle version
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) registration.update().catch(() => {});
+    });
+  }).catch(() => {});
 }
 // demander au navigateur de ne pas effacer les données de l'app (profils, progrès) quand il manque de place
 if (store.order.length) navigator.storage?.persist?.().catch(() => {});

@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.17.2',
+  version: '1.17.3',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.17.3',
+    date: '2026-10-11',
+    changes: [
+      'Mises à jour : l’app installée sur l’écran d’accueil se met à jour toute seule. À chaque retour dans l’app, elle demande s’il y a une nouvelle version, et se recharge sur « Qui joue ? » ou l’accueil, jamais pendant une partie. Elle ne reprend plus d’anciens fichiers gardés par le téléphone : une app installée pouvait rester des heures sur l’ancienne version. Une app installée avant cette version reçoit la nouvelle, en principe, à sa deuxième ouverture.',
+    ],
+  },
   {
     version: '1.17.2',
     date: '2026-10-11',
