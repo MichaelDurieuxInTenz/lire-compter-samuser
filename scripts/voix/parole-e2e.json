@@ -10338,5 +10338,15 @@
   "ecrans": [
    "play compter"
   ]
+ },
+ {
+  "text": "Impasse ! Reviens en arrière.",
+  "lang": "fr-FR",
+  "rate": 0.949999988079071,
+  "count": 2,
+  "ecrans": [
+   "play labyrinthe",
+   "play labyrinthe-rond"
+  ]
  }
 ]

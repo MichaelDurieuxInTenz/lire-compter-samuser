@@ -285,6 +285,9 @@ function fonctions() {
 
 // ---------------------------------------------------------------- parcours
 
+// le code parental choisi pendant le test (la première fois, après le calcul)
+const CODE_PARENTAL = '2580';
+
 async function attendre(pilote, selecteur, ms = 20000, pas = 250) {
   for (const fin = Date.now() + ms; Date.now() < fin;) {
     if (await pilote.evaluer((s) => Boolean(document.querySelector(s)), selecteur).catch(() => false)) return;
@@ -358,22 +361,32 @@ async function main() {
     }
   }
 
-  /** Espace parents (la question de la barrière est calculée). */
+  /**
+   * Espace parents : la barrière franchie (la première fois, le calcul puis le choix du code ;
+   * ensuite, le code).
+   */
   async function espaceParents() {
     await pilote.ouvrir(BASE);
     await attendre(pilote, '.profiles, .home');
     if (await pilote.evaluer(() => Boolean(document.querySelector('.home')))) await pilote.toucher('.profile-chip');
     await attendre(pilote, '.parent-btn');
     await pilote.toucher('.parent-btn');
-    await attendre(pilote, '.gate, .parents');
-    if (await pilote.evaluer(() => Boolean(document.querySelector('.gate')))) {
-      await pilote.evaluer(() => {
-        const [a, b] = document.querySelector('.gate-question').textContent.match(/\d+/g).map(Number);
-        const champ = document.querySelector('.gate-input');
-        champ.value = String(a * b);
-        champ.dispatchEvent(new Event('input', { bubbles: true }));
-      });
-      await pilote.toucher('.gate-form button');
+    for (let k = 0; k < 4; k++) {
+      await attendre(pilote, '.gate, .parents');
+      const etat = await pilote.evaluer(() => document.querySelector('.gate')?.dataset.gate || '');
+      if (!etat) break;
+      await pilote.evaluer((e, code) => {
+        const remplir = (champ, valeur) => {
+          champ.value = valeur;
+          champ.dispatchEvent(new Event('input', { bubbles: true }));
+        };
+        if (e === 'calcul') {
+          const [a, b, c] = document.querySelector('.gate-question').textContent.match(/\d+/g).map(Number);
+          remplir(document.querySelector('.gate-input'), String(a * b - c));
+        } else for (const champ of document.querySelectorAll('.gate-code')) remplir(champ, code);
+      }, etat, CODE_PARENTAL);
+      await pilote.toucher(etat === 'nouveau' ? '[data-save-code]' : '.gate-form button[type="submit"]');
+      await attendre(pilote, `.parents, .gate:not([data-gate="${etat}"])`);
     }
     await attendre(pilote, '.parents');
   }

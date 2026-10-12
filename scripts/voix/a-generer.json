@@ -23769,6 +23769,15 @@
   "file": "fr/d8e57f65d47acc1d.mp3"
  },
  {
+  "key": "fr|1|Impasse !",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Impasse !",
+  "voice": "estelle",
+  "file": "fr/2d3ccdfb06508d2b.mp3"
+ },
+ {
   "key": "fr|1|Lis le problème, puis tape la réponse.",
   "lang": "fr",
   "rate": 1,
@@ -31876,6 +31885,15 @@
   "text": "Il manque 3 cases !",
   "voice": "estelle",
   "file": "fr/91291cfa21ce89c0.mp3"
+ },
+ {
+  "key": "fr|1|Reviens en arrière.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Reviens en arrière.",
+  "voice": "estelle",
+  "file": "fr/8ef44a252daa9e52.mp3"
  },
  {
   "key": "fr|1|Lis le texte à voix haute, le mieux possible.",
@@ -131706,24 +131724,6 @@
   "file": "fr/8f9f68af921cfff0.mp3"
  },
  {
-  "key": "fr|1|Il en faut 10,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "Il en faut 10,",
-  "voice": "estelle",
-  "file": "fr/663bed3a50550d7e.mp3"
- },
- {
-  "key": "fr|1|Il en faut 20,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "Il en faut 20,",
-  "voice": "estelle",
-  "file": "fr/4aa681c2a555a8bb.mp3"
- },
- {
   "key": "fr|1|Bravo",
   "lang": "fr",
   "rate": 1,
@@ -141741,6 +141741,15 @@
   "file": "fr/2a4bdd7de249cf98.mp3"
  },
  {
+  "key": "fr|1|Il en faut",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "Il en faut",
+  "voice": "estelle",
+  "file": "fr/9b474b7aa07a7bd1.mp3"
+ },
+ {
   "key": "fr|1|mars,",
   "lang": "fr",
   "rate": 1,
@@ -142522,15 +142531,6 @@
   "text": "équipes.",
   "voice": "estelle",
   "file": "fr/f2a26af51c4332ea.mp3"
- },
- {
-  "key": "fr|1|Il en faut",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "Il en faut",
-  "voice": "estelle",
-  "file": "fr/9b474b7aa07a7bd1.mp3"
  },
  {
   "key": "fr|1|heures,",
@@ -214362,6 +214362,33 @@
   "file": "fr/9d2117c9ac02bef5.mp3"
  },
  {
+  "key": "fr|1|impasse",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "impasse",
+  "voice": "estelle",
+  "file": "fr/1a874dce13d5da86.mp3"
+ },
+ {
+  "key": "fr|1|reviens",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "reviens",
+  "voice": "estelle",
+  "file": "fr/e23f44645fa502ce.mp3"
+ },
+ {
+  "key": "fr|1|arrière",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "arrière",
+  "voice": "estelle",
+  "file": "fr/174a553f626e246d.mp3"
+ },
+ {
   "key": "fr|1|rendue",
   "lang": "fr",
   "rate": 1,
@@ -273168,6 +273195,15 @@
   "file": "fr/b0ed05011ff7e444.mp3"
  },
  {
+  "key": "fr|1|Il en faut 10,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Il en faut 10,",
+  "voice": "estelle",
+  "file": "fr/663bed3a50550d7e.mp3"
+ },
+ {
   "key": "fr|1|Il en faut 16,",
   "lang": "fr",
   "rate": 1,
@@ -273202,6 +273238,15 @@
   "text": "Il en faut 17,",
   "voice": "estelle",
   "file": "fr/1518ad15c5cc9c10.mp3"
+ },
+ {
+  "key": "fr|1|Il en faut 20,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Il en faut 20,",
+  "voice": "estelle",
+  "file": "fr/4aa681c2a555a8bb.mp3"
  },
  {
   "key": "fr|1|Il en faut 8,",

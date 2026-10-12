@@ -34,6 +34,7 @@ import { PROGRAMS } from '../app/js/programs.js';
 import { starsFor } from '../app/js/progress.js';
 import { stickersUnlocked } from '../app/js/rewards.js';
 import { STORAGE_KEY } from '../app/js/storage.js';
+import { canMove } from '../app/js/games/labyrinthes.js';
 import { APP } from '../app/js/config.js';
 import { seasonOf } from '../app/js/themes.js';
 import { cle, planLecture } from '../app/js/voix-cles.js';
@@ -189,17 +190,137 @@ async function goProfile(page, id = 'eva-rose', url = BASE) {
   await page.waitForSelector('.home');
 }
 
-/** Ouvre l'espace parents (en calculant la multiplication si la barrière est là). */
+// Le code parental des tests : choisi la première fois (après le calcul), puis tapé à chaque entrée
+const TEST_CODE = '2580';
+
+/** La réponse du calcul d'adulte de la barrière : « 17 × 6 − 28 = ? ». */
+function gateAnswer(text) {
+  const [a, b, c] = text.match(/\d+/g).map(Number);
+  return a * b - c;
+}
+
+/**
+ * Choisit le code parental (le code, puis encore une fois), puis l'enregistre. L'app met le curseur
+ * dans le premier champ 50 ms après l'écran : si cela tombe pendant la saisie du second champ, le
+ * second code finit dans le premier (Playwright tape dans le champ qui a le curseur), et l'app répond,
+ * à juste titre, que les deux codes ne sont pas les mêmes (CI de la PR #31). On relit donc les deux
+ * champs, et on les retape une fois si besoin : le curseur n'est posé qu'une fois par écran.
+ */
+async function chooseCode(page, code, again = code) {
+  const fields = page.locator('.gate-new-code input');
+  for (let k = 0; ; k++) {
+    await fields.nth(0).fill(code);
+    await fields.nth(1).fill(again);
+    const typed = await fields.evaluateAll((els) => els.map((el) => el.value));
+    if (typed[0] === code && typed[1] === again) break;
+    if (k) fail(`choix du code : « ${typed.join(' », « ')} » au lieu de « ${code} », « ${again} »`);
+  }
+  await page.click('[data-save-code]');
+}
+
+/**
+ * Franchit la barrière de l'espace parents, quel que soit son écran : le calcul puis le choix du code
+ * (la première fois), ou le code. `done` : l'écran attendu derrière la barrière.
+ */
+async function passGate(page, done = '.parents') {
+  for (let k = 0; k < 4; k++) {
+    await page.waitForSelector(`${done}, .gate`);
+    if (!(await page.locator('.gate').count())) return;
+    const state = await page.getAttribute('.gate', 'data-gate');
+    if (state === 'calcul') {
+      await page.fill('.gate-input', String(gateAnswer(await page.textContent('.gate-question'))));
+      await page.click('.gate-form button[type="submit"]');
+    } else if (state === 'nouveau') {
+      await chooseCode(page, TEST_CODE);
+    } else if (state === 'code') {
+      await page.fill('.gate-code', TEST_CODE);
+      await page.click('.gate-form button[type="submit"]');
+    } else fail(`barrière de l’espace parents : écran « ${state} »`);
+    await page.waitForFunction((was) => document.querySelector('.gate')?.dataset.gate !== was, state);
+  }
+  fail('barrière de l’espace parents : toujours là après le code');
+}
+
+/** Ouvre l'espace parents depuis l'écran affiché (bouton des parents, puis la barrière). */
+async function enterParents(page) {
+  await page.click('.parent-btn');
+  await passGate(page);
+}
+
+/** Ouvre l'espace parents (en passant la barrière : le code parental, choisi la première fois). */
 async function openParents(page) {
   await goProfiles(page);
+  await enterParents(page);
+}
+
+/**
+ * La barrière de l'espace parents (code parental), depuis « Qui joue ? » : la première fois, un calcul
+ * d'adulte (un autre calcul après une erreur), puis le choix du code (pas trop facile, tapé deux fois
+ * pareil) ; ensuite le code à chaque entrée (plus de passage valable toute la séance) ; trois erreurs
+ * de suite : 30 s d'attente, même en relançant l'app ; « Code oublié ? » : le calcul, puis un nouveau
+ * code. Finit dans l'espace parents.
+ */
+async function checkParentCode(page) {
+  const gate = (state) => page.waitForSelector(`.gate[data-gate="${state}"]`);
+  const solve = async () => {
+    await page.fill('.gate-input', String(gateAnswer(await page.textContent('.gate-question'))));
+    await page.click('.gate-form button[type="submit"]');
+  };
+  const choose = (code, again) => chooseCode(page, code, again);
+  const errorSays = (re) => page.waitForFunction((src) => new RegExp(src).test(document.querySelector('.gate .gate-error')?.textContent || ''), re.source);
+  // comme sur un appareil où le code n'a pas encore été choisi (le parcours a pu en choisir un avant)
+  await page.evaluate((key) => {
+    const store = JSON.parse(localStorage.getItem(key));
+    delete store.settings.parentCode;
+    delete store.settings.parentCodeDate;
+    localStorage.setItem(key, JSON.stringify(store));
+    localStorage.removeItem('lire-et-compter:barriere');
+  }, STORAGE_KEY);
+  await goProfiles(page);
   await page.click('.parent-btn');
-  await page.waitForSelector('.parents, .gate');
-  if (await page.locator('.gate').count()) {
-    const [a, b] = (await page.textContent('.gate-question')).match(/\d+/g).map(Number);
-    await page.fill('.gate-input', String(a * b));
-    await page.click('.gate-form button');
-    await page.waitForSelector('.parents');
+  await gate('calcul');
+  if (!/^\d+ × \d+ − \d+ = \?$/.test((await page.textContent('.gate-question')).trim())) fail('barrière : le calcul n’est pas un calcul d’adulte');
+  await page.fill('.gate-input', String(gateAnswer(await page.textContent('.gate-question')) + 1));
+  await page.click('.gate-form button[type="submit"]');
+  await errorSays(/autre calcul/);
+  await solve();
+  await gate('nouveau');
+  await choose('1234', '1234');
+  await errorSays(/trop facile/);
+  await choose(TEST_CODE, '2581');
+  await errorSays(/pas les mêmes/);
+  await choose(TEST_CODE, TEST_CODE);
+  await page.waitForSelector('.parents');
+  // le code, à chaque entrée (les chiffres tapés sont cachés)
+  await goProfiles(page);
+  await page.click('.parent-btn');
+  await gate('code');
+  if (!(await page.$eval('.gate-code', (el) => getComputedStyle(el).webkitTextSecurity === 'disc'))) fail('barrière : les chiffres du code se voient');
+  for (let k = 1; k <= 2; k++) {
+    await page.fill('.gate-code', '1357');
+    await page.click('.gate-form button[type="submit"]');
+    await errorSays(/bon code/);
   }
+  await page.fill('.gate-code', '1357');
+  await page.click('.gate-form button[type="submit"]');
+  await gate('attente');
+  const seconds = Number(await page.textContent('.gate[data-gate="attente"] b'));
+  if (!(seconds > 20 && seconds <= 30)) fail(`barrière : ${seconds} s d’attente après trois erreurs au lieu de 30`);
+  await page.reload();
+  await goProfiles(page);
+  await page.click('.parent-btn');
+  await gate('attente');
+  // la fin de l'attente : le code est redemandé, sans rien toucher
+  await page.evaluate(() => localStorage.removeItem('lire-et-compter:barriere'));
+  await gate('code');
+  await page.click('.gate-forgot');
+  await gate('calcul');
+  if (!(await page.textContent('.gate-form')).includes('Code oublié')) fail('barrière : « Code oublié » ne le dit pas');
+  await solve();
+  await gate('nouveau');
+  await choose(TEST_CODE, TEST_CODE);
+  await page.waitForSelector('.parents');
+  console.log('✔ code parental : calcul puis choix du code la première fois, le code à chaque entrée, attente après 3 erreurs, code oublié');
 }
 
 /** Une rubrique des Réglages (son, acces, sauvegarde, appareil, apropos) : Espace parents → Réglages → la rubrique. */
@@ -500,6 +621,56 @@ async function testClockDrag(page) {
   console.log('  ✔ règle l’horloge : grande aiguille glissée à la souris (elle passe le 12, l’heure avance)');
 }
 
+/**
+ * Un détour par une impasse (labyrinthes) : le bon chemin jusqu'à une case d'où part une impasse, le
+ * bout de l'impasse, le retour, puis la suite du bon chemin. null si aucune impasse ne part du bon
+ * chemin. `keep` : départ, arrivée et clés (le bout d'une impasse n'en est jamais une).
+ */
+function deadEndDetour(solution, neighbours, keep) {
+  const onPath = new Set(solution);
+  for (let i = 0; i < solution.length - 1; i++) {
+    for (const first of neighbours(solution[i])) {
+      if (onPath.has(first) || keep.has(first)) continue;
+      const seen = new Set([...onPath, first]);
+      const branch = [first];
+      const explore = (c) => {
+        if (neighbours(c).length === 1) return true;
+        for (const n of neighbours(c)) {
+          if (seen.has(n) || keep.has(n)) continue;
+          seen.add(n);
+          branch.push(n);
+          if (explore(n)) return true;
+          branch.pop();
+        }
+        return false;
+      };
+      if (explore(first)) {
+        return { route: [...solution.slice(0, i + 1), ...branch, ...branch.slice(0, -1).reverse(), ...solution.slice(i)], deadEnd: branch.at(-1), back: i + 2 * branch.length };
+      }
+    }
+  }
+  return null;
+}
+
+// les labyrinthes où le robot est passé par une impasse (une ligne du résumé)
+const deadEndsSeen = new Set();
+
+/** Au bout d'une impasse : la croix est là, la voix et le texte le disent. */
+async function checkDeadEnd(page, cross, game) {
+  await page.waitForSelector(cross);
+  if (!(await page.textContent('.feedback')).includes('Impasse')) fail(`${game} : l’impasse n’est pas dite`);
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/impasse-${game.replace(/\W+/g, '-')}.png` });
+  deadEndsSeen.add(game);
+}
+
+/** Revenu sur le bon chemin : le message de l'impasse s'en va ; aucune case du bon chemin n'est marquée. */
+async function checkBackOnPath(page, deadCells, solution, game) {
+  await page.waitForFunction(() => !document.querySelector('.maze-dead-note'));
+  const marked = await page.$$eval(deadCells, (els) => els.map((el) => Number(el.dataset.cell)));
+  if (marked.some((c) => solution.includes(c))) fail(`${game} : une case du bon chemin est marquée comme impasse`);
+  if (!marked.length) fail(`${game} : la branche fausse n’est pas marquée`);
+}
+
 async function answer(page, q, wrongFirst) {
   switch (q.interaction) {
     case 'keypad':
@@ -593,15 +764,29 @@ async function answer(page, q, wrongFirst) {
       await page.click('.validate-btn');
       break;
     }
-    case 'maze':
-      // l'indice compte comme une aide : la question n'est plus « du premier coup »
+    case 'maze': {
+      // l'indice compte comme une aide : la question n'est plus « du premier coup » ; en se trompant,
+      // le robot passe aussi par une impasse (marquée en rouge, une croix au bout)
       if (wrongFirst) await page.click('.maze-hint');
-      for (const cell of q.stage.solution.slice(1)) await page.click(`.maze-cell[data-cell="${cell}"]`);
+      const { cols, open, start, goal, items = [], solution } = q.stage;
+      const neighbours = (c) => [c - cols, c + 1, c + cols, c - 1].filter((n) => n >= 0 && n < open.length && canMove(open, cols, c, n));
+      const detour = wrongFirst ? deadEndDetour(solution, neighbours, new Set([start, goal, ...items])) : null;
+      const route = detour ? detour.route : solution;
+      for (const [k, cell] of route.entries()) {
+        if (!k) continue;
+        await page.click(`.maze-cell[data-cell="${cell}"]`);
+        if (detour && cell === detour.deadEnd && k < detour.back) await checkDeadEnd(page, `.maze-cell.dead-end[data-cell="${cell}"]`, 'labyrinthe');
+        if (detour && k === detour.back) await checkBackOnPath(page, '.maze-cell.dead', solution, 'labyrinthe');
+      }
       break;
+    }
     case 'roundmaze': {
-      // labyrinthe rond : on glisse le doigt de case en case (centre de chaque case, d'après le dessin)
+      // labyrinthe rond : on glisse le doigt de case en case (centre de chaque case, d'après le dessin) ;
+      // en se trompant, le robot passe aussi par une impasse
       if (wrongFirst) await page.click('.maze-hint');
-      const { sectors, solution } = q.stage;
+      const { sectors, links, start, goal, items = [] } = q.stage;
+      const detour = wrongFirst ? deadEndDetour(q.stage.solution, (c) => links[c], new Set([start, goal, ...items])) : null;
+      const solution = detour ? detour.route : q.stage.solution;
       const box = await page.locator('.rmaze-svg').boundingBox();
       const V = sectors.length * 10 + 2; // comme dans main.js : centre et anneaux de 10, marge de 2
       const centre = (cell) => {
@@ -614,7 +799,12 @@ async function answer(page, q, wrongFirst) {
       };
       await page.mouse.move(...centre(solution[0]));
       await page.mouse.down();
-      for (const cell of solution.slice(1)) await page.mouse.move(...centre(cell), { steps: 2 });
+      for (const [k, cell] of solution.entries()) {
+        if (!k) continue;
+        await page.mouse.move(...centre(cell), { steps: 2 });
+        if (detour && cell === detour.deadEnd && k < detour.back) await checkDeadEnd(page, `.rmaze-dead text[data-cell="${cell}"]`, 'labyrinthe rond');
+        if (detour && k === detour.back) await checkBackOnPath(page, '.rmaze-dead-dot', q.stage.solution, 'labyrinthe rond');
+      }
       await page.mouse.up();
       break;
     }
@@ -1311,6 +1501,7 @@ for (const game of GAMES.filter((g) => !PLAY || PLAY.includes(g.id))) {
   }
   console.log(`✔ ${game.id} (${grade}) : partie complète, ${stars} étoiles`);
 }
+if (deadEndsSeen.size) console.log(`✔ impasses : branche fausse marquée, croix et « Impasse ! Reviens en arrière. » (${[...deadEndsSeen].join(', ')})`);
 
 if (PLAY) {
   if (PLAY.includes('histoires')) await checkRecordings(page);
@@ -1411,6 +1602,11 @@ await page.click('[data-domain="maths"]');
 await page.click('[data-game="compter"]');
 await page.waitForSelector('.pause-card');
 await shot('43-pause');
+// « Parents : 10 minutes de plus » passe par la barrière de l'espace parents
+await page.click('.pause-more');
+await page.waitForSelector('.gate');
+await page.click('.top-bar .icon-btn');
+await page.waitForSelector('.pause-card, .home');
 await setStore(page, "store.profiles['eva-rose'].goals = {};");
 console.log('✔ objectif du jour et pause quand le temps est écoulé');
 
@@ -1606,16 +1802,9 @@ for (const id of trio) {
 await removeKids(page, ['lou']);
 console.log('✔ jouer à plusieurs (« Jouer ensemble » dès trois enfants ; à trois, 9 questions chacun son tour, titre et résultats)');
 
-// espace parents : barrière, tableau de bord, changement de classe
+// espace parents : barrière (code parental), tableau de bord, changement de classe
 await goProfiles(page);
-await page.click('.parent-btn');
-const question = await page.textContent('.gate-question');
-const [a, b] = question.match(/\d+/g).map(Number);
-await page.fill('.gate-input', '1');
-await page.click('.gate-form button');
-await page.waitForSelector('.gate-error:not(:empty)');
-await page.fill('.gate-input', String(a * b));
-await page.click('.gate-form button');
+await checkParentCode(page);
 await page.waitForSelector('.parents');
 await page.click('[data-child="eva-rose"]');
 if ((await page.locator('.stat-tile').count()) !== 4) fail('chiffres clés absents');
@@ -1679,7 +1868,7 @@ if (!(await page.textContent('.home-title')).includes('Lou')) fail('nouveau pré
 const LONG_NAME = 'Paris Saint-Germain Féminines';
 page.on('dialog', (dialog) => dialog.accept());
 await goProfiles(page);
-await page.click('.parent-btn');
+await enterParents(page);
 await page.click('[data-tab="enfants"]');
 await page.click('.add-child');
 await page.locator('[data-field="name"]').pressSequentially(LONG_NAME);
@@ -1761,7 +1950,7 @@ await page.waitForSelector('.choices');
 if (!(await page.evaluate(() => globalThis.__lc.question.key))) fail('accueil : le jeu conseillé ne s’ouvre pas');
 // on remet le jeu et la rubrique (le jeu conseillé reste) pour la suite du parcours
 await goProfiles(page);
-await page.click('.parent-btn');
+await enterParents(page);
 await page.click('[data-tab="enfants"]');
 await page.click('[data-edit="eva-rose"]');
 await openFold(page, 'jeux');
@@ -1798,6 +1987,18 @@ await shot('07-reglages');
 const settingsRows = await page.$$eval('.settings-row', (els) => els.map((el) => [el.dataset.settingsPage, el.querySelector('.settings-row-sub')?.textContent]));
 if (settingsRows.map(([id]) => id).join() !== 'son,acces,fiches,sauvegarde,appareil,apropos') fail(`réglages : rubriques ${settingsRows.map(([id]) => id).join()}`);
 if (settingsRows.some(([, sub]) => !sub?.trim())) fail('réglages : une rubrique sans son état');
+// Cet appareil : le code parental (la date où il a été choisi ; on le change, deux fois le nouveau)
+await page.click('[data-settings-page="appareil"]');
+await page.waitForSelector('[data-parent-code]');
+if (!/Choisi le \d/.test(await page.textContent('[data-parent-code]'))) fail('code parental : la date du choix manque');
+for (const code of ['2468', TEST_CODE]) {
+  await page.click('[data-change-code]');
+  await chooseCode(page, code);
+  await page.waitForSelector('[data-parent-code] .toast');
+  if ((await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).settings.parentCode, STORAGE_KEY)) !== code) fail(`code parental : ${code} non enregistré`);
+}
+await page.click('.top-bar .icon-btn');
+await page.waitForSelector('.settings-list');
 await page.click('[data-settings-page="apropos"]');
 await page.waitForSelector('.settings-page[data-page="apropos"]');
 if ((await page.textContent('[data-version]')) !== pkg.version) fail('version affichée différente de package.json');
@@ -1885,7 +2086,7 @@ await goProfiles(page);
 if (!(await page.locator('[data-profile="eva-rose"] .avatar-photo img').count())) fail('photo non conservée après rechargement');
 if (await page.locator('[data-profile="matteo"] .avatar-photo').count()) fail('la photo d’Eva-Rose est apparue chez Matteo');
 await shot('08-qui-joue-photo');
-await page.click('.parent-btn'); // barrière déjà franchie pendant cette séance
+await enterParents(page); // le code, à chaque entrée
 await page.click('[data-tab="enfants"]');
 await page.click('[data-edit="eva-rose"]');
 await page.click('[data-photo-row="eva-rose"] .link-action');
@@ -2267,14 +2468,27 @@ async function a11yPart() {
   await page.click('[data-dress]');
   await audit('personnage');
 
-  // espace parents : la multiplication, puis chaque onglet
-  await goProfiles(page);
-  await page.evaluate(() => sessionStorage.clear()); // la multiplication est redemandée
-  await page.reload();
+  // espace parents : la barrière (le calcul et le choix du code la première fois, puis le code),
+  // puis chaque onglet
+  await page.evaluate((key) => {
+    const store = JSON.parse(localStorage.getItem(key));
+    delete store.settings.parentCode;
+    localStorage.setItem(key, JSON.stringify(store));
+  }, STORAGE_KEY);
+  await goProfiles(page); // l'app rechargée, sur « Qui joue ? »
   await page.click('.parent-btn');
-  await page.waitForSelector('.gate');
-  await audit('espace parents, multiplication');
-  await openParents(page);
+  await page.waitForSelector('.gate[data-gate="calcul"]');
+  await audit('espace parents, calcul');
+  await page.fill('.gate-input', String(gateAnswer(await page.textContent('.gate-question'))));
+  await page.click('.gate-form button[type="submit"]');
+  await page.waitForSelector('.gate[data-gate="nouveau"]');
+  await audit('espace parents, choix du code');
+  await passGate(page);
+  await goProfiles(page);
+  await page.click('.parent-btn');
+  await page.waitForSelector('.gate[data-gate="code"]');
+  await audit('espace parents, code parental');
+  await passGate(page);
   // une matière et un de ses jeux dépliés (le choix du niveau)
   await page.click('.skill-domain > summary');
   await page.click('.skill-domain[open] .game-row > summary');
@@ -3169,10 +3383,14 @@ async function checkDevice(device, repeat, deviceIndex) {
   await page.goto(BASE);
   await goProfiles(page);
   await page.click('.parent-btn');
-  const [a, b] = (await page.textContent('.gate-question')).match(/\d+/g).map(Number);
-  await page.fill('.gate-input', String(a * b));
-  await page.click('.gate-form button');
-  await page.waitForSelector('.parents');
+  // la barrière, la première fois : le calcul, puis le choix du code (deux champs et le bouton dans l'écran)
+  await page.waitForSelector('.gate[data-gate="calcul"]');
+  await checkLayout(page, tag('barrière, calcul'));
+  await page.fill('.gate-input', String(gateAnswer(await page.textContent('.gate-question'))));
+  await page.click('.gate-form button[type="submit"]');
+  await page.waitForSelector('.gate[data-gate="nouveau"]');
+  await checkLayout(page, tag('barrière, choix du code'));
+  await passGate(page);
   await checkLayout(page, tag('espace parents'), { reachable: false });
   await page.click('[data-tab="enfants"]');
   await checkLayout(page, tag('enfants'), { reachable: false });
