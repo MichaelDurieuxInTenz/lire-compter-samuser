@@ -4,7 +4,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const APP = new URL('../app/', import.meta.url).pathname;
-const NOT_CACHED = new Set(['sw.js', 'fonts/OFL.txt', 'fonts/TWEMOJI.txt']);
+// _headers : les en-têtes de sécurité, lus par Cloudflare Pages (ce n'est pas un fichier de l'app)
+const NOT_CACHED = new Set(['sw.js', '_headers', 'fonts/OFL.txt', 'fonts/TWEMOJI.txt']);
 
 function listFiles(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -65,4 +66,23 @@ test('sécurité : la page n’autorise que les fichiers de l’app (CSP)', () =
   // voix des parents : les enregistrements (blob:) se jouent, rien d'autre ne vient d'ailleurs
   const media = csp.match(/media-src ([^;]+)/)?.[1].trim().split(/\s+/);
   assert.deepEqual(media, ["'self'", 'blob:']);
+});
+
+test('en-têtes de sécurité (app/_headers, Cloudflare Pages) : pas dans le cadre d’un autre site, micro seulement', async () => {
+  const { headersFor, parseHeaders } = await import('../scripts/serve.mjs');
+  const rules = parseHeaders(readFileSync(join(APP, '_headers'), 'utf8'));
+  for (const path of ['/', '/index.html', '/js/main.js', '/voix/manifest.json']) {
+    const h = headersFor(rules, path);
+    assert.equal(h['Content-Security-Policy'], "frame-ancestors 'none'", path);
+    assert.equal(h['X-Frame-Options'], 'DENY', path);
+    assert.equal(h['X-Content-Type-Options'], 'nosniff', path);
+    assert.equal(h['Referrer-Policy'], 'no-referrer', path);
+    assert.match(h['Permissions-Policy'], /(^|, )microphone=\(self\)/, `${path} : le micro sert aux histoires enregistrées`);
+    assert.match(h['Permissions-Policy'], /camera=\(\)/, path);
+    assert.match(h['Strict-Transport-Security'], /max-age=\d{7,}/, path);
+  }
+  // la CSP de la page reste dans index.html (scripts du site seulement, sans script en ligne)
+  const html = readFileSync(join(APP, 'index.html'), 'utf8');
+  assert.match(html, /http-equiv="Content-Security-Policy" content="default-src 'self';/);
+  assert.doesNotMatch(html, /script-src[^;"]*'unsafe-(inline|eval)'/);
 });

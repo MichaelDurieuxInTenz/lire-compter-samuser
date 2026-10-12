@@ -257,8 +257,8 @@ async function openParents(page) {
  * La barrière de l'espace parents (code parental), depuis « Qui joue ? » : la première fois, un calcul
  * d'adulte (un autre calcul après une erreur), puis le choix du code (pas trop facile, tapé deux fois
  * pareil) ; ensuite le code à chaque entrée (plus de passage valable toute la séance) ; trois erreurs
- * de suite : 30 s d'attente, même en relançant l'app ; « Code oublié ? » : le calcul, puis un nouveau
- * code. Finit dans l'espace parents.
+ * de suite : 30 s d'attente, même en relançant l'app, puis 2 min ; « Code oublié ? » : un calcul plus
+ * dur, 5 minutes d'attente, puis un nouveau code. Finit dans l'espace parents.
  */
 async function checkParentCode(page) {
   const gate = (state) => page.waitForSelector(`.gate[data-gate="${state}"]`);
@@ -304,23 +304,61 @@ async function checkParentCode(page) {
   await page.fill('.gate-code', '1357');
   await page.click('.gate-form button[type="submit"]');
   await gate('attente');
-  const seconds = Number(await page.textContent('.gate[data-gate="attente"] b'));
-  if (!(seconds > 20 && seconds <= 30)) fail(`barrière : ${seconds} s d’attente après trois erreurs au lieu de 30`);
+  const seconds = Number(/^(\d+) s$/.exec(await page.textContent('.gate[data-gate="attente"] b'))?.[1]);
+  if (!(seconds > 20 && seconds <= 30)) fail(`barrière : « ${await page.textContent('.gate[data-gate="attente"] b')} » d’attente après trois erreurs au lieu de 30 s`);
   await page.reload();
   await goProfiles(page);
   await page.click('.parent-btn');
   await gate('attente');
-  // la fin de l'attente : le code est redemandé, sans rien toucher
-  await page.evaluate(() => localStorage.removeItem('lire-et-compter:barriere'));
+  // la fin de l'attente : le code est redemandé, sans rien toucher ; trois erreurs de plus : 2 minutes
+  const gateKey = 'lire-et-compter:barriere';
+  const endWait = () => page.evaluate((key) => {
+    const state = JSON.parse(localStorage.getItem(key));
+    localStorage.setItem(key, JSON.stringify({ ...state, jusqua: 0 }));
+  }, gateKey);
+  await endWait();
   await gate('code');
-  await page.click('.gate-forgot');
-  await gate('calcul');
-  if (!(await page.textContent('.gate-form')).includes('Code oublié')) fail('barrière : « Code oublié » ne le dit pas');
-  await solve();
+  for (let k = 1; k <= 3; k++) {
+    await page.fill('.gate-code', '1357');
+    await page.click('.gate-form button[type="submit"]');
+  }
+  await gate('attente');
+  const longer = await page.textContent('.gate[data-gate="attente"] b');
+  if (!/^(2 min|1 min [0-5]\d s)$/.test(longer)) fail(`barrière : « ${longer} » d’attente à la deuxième série d’erreurs au lieu de 2 min`);
+  await endWait();
+  await gate('code');
+  // code oublié : un calcul plus dur, puis 5 minutes d'attente (le retour annule ; une relance, non)
+  const forgot = async () => {
+    await page.click('.gate-forgot');
+    await gate('calcul');
+    if (!(await page.textContent('.gate-form')).includes('Code oublié')) fail('barrière : « Code oublié » ne le dit pas');
+    const [a, b] = (await page.textContent('.gate-question')).match(/\d+/g).map(Number);
+    if (a < 23 || b < 13) fail(`barrière : calcul du code oublié trop facile (${await page.textContent('.gate-question')})`);
+    await solve();
+    await gate('patience');
+    const left = await page.textContent('.gate[data-gate="patience"] b');
+    if (!/^(5 min|4 min [0-5]\d s)$/.test(left)) fail(`barrière : code oublié, « ${left} » d’attente au lieu de 5 min`);
+  };
+  await forgot();
+  await page.click('.top-bar .icon-btn'); // retour : le code oublié est abandonné
+  await goProfiles(page);
+  await page.click('.parent-btn');
+  await gate('code');
+  await forgot();
+  await page.reload(); // relancer l'app ne raccourcit pas l'attente
+  await goProfiles(page);
+  await page.click('.parent-btn');
+  await gate('patience');
+  // les 5 minutes passées : le choix du nouveau code, sans rien toucher
+  await page.evaluate((key) => {
+    const state = JSON.parse(localStorage.getItem(key));
+    localStorage.setItem(key, JSON.stringify({ ...state, oubli: Date.now() - 1 }));
+  }, gateKey);
   await gate('nouveau');
   await choose(TEST_CODE, TEST_CODE);
   await page.waitForSelector('.parents');
-  console.log('✔ code parental : calcul puis choix du code la première fois, le code à chaque entrée, attente après 3 erreurs, code oublié');
+  if (await page.evaluate((key) => JSON.parse(localStorage.getItem(key) || '{}').oubli, gateKey)) fail('barrière : le code oublié reste en cours après le nouveau code');
+  console.log('✔ code parental : calcul puis choix du code la première fois, le code à chaque entrée, attente de plus en plus longue après 3 erreurs (30 s, 2 min), code oublié (calcul plus dur, 5 minutes d’attente, annulée par le retour, gardée à la relance)');
 }
 
 /** Une rubrique des Réglages (son, acces, sauvegarde, appareil, apropos) : Espace parents → Réglages → la rubrique. */
@@ -1395,8 +1433,12 @@ const voiceClip = (m) => /\/voix\/(fr|en)\/[0-9a-f]+\.mp3$/.test(m.location()?.u
 page.on('console', (m) => m.type() === 'error' && !voiceClip(m) && errors.push(m.text()));
 const shot = async (name) => SHOTS && page.screenshot({ path: `${SHOTS}/${name}.png` });
 
-// premier lancement : la famille crée les profils (prénom, dessin, classe)
-await page.goto(BASE);
+// premier lancement : la famille crée les profils (prénom, dessin, classe). Les en-têtes de sécurité
+// (app/_headers, comme sur Cloudflare Pages) sont servis : pas dans le cadre d'un autre site, micro seulement
+const firstLoad = await page.goto(BASE);
+const securityHeaders = firstLoad.headers();
+if (securityHeaders['x-frame-options'] !== 'DENY' || !/frame-ancestors 'none'/.test(securityHeaders['content-security-policy'] || '')
+  || !/microphone=\(self\)/.test(securityHeaders['permissions-policy'] || '')) fail('en-têtes de sécurité absents (app/_headers)');
 await page.waitForSelector('.welcome');
 await shot('00-bienvenue');
 await page.click('.child-submit');
@@ -2504,6 +2546,16 @@ async function a11yPart() {
   await page.click('.parent-btn');
   await page.waitForSelector('.gate[data-gate="code"]');
   await audit('espace parents, code parental');
+  // code oublié : l'attente de 5 minutes (le retour l'annule)
+  await page.click('.gate-forgot');
+  await page.waitForSelector('.gate[data-gate="calcul"]');
+  await page.fill('.gate-input', String(gateAnswer(await page.textContent('.gate-question'))));
+  await page.click('.gate-form button[type="submit"]');
+  await page.waitForSelector('.gate[data-gate="patience"]');
+  await audit('espace parents, code oublié');
+  await page.click('.top-bar .icon-btn');
+  await goProfiles(page);
+  await page.click('.parent-btn');
   await passGate(page);
   // une matière et un de ses jeux dépliés (le choix du niveau)
   await page.click('.skill-domain > summary');

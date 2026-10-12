@@ -2,6 +2,7 @@
 // Sur le même Wi-Fi, l'iPhone peut ouvrir http://<ip-de-l-ordinateur>:8080.
 
 import { createServer } from 'node:http';
+import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 
@@ -23,13 +24,42 @@ const TYPES = {
 };
 
 /**
+ * Les en-têtes de app/_headers (règles de Cloudflare Pages : une adresse, « /* » pour toutes, puis ses
+ * en-têtes, en retrait), appliqués comme sur le site publié.
+ */
+export function parseHeaders(text) {
+  const rules = [];
+  for (const line of text.split('\n')) {
+    if (!line.trim() || line.trim().startsWith('#')) continue;
+    if (!/^\s/.test(line)) rules.push({ path: line.trim(), headers: {} });
+    else if (rules.length) {
+      const i = line.indexOf(':');
+      if (i > 0) rules.at(-1).headers[line.slice(0, i).trim()] = line.slice(i + 1).trim();
+    }
+  }
+  return rules;
+}
+
+/** Les en-têtes d'une adresse : ceux de chaque règle qui la couvre (« /* », un dossier « /x/* », l'adresse exacte). */
+export function headersFor(rules, path) {
+  const out = {};
+  for (const rule of rules) {
+    const match = rule.path.endsWith('*') ? path.startsWith(rule.path.slice(0, -1)) : path === rule.path;
+    if (match) Object.assign(out, rule.headers);
+  }
+  return out;
+}
+
+/**
  * Options (test de mise à jour, scripts/smoke.mjs) : `cacheControl`, l'en-tête envoyé (par défaut, le
  * navigateur redemande chaque fichier) ; `replaced`, des fichiers servis à la place de ceux du disque
  * (adresse → contenu), comme une nouvelle version publiée.
  */
 export function startServer(port = PORT, root = ROOT, { cacheControl = 'no-cache', replaced = null } = {}) {
+  const rules = existsSync(join(root, '_headers')) ? parseHeaders(readFileSync(join(root, '_headers'), 'utf8')) : [];
   const server = createServer(async (req, res) => {
     const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    for (const [name, value] of Object.entries(headersFor(rules, path))) res.setHeader(name, value);
     const file = normalize(join(root, path.endsWith('/') ? `${path}index.html` : path));
     if (!file.startsWith(root)) {
       res.writeHead(403).end();
