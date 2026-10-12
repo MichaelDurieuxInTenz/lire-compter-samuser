@@ -4954,7 +4954,9 @@ function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', 
     type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: CODE_LENGTH, class: 'gate-input gate-code',
     'aria-label': label, autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false',
   });
-  const screen = (state, ...content) => show(h('main', { class: 'screen gate', 'data-gate': state },
+  // chaque écran a son titre (le titre de la page, lu par les lecteurs d'écran)
+  const titles = { code: 'Espace parents : code parental', calcul: 'Espace parents : calcul', nouveau: 'Espace parents : choix du code', attente: 'Espace parents : attente' };
+  const screen = (state, ...content) => show(h('main', { class: 'screen gate', 'data-gate': state, 'data-title': titles[state] },
     topBar({ onBack: back, title: 'Espace parents' }), ...content));
   // une erreur : un essai de moins avant l'attente
   const wrong = (message, retry) => {

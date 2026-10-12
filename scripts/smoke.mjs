@@ -2450,13 +2450,12 @@ async function a11yPart() {
 
   // espace parents : la barrière (le calcul et le choix du code la première fois, puis le code),
   // puis chaque onglet
-  await goProfiles(page);
   await page.evaluate((key) => {
     const store = JSON.parse(localStorage.getItem(key));
     delete store.settings.parentCode;
     localStorage.setItem(key, JSON.stringify(store));
   }, STORAGE_KEY);
-  await page.reload();
+  await goProfiles(page); // l'app rechargée, sur « Qui joue ? »
   await page.click('.parent-btn');
   await page.waitForSelector('.gate[data-gate="calcul"]');
   await audit('espace parents, calcul');
