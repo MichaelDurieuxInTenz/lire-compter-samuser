@@ -84,3 +84,14 @@ test('personnage : le prénom choisi par la famille, échappé dans le dessin', 
   assert.deepEqual(makeCharacter('x', { name: 'Hugo', look: 'garcon' }).voice, c.voice);
   assert.ok(!avatarSvg('fille', '').includes('<text'), 'pas de prénom : tee-shirt vide');
 });
+
+test('personnage : les lunettes sur les yeux, pour les deux dessins (elles tombaient sur la bouche)', () => {
+  for (const look of ['fille', 'garcon']) {
+    const svg = avatarSvg(look, 'Léa', { style: { accessory: 'lunettes' } });
+    const eyes = [...svg.matchAll(/<circle cx="[\d.]+" cy="([\d.]+)" r="4\.2"/g)].map((m) => Number(m[1]));
+    const glasses = Number(/<text x="[\d.]+" y="([\d.]+)"[^>]*>🕶️<\/text>/.exec(svg)?.[1]);
+    assert.equal(eyes.length, 2, look);
+    // l'emoji est centré sur son y (dominant-baseline central) : à la hauteur du centre des yeux
+    assert.ok(eyes.every((y) => y === glasses), `${look} : lunettes à y=${glasses}, yeux à y=${eyes.join(', ')}`);
+  }
+});

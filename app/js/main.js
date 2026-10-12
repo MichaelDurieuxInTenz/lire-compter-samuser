@@ -6285,8 +6285,16 @@ async function verifierAffichage(classes) {
   const aides = aidesAffichage(child());
   const etat = { arret: false };
   const avancement = h('span', {}, 'Vérification…');
+  // « Arrêter » répond au toucher lui-même (touchend), pas seulement au clic : un écran nouveau, et
+  // ses boutons, s'affiche toutes les 30 ms environ, et Safari sur iPhone prend alors le toucher pour
+  // un survol, sans envoyer le clic. Le clic reste pour la souris et le clavier.
+  const stop = (e) => {
+    if (e.type === 'touchend') e.preventDefault(); // pas de clic, plus tard, sur l'écran du résultat
+    etat.arret = true;
+    avancement.textContent = 'Arrêt…';
+  };
   // un voile transparent sur l'écran : un toucher pendant la vérification ne répond à aucune question
-  const arreter = h('button', { class: 'verif-stop', type: 'button', onclick: () => { etat.arret = true; } }, 'Arrêter');
+  const arreter = h('button', { class: 'verif-stop', type: 'button', onclick: stop, ontouchend: stop }, 'Arrêter');
   const voile = h('div', { class: 'verif-shield' }, h('div', { class: 'verif-band' }, avancement, arreter));
   document.body.append(voile);
   app.inert = true;
