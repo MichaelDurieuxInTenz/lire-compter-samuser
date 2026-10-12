@@ -451,6 +451,18 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
 }
 .text-input { font-size: 1.1rem; width: 150px; text-align: left; }
 .gate-error { color: #c43d3d; min-height: 1.4em; }
+/* code parental : les chiffres tapés sont cachés (un enfant qui regarde l'écran ne les lit pas) */
+.gate-code { -webkit-text-security: disc; letter-spacing: 0.3em; }
+.gate-intro { max-width: 30em; text-align: center; font-size: 1.05rem; }
+.gate-new-code { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.gate-field { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 700; font-size: 1rem; }
+.gate-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.gate-actions .big-btn { min-height: 52px; font-size: 1.1rem; }
+.parent-code-card { display: flex; flex-direction: column; gap: 8px; }
+.parent-code-card h2, .parent-code-card p { margin: 0; }
+.parent-code-card .gate-new-code { align-items: flex-start; }
+.parent-code-card .gate-field { align-items: flex-start; }
+.parent-code-card .gate-actions { justify-content: flex-start; }
 
 .parents { gap: 14px; -webkit-user-select: text; user-select: text; }
 .card { background: var(--card); border-radius: 18px; padding: 14px 16px; box-shadow: 0 3px 0 var(--line); }
@@ -1013,6 +1025,14 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
 .maze-cell.trail::before { content: ''; width: 24%; aspect-ratio: 1; border-radius: 50%; background: var(--accent); opacity: 0.5; }
 .maze-cell.hint::before { content: '⭐'; width: auto; background: none; opacity: 1; font-size: 16px; font-size: calc(45cqi / var(--cols)); }
 .maze-cell.here::before { content: none; }
+/* une impasse : la branche fausse en rouge, une croix au bout (la croix et la voix le disent aussi,
+   pas seulement la couleur) */
+.maze-cell.dead { background: #fde4e4; }
+.maze-cell.dead.trail::before { background: #c43d3d; opacity: 0.75; }
+.maze-cell.dead-end::after {
+  content: '✗'; position: absolute; inset: 0; display: grid; place-items: center;
+  color: #c43d3d; font-weight: 700; line-height: 1; font-size: 18px; font-size: calc(55cqi / var(--cols));
+}
 .maze-hero, .maze-goal { position: absolute; line-height: 1; font-size: 26px; font-size: calc(68cqi / var(--cols)); }
 .maze-hero { z-index: 2; }
 .maze-hero.bump { animation: shake 0.3s; }
@@ -1046,6 +1066,10 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
 .rmaze-walls { fill: none; stroke: var(--ink); stroke-width: 2.5px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .rmaze-trail circle { fill: var(--accent); opacity: 0.5; }
 .rmaze-hints text { text-anchor: middle; dominant-baseline: central; }
+/* une impasse : un rond rouge sur chaque case de la branche fausse, une croix au bout */
+.rmaze-dead-bg { fill: #fde4e4; }
+.rmaze-dead-dot { fill: #c43d3d; opacity: 0.75; }
+.rmaze-dead text { fill: #c43d3d; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
 .rmaze-token {
   position: absolute; translate: -50% -50%; line-height: 1; pointer-events: none;
   font-size: 18px; font-size: calc(var(--cell) * 0.8cqi);

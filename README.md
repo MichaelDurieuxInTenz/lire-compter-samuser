@@ -162,6 +162,8 @@ l'enfant, et on peut aussi le choisir directement.
 - *Labyrinthes* : de 4 × 4 à 9 × 9 cases (doigt, flèches, ou toucher une case ; 💡 pour un
   indice), avec des boucles ou des clés à ramasser ; **le labyrinthe rond** (de 3 anneaux au grand
   rond, aller au centre ou en sortir, avec une clé) ; et le chemin des nombres (de 1 en 1, de 2 en 2, de 5 en 5, de 10 en 10, à rebours).
+  Au bout d'une impasse, la branche fausse se colore en rouge, avec une croix au bout, et l'app dit
+  « Impasse ! Reviens en arrière. » (le bon chemin n'est jamais montré).
 
 **Jeux et logique**
 - *Puzzles, memory et coloriages* : **le puzzle** (de 4 à 25 pièces, toucher deux pièces pour les
@@ -276,7 +278,12 @@ contrôlés automatiquement à chaque modification. La déclaration d'accessibil
 
 ## Espace parents
 
-Le bouton **Parents** de l'écran « Qui joue ? » est protégé par une petite multiplication.
+Le bouton **Parents** de l'écran « Qui joue ? » est protégé par un **code parental** à 4 chiffres,
+demandé à chaque entrée (et pour donner 10 minutes de jeu en plus). Il est choisi la première fois,
+après un calcul d'adulte (« 17 × 6 − 28 »), pour qu'un enfant ne puisse pas le choisir à la place
+des parents ; un code trop facile (1234, 0000…) est refusé. Code oublié : le même calcul, puis un
+nouveau code. Après trois erreurs de suite, il faut attendre 30 secondes. Le code se change dans
+Réglages → Cet appareil.
 Il ouvre trois onglets, qui restent en haut de l'écran. Chaque écran montre l'essentiel ; le détail
 s'ouvre d'un toucher (un chevron le signale), pour ne pas faire défiler longtemps :
 
@@ -313,7 +320,8 @@ s'ouvre d'un toucher (un chevron le signale), pour ne pas faire défiler longtem
     fichier (sur iPhone et iPad : « Enregistrer dans Fichiers », par e-mail…), à restaurer dans un autre
     navigateur, sur un autre appareil ou dans l'app installée sur l'écran d'accueil. Au premier
     lancement, « Déjà une sauvegarde ? » évite de recréer les enfants.
-  - **Cet appareil** : installer l'icône sur l'écran d'accueil, et **Vérifier l'affichage sur cet
+  - **Cet appareil** : installer l'icône sur l'écran d'accueil, changer le **code parental** (propre
+    à cet appareil, gardé dans les sauvegardes), et **Vérifier l'affichage sur cet
     appareil** : l'app fait défiler chaque niveau des jeux des classes des enfants (ou de toutes les
     classes) sur ce téléphone, cette tablette ou cet ordinateur, dans le sens où on le tient, et signale
     ce qui dépasse (texte plus large que sa case, réponses sous le bas de l'écran). Rien n'est dit ni

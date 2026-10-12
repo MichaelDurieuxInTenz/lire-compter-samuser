@@ -197,6 +197,27 @@ export function deadEndItems(count, cellCount, neighbours, linked, start, goal, 
 }
 
 /**
+ * Une impasse, quand le héros arrive au bout : la case n'a qu'une sortie et n'est ni le départ, ni
+ * l'arrivée, ni une clé (`keep`). La branche fausse est alors cette case, puis, en revenant, chaque
+ * case dont toutes les autres sorties sont déjà des impasses (`dead`, complété ici) : jusqu'à
+ * l'embranchement, et au-delà si ses autres branches sont déjà connues pour être des impasses.
+ * `neighbours(c)` : les cases où l'on passe depuis c (sans mur). Renvoie null si la case n'est pas un
+ * bout d'impasse, sinon les cases nouvellement marquées (la première : le bout ; [] si déjà connue).
+ * Seules des cases déjà parcourues sont marquées : on n'arrive au bout d'une impasse qu'en la suivant.
+ */
+export function impasse(neighbours, cell, keep, dead = new Set()) {
+  if (keep.has(cell) || neighbours(cell).length !== 1) return null;
+  const fresh = [];
+  const live = (c) => neighbours(c).filter((n) => !dead.has(n));
+  for (let c = cell; c !== undefined && !keep.has(c) && !dead.has(c) && live(c).length <= 1;) {
+    dead.add(c);
+    fresh.push(c);
+    [c] = live(c);
+  }
+  return fresh;
+}
+
+/**
  * Le trajet complet : du départ, ramasser chaque objet (le plus proche d'abord), puis aller à
  * l'arrivée. `solve(a, b)` donne le chemin de a à b.
  */

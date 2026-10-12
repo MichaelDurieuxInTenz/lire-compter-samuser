@@ -4,13 +4,21 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.18.0',
+  version: '1.19.0',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.19.0',
+    date: '2026-10-12',
+    changes: [
+      'Espace parents : un code parental à 4 chiffres, demandé à chaque entrée et pour donner 10 minutes de jeu en plus. Il se choisit la première fois, après un calcul d’adulte, pour qu’un enfant ne puisse pas le choisir à votre place ; un code trop facile (1234, 0000…) est refusé. Code oublié : le même calcul, puis un nouveau code. Après trois erreurs, il faut attendre 30 secondes. Le code se change dans Réglages → Cet appareil.',
+      'Labyrinthes (carré et rond) : au bout d’une impasse, la branche fausse se colore en rouge, avec une croix au bout, et l’app dit « Impasse ! Reviens en arrière. ». Le bon chemin n’est jamais montré.',
+    ],
+  },
   {
     version: '1.18.0',
     date: '2026-10-11',

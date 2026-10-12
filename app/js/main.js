@@ -2,7 +2,7 @@
 
 import { findGame } from './games/index.js';
 import { CALC_PALIERS, equationHolds } from './games/maths.js';
-import { canMove, polarCell, ringOffsets, solveLinks, solveMaze } from './games/labyrinthes.js';
+import { canMove, impasse, polarCell, ringOffsets, solveLinks, solveMaze } from './games/labyrinthes.js';
 import { clockLabel } from './games/maths-extra.js';
 import { lineValueAt, lineX } from './games/nombres-plus.js';
 import { bodySvg, voiciPartie } from './games/corps.js';
@@ -56,6 +56,7 @@ import * as recordings from './recordings.js';
 import { formatDuration, MAX_SECONDS, pickMime, sentenceAt, sentenceTimeline } from './recordings.js';
 import { fichesScreen } from './fiches-ecran.js';
 import { creerSauvegarde, dateEnClair, exporterEnregistrements, importerEnregistrements, lireSauvegarde, nomFichier } from './sauvegarde.js';
+import { apresErreur, attente, calculDifficile, CODE_LENGTH, problemeCode } from './code-parental.js';
 import { cetAppareil, ecransAVerifier, mesurerEcran, rapportTexte } from './verif-affichage.js';
 
 const app = document.getElementById('app');
@@ -3513,6 +3514,37 @@ function mazeKeys(ctx, { items = [], goal, locked }, solve) {
   };
 }
 
+const DEAD_END_TEXT = 'Impasse ! Reviens en arrière.';
+
+/**
+ * Les impasses d'un labyrinthe (carré ou rond) : au bout d'une impasse, la branche fausse est marquée
+ * (en rouge, une croix au bout : voir impasse, labyrinthes.js), et on le dit. Le message s'en va quand
+ * le héros sort de la branche fausse. `mark(cells)` dessine les nouvelles cases (la première : le bout).
+ */
+function deadEndMarks(ctx, { neighbours, keep, mark }) {
+  const dead = new Set();
+  let saidAt = 0;
+  let note = null;
+  return {
+    /** Le héros arrive sur la case `cell`. */
+    arrive(cell) {
+      const fresh = impasse(neighbours, cell, keep, dead);
+      if (fresh === null) {
+        if (note?.isConnected && !dead.has(cell)) note.remove();
+        return;
+      }
+      if (fresh.length) mark(fresh);
+      note = h('p', { class: 'try-again maze-dead-note' }, DEAD_END_TEXT);
+      ctx.feedback.replaceChildren(note);
+      // pas à chaque mouvement du doigt : une fois toutes les 3 secondes au plus
+      if (Date.now() - saidAt > 3000) {
+        saidAt = Date.now();
+        say(ctx.session.guide, DEAD_END_TEXT);
+      }
+    },
+  };
+}
+
 function mazeZone(ctx) {
   const { q } = ctx;
   const { cols, rows, open, start, goal, hero, goalEmoji, items = [], itemEmoji } = q.stage;
@@ -3536,6 +3568,11 @@ function mazeZone(ctx) {
     style: { '--cols': cols, '--rows': rows },
   }, cells);
   const mazeLabel = grid.getAttribute('aria-label');
+  const deadEnds = deadEndMarks(ctx, {
+    neighbours: (c) => [c - cols, c + 1, c + cols, c - 1].filter((n) => n >= 0 && n < open.length && canMove(open, cols, c, n)),
+    keep: new Set([start, goal, ...items]),
+    mark: (list) => list.forEach((c, i) => cells[c].classList.add('dead', ...(i ? [] : ['dead-end']))),
+  });
   const place = () => {
     cells[pos].append(heroEl);
     cells.forEach((c, i) => c.classList.toggle('here', i === pos));
@@ -3556,6 +3593,7 @@ function mazeZone(ctx) {
     pos = target;
     place();
     cells[pos].classList.remove('hint');
+    deadEnds.arrive(pos);
     if (keys.collect(pos)) {
       itemEls.get(pos).remove();
       if (!keys.left.size) lock?.remove();
@@ -3671,11 +3709,12 @@ function roundMazeZone(ctx) {
   };
   const svg = svgEl('svg', { class: 'rmaze-svg', viewBox: `${-V} ${-V} ${2 * V} ${2 * V}`, 'aria-hidden': 'true' });
   const trail = svgEl('g', { class: 'rmaze-trail' });
+  const deadGroup = svgEl('g', { class: 'rmaze-dead' });
   const hints = svgEl('g', { class: 'rmaze-hints' });
   svg.append(
     svgEl('circle', { class: 'rmaze-floor', r: R }),
     svgEl('circle', { class: 'rmaze-centre', r: T }),
-    trail, hints,
+    trail, deadGroup, hints,
     svgEl('path', { class: 'rmaze-walls', d: walls }),
   );
   // le personnage, l'arrivée et les clés : des émojis posés par-dessus le dessin
@@ -3702,6 +3741,24 @@ function roundMazeZone(ctx) {
     heroEl.classList.add('bump');
   };
   const clearHint = (cell) => hints.querySelectorAll(`[data-cell="${cell}"]`).forEach((n) => n.remove());
+  // une impasse : un rond rouge sur chaque case de la branche fausse, une croix au bout
+  const deadEnds = deadEndMarks(ctx, {
+    neighbours: (c) => links[c],
+    keep: new Set([start, goal, ...items]),
+    mark: (list) => list.forEach((c, i) => {
+      const [x, y] = centreOf(c);
+      // comme dans le labyrinthe carré : un fond rose, et un point rouge à la place du point du trajet
+      deadGroup.append(
+        svgEl('circle', { class: 'rmaze-dead-bg', cx: f(x), cy: f(y), r: T * 0.34, 'data-cell': c }),
+        svgEl('circle', { class: 'rmaze-dead-dot', cx: f(x), cy: f(y), r: T * 0.16, 'data-cell': c }),
+      );
+      if (!i) {
+        const cross = svgEl('text', { x: f(x), y: f(y), 'data-cell': c, 'font-size': T * 0.7 });
+        cross.textContent = '✗';
+        deadGroup.append(cross);
+      }
+    }),
+  });
   const moveTo = (target) => {
     if (ctx.session.locked || !linked(pos, target)) return false;
     if (keys.blocked(target)) {
@@ -3713,6 +3770,7 @@ function roundMazeZone(ctx) {
     pos = target;
     at(heroEl, pos);
     clearHint(pos);
+    deadEnds.arrive(pos);
     if (keys.collect(pos)) {
       itemEls.get(pos).remove();
       if (!keys.left.size) lock?.remove();
@@ -4864,31 +4922,184 @@ function coloringGame(back) {
 
 // ---------------------------------------------------------------- Espace parents
 
-function parentGate(next) {
-  if (sessionFlag('parent-ok')) return next();
-  const a = randInt(rng, 3, 9);
-  const b = randInt(rng, 3, 9);
-  const input = h('input', { type: 'text', inputmode: 'numeric', pattern: '[0-9]*', class: 'gate-input', 'aria-label': 'Réponse', autocomplete: 'off' });
-  const error = h('p', { class: 'gate-error' });
-  const check = (e) => {
-    e.preventDefault();
-    if (Number(input.value) === a * b) {
-      sessionFlag('parent-ok', true);
-      next();
-    } else {
-      error.textContent = 'Ce n’est pas la bonne réponse.';
-      input.value = '';
-    }
+// Le verrou de la barrière (3 erreurs de suite : 30 secondes d'attente), gardé sur l'appareil :
+// relancer l'app ne le lève pas
+const GATE_KEY = 'lire-et-compter:barriere';
+function gateState() {
+  try {
+    return JSON.parse(localStorage.getItem(GATE_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+function setGateState(state) {
+  try {
+    localStorage.setItem(GATE_KEY, JSON.stringify(state));
+  } catch {
+    // navigation privée : le verrou ne dure que le temps de l'écran
+  }
+}
+
+/**
+ * La barrière de l'espace parents (et du temps de jeu en plus) : le code parental, à chaque fois.
+ * Pas encore de code, ou code oublié : d'abord un calcul d'adulte, pour qu'un enfant ne puisse pas
+ * choisir le code ; puis on choisit le code (deux fois). Trois erreurs de suite : 30 s d'attente.
+ * `mode` : 'code', 'calcul' ou 'nouveau' ; `why` : 'premier' (pas encore de code) ou 'oubli'.
+ */
+function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', why = 'premier') {
+  const back = () => (store.active ? homeScreen() : profileScreen());
+  const again = (m = mode, w = why) => parentGate(next, m, w);
+  const error = h('p', { class: 'gate-error', role: 'alert' });
+  const codeInput = (label) => h('input', {
+    type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: CODE_LENGTH, class: 'gate-input gate-code',
+    'aria-label': label, autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false',
+  });
+  const screen = (state, ...content) => show(h('main', { class: 'screen gate', 'data-gate': state },
+    topBar({ onBack: back, title: 'Espace parents' }), ...content));
+  // une erreur : un essai de moins avant l'attente
+  const wrong = (message, retry) => {
+    const state = apresErreur(gateState(), Date.now());
+    setGateState(state);
+    if (attente(state, Date.now())) return again();
+    error.textContent = message;
+    retry();
+    return null;
   };
-  show(h('main', { class: 'screen gate' },
-    topBar({ onBack: () => (store.active ? homeScreen() : profileScreen()), title: 'Espace parents' }),
-    h('form', { class: 'gate-form', onsubmit: check },
-      h('p', {}, 'Pour entrer, calculez :'),
-      h('p', { class: 'gate-question' }, `${a} × ${b} = ?`),
+
+  // trop d'erreurs : on attend, puis on peut réessayer
+  const wait = attente(gateState(), Date.now());
+  if (wait) {
+    const left = h('b', {}, String(Math.ceil(wait / 1000)));
+    screen('attente', h('div', { class: 'gate-form' },
+      h('p', {}, 'Trop d’erreurs.'),
+      h('p', {}, 'Réessayez dans ', left, ' secondes.')));
+    const timer = setInterval(() => {
+      const ms = attente(gateState(), Date.now());
+      if (!left.isConnected) clearInterval(timer);
+      else if (!ms) {
+        clearInterval(timer);
+        again();
+      } else left.textContent = String(Math.ceil(ms / 1000));
+    }, 500);
+    return;
+  }
+
+  if (mode === 'code') {
+    const input = codeInput('Code parental');
+    const check = (e) => {
+      e.preventDefault();
+      if (input.value === store.settings.parentCode) {
+        setGateState({});
+        next();
+      } else {
+        wrong('Ce n’est pas le bon code.', () => { input.value = ''; input.focus(); });
+      }
+    };
+    screen('code', h('form', { class: 'gate-form', onsubmit: check },
+      h('p', {}, 'Pour entrer, tapez le code parental :'),
       input,
       h('button', { class: 'big-btn primary', type: 'submit' }, 'Entrer'),
-      error)));
-  setTimeout(() => input.focus(), 50);
+      error,
+      h('button', { type: 'button', class: 'link-action gate-forgot', onclick: () => again('calcul', 'oubli') }, 'Code oublié ?')));
+    setTimeout(() => input.focus(), 50);
+    return;
+  }
+
+  if (mode === 'calcul') {
+    let calc = calculDifficile(rng);
+    const question = h('p', { class: 'gate-question' }, calc.texte);
+    const input = h('input', { type: 'text', inputmode: 'numeric', pattern: '[0-9]*', class: 'gate-input', 'aria-label': 'Réponse', autocomplete: 'off' });
+    const check = (e) => {
+      e.preventDefault();
+      if (input.value.trim() !== '' && Number(input.value) === calc.reponse) {
+        setGateState({});
+        again('nouveau', why);
+      } else {
+        // un autre calcul à chaque erreur : on ne devine pas la réponse en essayant
+        wrong('Ce n’est pas la bonne réponse. Voici un autre calcul.', () => {
+          calc = calculDifficile(rng);
+          question.textContent = calc.texte;
+          input.value = '';
+          input.focus();
+        });
+      }
+    };
+    screen('calcul', h('form', { class: 'gate-form', onsubmit: check },
+      h('p', {}, why === 'oubli' ? 'Code oublié : pour en choisir un nouveau, calculez :' : 'Pour choisir le code parental, calculez d’abord :'),
+      question,
+      input,
+      h('button', { class: 'big-btn primary', type: 'submit' }, 'Valider'),
+      error));
+    setTimeout(() => input.focus(), 50);
+    return;
+  }
+
+  // mode 'nouveau' : on choisit le code, deux fois
+  const form = parentCodeForm({
+    submitLabel: 'Enregistrer le code',
+    onSaved: () => next(),
+  });
+  screen('nouveau', h('div', { class: 'gate-form' },
+    h('p', { class: 'gate-intro' }, 'Choisissez un code parental à 4 chiffres. Il sera demandé pour entrer dans l’espace parents et pour donner du temps de jeu en plus.'),
+    form));
+  setTimeout(() => form.querySelector('input')?.focus(), 50);
+}
+
+/**
+ * Le choix du code parental : le code, puis encore une fois. Enregistre le code (et sa date) quand
+ * il convient. `onCancel` : un bouton « Annuler » (dans les Réglages).
+ */
+function parentCodeForm({ submitLabel, onSaved, onCancel = null }) {
+  const field = (label) => {
+    const input = h('input', {
+      type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: CODE_LENGTH, class: 'gate-input gate-code',
+      autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false',
+    });
+    return [h('label', { class: 'gate-field' }, h('span', {}, label), input), input];
+  };
+  const [first, code] = field('Code (4 chiffres)');
+  const [second, confirmation] = field('Encore une fois');
+  const error = h('p', { class: 'gate-error', role: 'alert' });
+  const submit = (e) => {
+    e.preventDefault();
+    const problem = problemeCode(code.value, confirmation.value);
+    if (problem) {
+      error.textContent = problem;
+      code.value = '';
+      confirmation.value = '';
+      code.focus();
+      return;
+    }
+    store.settings.parentCode = code.value;
+    store.settings.parentCodeDate = new Date().toISOString();
+    save();
+    onSaved();
+  };
+  return h('form', { class: 'gate-new-code', onsubmit: submit },
+    first, second,
+    h('div', { class: 'gate-actions' },
+      h('button', { class: 'big-btn primary', type: 'submit', 'data-save-code': '' }, submitLabel),
+      onCancel ? h('button', { class: 'big-btn', type: 'button', onclick: onCancel }, 'Annuler') : null),
+    error);
+}
+
+/** Réglages, Cet appareil : le code parental (changer le code ; la date où il a été choisi). */
+function parentCodeCard() {
+  const card = h('section', { class: 'card parent-code-card', 'data-parent-code': '' });
+  const draw = (editing = false, message = '') => {
+    const when = dateEnClair(store.settings.parentCodeDate);
+    card.replaceChildren(...[
+      h('h2', {}, '🔒 Code parental'),
+      h('p', { class: 'muted small' }, `Il est demandé pour entrer dans l’espace parents et pour donner du temps de jeu en plus.${when ? ` Choisi le ${when}.` : ''}`),
+      editing
+        ? parentCodeForm({ submitLabel: 'Enregistrer', onSaved: () => draw(false, 'Le nouveau code est enregistré.'), onCancel: () => draw(false) })
+        : h('button', { class: 'pill-btn', 'data-change-code': '', onclick: () => draw(true) }, 'Changer le code'),
+      message ? h('p', { class: 'toast', role: 'status' }, message) : null,
+    ].filter(Boolean));
+    if (editing) card.querySelector('input')?.focus();
+  };
+  draw();
+  return card;
 }
 
 function toggle(label, value, onChange, setting) {
@@ -6256,8 +6467,8 @@ const SETTINGS_PAGES = [
     const when = dateEnClair(store.settings.lastBackup);
     return when ? `Dernière : le ${when}` : 'Pas encore de sauvegarde';
   }, () => [backupCard()]],
-  ['appareil', '📱', 'Cet appareil', () => (isStandalone() ? 'Vérifier l’affichage' : 'Installer l’icône, vérifier l’affichage'),
-    () => [isStandalone() ? null : installCard(), verifCard()]],
+  ['appareil', '📱', 'Cet appareil', () => (isStandalone() ? 'Code parental, vérifier l’affichage' : 'Installer l’icône, code parental, vérifier l’affichage'),
+    () => [isStandalone() ? null : installCard(), parentCodeCard(), verifCard()]],
   ['apropos', 'ℹ️', 'À propos', () => `Version ${APP.version} · nouveautés · contact`, () => [aboutCard()]],
 ];
 
