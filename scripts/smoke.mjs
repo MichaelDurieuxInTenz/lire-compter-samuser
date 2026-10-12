@@ -255,6 +255,15 @@ async function checkParentCode(page) {
     await page.click('[data-save-code]');
   };
   const errorSays = (re) => page.waitForFunction((src) => new RegExp(src).test(document.querySelector('.gate .gate-error')?.textContent || ''), re.source);
+  // comme sur un appareil où le code n'a pas encore été choisi (le parcours a pu en choisir un avant)
+  await page.evaluate((key) => {
+    const store = JSON.parse(localStorage.getItem(key));
+    delete store.settings.parentCode;
+    delete store.settings.parentCodeDate;
+    localStorage.setItem(key, JSON.stringify(store));
+    localStorage.removeItem('lire-et-compter:barriere');
+  }, STORAGE_KEY);
+  await goProfiles(page);
   await page.click('.parent-btn');
   await gate('calcul');
   if (!/^\d+ × \d+ − \d+ = \?$/.test((await page.textContent('.gate-question')).trim())) fail('barrière : le calcul n’est pas un calcul d’adulte');
