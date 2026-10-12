@@ -4,13 +4,22 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.19.1',
+  version: '1.19.2',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.19.2',
+    date: '2026-10-12',
+    changes: [
+      'Code parental, code oublié : un calcul plus dur, puis 5 minutes d’attente avant de choisir le nouveau code. Un enfant qui aurait trouvé le calcul se lasse ; le retour annule tout.',
+      'Code parental, erreurs : après chaque série de trois erreurs, l’attente s’allonge (30 secondes, 2 minutes, 10 minutes, puis 30 minutes), jusqu’au bon code.',
+      'Sécurité : l’app ne peut plus s’afficher dans le cadre d’un autre site, et le navigateur sait qu’elle ne se sert que du micro (pas de la caméra ni de la position).',
+    ],
+  },
   {
     version: '1.19.1',
     date: '2026-10-12',

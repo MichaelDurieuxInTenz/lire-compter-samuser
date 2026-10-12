@@ -281,9 +281,10 @@ contrôlés automatiquement à chaque modification. La déclaration d'accessibil
 Le bouton **Parents** de l'écran « Qui joue ? » est protégé par un **code parental** à 4 chiffres,
 demandé à chaque entrée (et pour donner 10 minutes de jeu en plus). Il est choisi la première fois,
 après un calcul d'adulte (« 17 × 6 − 28 »), pour qu'un enfant ne puisse pas le choisir à la place
-des parents ; un code trop facile (1234, 0000…) est refusé. Code oublié : le même calcul, puis un
-nouveau code. Après trois erreurs de suite, il faut attendre 30 secondes. Le code se change dans
-Réglages → Cet appareil.
+des parents ; un code trop facile (1234, 0000…) est refusé. Code oublié : un calcul plus dur
+(« 37 × 16 − 248 »), puis 5 minutes d'attente avant de choisir le nouveau code (un enfant qui aurait
+trouvé le calcul se lasse). Après trois erreurs de suite, il faut attendre, de plus en plus longtemps :
+30 secondes, 2 minutes, 10 minutes, puis 30 minutes. Le code se change dans Réglages → Cet appareil.
 Il ouvre trois onglets, qui restent en haut de l'écran. Chaque écran montre l'essentiel ; le détail
 s'ouvre d'un toucher (un chevron le signale), pour ne pas faire défiler longtemps :
 
@@ -375,7 +376,11 @@ une voix installée.
 - Les prénoms, photos, progrès et voix enregistrées restent dans le navigateur de l'appareil (stockage local).
 - Effacer les données du site dans le navigateur supprime les profils : gardez une sauvegarde
   (*Espace parents → Réglages → Sauvegarde*), qui reste chez vous.
-- Aucune bibliothèque extérieure ; la page n'accepte que ses propres fichiers (règle CSP).
+- Aucune bibliothèque extérieure ; la page n'accepte que ses propres fichiers (règle CSP, dans
+  `index.html`). Le site ne s'affiche dans le cadre d'aucun autre site, et seul le micro peut servir
+  (en-têtes de sécurité, `app/_headers`, appliqués par Cloudflare Pages et par `npm start`).
+- Les workflows GitHub lisent le dépôt sans pouvoir l'écrire (sauf l'étiquette des sons de la voix),
+  leurs actions sont épinglées par leur empreinte et tenues à jour par Dependabot.
 
 ---
 

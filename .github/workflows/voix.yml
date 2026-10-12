@@ -28,19 +28,22 @@ jobs:
       matrix:
         morceau: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.12'
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg espeak-ng
-      - run: pip install pocket-tts faster-whisper transformers phonemizer --extra-index-url https://download.pytorch.org/whl/cpu
+      # versions figées (celles de l'exécution 24) : torch (sans carte graphique) depuis l'index de PyTorch
+      # seul, puis le reste depuis PyPI seul (pas deux index pour un même paquet)
+      - run: pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install pocket-tts==3.3.0 faster-whisper==1.2.1 transformers==5.19.0 phonemizer==3.4.0
       # a-refaire.json : sons douteux à refaire (l'ancien est gardé s'il reste le meilleur). Pour réécouter
       # tous les mots déjà faits et refaire les mal prononcés, ajouter --verifier-mots (fait pour la 1.9.1).
       - run: >-
           python scripts/voix/generer.py --shard ${{ matrix.morceau }}/16 --sortie voix-sortie --essais 4
           --whisper large-v3-turbo --phonemes
           $( [ -f scripts/voix/a-refaire.json ] && echo --refaire scripts/voix/a-refaire.json )
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always() # même si le temps est écoulé : les sons déjà fabriqués ne sont pas perdus
         with:
           name: voix-${{ matrix.morceau }}
@@ -53,12 +56,14 @@ jobs:
     permissions:
       contents: write # pour l'étiquette voix-sons/<branche>
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           pattern: voix-*
           merge-multiple: true
           path: voix-sortie
-      - run: bash scripts/voix/publier.sh "voix-sons/${{ github.ref_name }}" voix-sortie
+      # le nom de la branche passe par une variable, jamais tel quel dans la commande
+      - run: bash scripts/voix/publier.sh "voix-sons/$BRANCHE" voix-sortie
         env:
+          BRANCHE: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ github.token }}

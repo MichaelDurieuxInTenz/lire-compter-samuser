@@ -1,0 +1,19 @@
+# Mises à jour proposées par Dependabot, une fois par mois, en une seule PR par sorte : les actions
+# GitHub des workflows (épinglées par leur empreinte, que Dependabot tient à jour) et les outils de
+# test (npm ; l'app elle-même n'a aucune dépendance).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      outils-de-test:
+        patterns: ['*']

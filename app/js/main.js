@@ -56,7 +56,7 @@ import * as recordings from './recordings.js';
 import { formatDuration, MAX_SECONDS, pickMime, sentenceAt, sentenceTimeline } from './recordings.js';
 import { fichesScreen } from './fiches-ecran.js';
 import { creerSauvegarde, dateEnClair, exporterEnregistrements, importerEnregistrements, lireSauvegarde, nomFichier } from './sauvegarde.js';
-import { apresErreur, attente, calculDifficile, CODE_LENGTH, problemeCode } from './code-parental.js';
+import { apresErreur, ATTENTE_OUBLI_MS, attente, calculDifficile, calculOubli, CODE_LENGTH, dureeEnClair, etapeOubli, problemeCode } from './code-parental.js';
 import { cetAppareil, ecransAVerifier, mesurerEcran, rapportTexte } from './verif-affichage.js';
 
 const app = document.getElementById('app');
@@ -4942,8 +4942,9 @@ function setGateState(state) {
 
 /**
  * La barrière de l'espace parents (et du temps de jeu en plus) : le code parental, à chaque fois.
- * Pas encore de code, ou code oublié : d'abord un calcul d'adulte, pour qu'un enfant ne puisse pas
- * choisir le code ; puis on choisit le code (deux fois). Trois erreurs de suite : 30 s d'attente.
+ * Pas encore de code : d'abord un calcul d'adulte, pour qu'un enfant ne puisse pas choisir le code ;
+ * puis on choisit le code (deux fois). Code oublié : un calcul plus dur, puis 5 minutes d'attente avant
+ * de choisir le nouveau. Trois erreurs de suite : une attente (30 s, puis 2 min, 10 min, 30 min).
  * `mode` : 'code', 'calcul' ou 'nouveau' ; `why` : 'premier' (pas encore de code) ou 'oubli'.
  */
 function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', why = 'premier') {
@@ -4955,9 +4956,14 @@ function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', 
     'aria-label': label, autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false',
   });
   // chaque écran a son titre (le titre de la page, lu par les lecteurs d'écran)
-  const titles = { code: 'Espace parents : code parental', calcul: 'Espace parents : calcul', nouveau: 'Espace parents : choix du code', attente: 'Espace parents : attente' };
+  const titles = {
+    code: 'Espace parents : code parental', calcul: 'Espace parents : calcul', nouveau: 'Espace parents : choix du code',
+    attente: 'Espace parents : attente', patience: 'Espace parents : code oublié',
+  };
+  // le code oublié abandonné (retour, ou « J'ai retrouvé le code ») : tout sera à refaire
+  const cancelOubli = () => setGateState({ ...gateState(), oubli: 0 });
   const screen = (state, ...content) => show(h('main', { class: 'screen gate', 'data-gate': state, 'data-title': titles[state] },
-    topBar({ onBack: back, title: 'Espace parents' }), ...content));
+    topBar({ onBack: state === 'patience' ? () => { cancelOubli(); back(); } : back, title: 'Espace parents' }), ...content));
   // une erreur : un essai de moins avant l'attente
   const wrong = (message, retry) => {
     const state = apresErreur(gateState(), Date.now());
@@ -4971,17 +4977,38 @@ function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', 
   // trop d'erreurs : on attend, puis on peut réessayer
   const wait = attente(gateState(), Date.now());
   if (wait) {
-    const left = h('b', {}, String(Math.ceil(wait / 1000)));
+    const left = h('b', {}, dureeEnClair(wait));
     screen('attente', h('div', { class: 'gate-form' },
       h('p', {}, 'Trop d’erreurs.'),
-      h('p', {}, 'Réessayez dans ', left, ' secondes.')));
+      h('p', {}, 'Réessayez dans ', left, '.')));
     const timer = setInterval(() => {
       const ms = attente(gateState(), Date.now());
       if (!left.isConnected) clearInterval(timer);
       else if (!ms) {
         clearInterval(timer);
         again();
-      } else left.textContent = String(Math.ceil(ms / 1000));
+      } else left.textContent = dureeEnClair(ms);
+    }, 500);
+    return;
+  }
+
+  // code oublié : le nouveau code se choisit 5 minutes après le calcul. L'attente est gardée sur
+  // l'appareil (relancer l'app ne la raccourcit pas) ; le retour l'annule.
+  const oubli = etapeOubli(gateState(), Date.now());
+  if (!oubli && gateState().oubli) cancelOubli(); // trop tard pour choisir : tout est à refaire
+  if (oubli === 'choix' && mode !== 'nouveau') return again('nouveau', 'oubli');
+  if (oubli === 'attente') {
+    const left = h('b', {}, dureeEnClair(gateState().oubli - Date.now()));
+    screen('patience', h('div', { class: 'gate-form' },
+      h('p', { class: 'gate-intro' }, 'Calcul juste. Par sécurité, le nouveau code se choisit 5 minutes plus tard : restez sur cet écran.'),
+      h('p', {}, 'Encore ', left, '.'),
+      h('button', { type: 'button', class: 'link-action gate-found', onclick: () => { cancelOubli(); again('code'); } }, 'J’ai retrouvé le code')));
+    const timer = setInterval(() => {
+      if (!left.isConnected) clearInterval(timer);
+      else if (etapeOubli(gateState(), Date.now()) !== 'attente') {
+        clearInterval(timer);
+        again();
+      } else left.textContent = dureeEnClair(gateState().oubli - Date.now());
     }, 500);
     return;
   }
@@ -5008,18 +5035,20 @@ function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', 
   }
 
   if (mode === 'calcul') {
-    let calc = calculDifficile(rng);
+    const newCalc = () => (why === 'oubli' ? calculOubli(rng) : calculDifficile(rng));
+    let calc = newCalc();
     const question = h('p', { class: 'gate-question' }, calc.texte);
     const input = h('input', { type: 'text', inputmode: 'numeric', pattern: '[0-9]*', class: 'gate-input', 'aria-label': 'Réponse', autocomplete: 'off' });
     const check = (e) => {
       e.preventDefault();
       if (input.value.trim() !== '' && Number(input.value) === calc.reponse) {
-        setGateState({});
-        again('nouveau', why);
+        // code oublié : d'abord l'attente ; la première fois, le code tout de suite
+        setGateState(why === 'oubli' ? { oubli: Date.now() + ATTENTE_OUBLI_MS } : {});
+        again(why === 'oubli' ? 'code' : 'nouveau', why);
       } else {
         // un autre calcul à chaque erreur : on ne devine pas la réponse en essayant
         wrong('Ce n’est pas la bonne réponse. Voici un autre calcul.', () => {
-          calc = calculDifficile(rng);
+          calc = newCalc();
           question.textContent = calc.texte;
           input.value = '';
           input.focus();
@@ -5039,7 +5068,10 @@ function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', 
   // mode 'nouveau' : on choisit le code, deux fois
   const form = parentCodeForm({
     submitLabel: 'Enregistrer le code',
-    onSaved: () => next(),
+    onSaved: () => {
+      setGateState({}); // le code oublié est réglé
+      next();
+    },
   });
   screen('nouveau', h('div', { class: 'gate-form' },
     h('p', { class: 'gate-intro' }, 'Choisissez un code parental à 4 chiffres. Il sera demandé pour entrer dans l’espace parents et pour donner du temps de jeu en plus.'),

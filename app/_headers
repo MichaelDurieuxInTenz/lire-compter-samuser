@@ -1,0 +1,11 @@
+# En-têtes de sécurité, ajoutés par Cloudflare Pages à chaque fichier publié (et par scripts/serve.mjs
+# pendant les tests). La politique de sécurité du contenu (CSP) est dans index.html : ici, seulement ce
+# qu'une balise <meta> ne peut pas dire. L'app ne s'affiche dans le cadre d'aucun autre site ; seul le
+# micro peut servir (histoires enregistrées par les parents), pas la caméra ni la position.
+/*
+  Content-Security-Policy: frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000
