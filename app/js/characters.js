@@ -89,7 +89,7 @@ export const ACCESSORIES = [
   { id: 'casquette', emoji: '🧢', label: 'Casquette', y: 26, size: 40 },
   { id: 'noeud', emoji: '🎀', label: 'Nœud', y: 24, size: 30 },
   { id: 'couronne', emoji: '👑', label: 'Couronne', y: 25, size: 38 },
-  { id: 'lunettes', emoji: '🕶️', label: 'Lunettes', y: 68, size: 34 },
+  { id: 'lunettes', emoji: '🕶️', label: 'Lunettes', y: 60, size: 34 },
   { id: 'chapeau', emoji: '🎩', label: 'Chapeau', y: 24, size: 40 },
   { id: 'toque', emoji: '🎓', label: 'Toque', y: 24, size: 38 },
   { id: 'fleur', emoji: '🌼', label: 'Fleur', y: 30, size: 26, x: 84 },

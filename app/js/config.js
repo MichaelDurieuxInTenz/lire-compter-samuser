@@ -4,13 +4,21 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.19.0',
+  version: '1.19.1',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.19.1',
+    date: '2026-10-12',
+    changes: [
+      'Vérifier l’affichage (Réglages → Cet appareil) : « Arrêter » arrête la vérification dès qu’on le touche, aussi sur iPhone et iPad, où le toucher pouvait rester sans effet.',
+      'Mon personnage : les lunettes sont sur les yeux. Elles tombaient sur la bouche.',
+    ],
+  },
   {
     version: '1.19.0',
     date: '2026-10-12',

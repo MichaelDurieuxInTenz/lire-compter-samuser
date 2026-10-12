@@ -355,6 +355,22 @@ async function openFold(page, id) {
  */
 async function checkVerif(page) {
   await openSettings(page, 'appareil');
+  // « Arrêter » au toucher, même sans clic : pendant la vérification, un écran nouveau (et ses
+  // boutons) s'affiche toutes les 30 ms environ, et Safari sur iPhone prend alors le toucher pour un
+  // survol, sans envoyer le clic. Ici, le clic sur « Arrêter » est retenu, comme sur l'iPhone.
+  await page.evaluate(() => {
+    window.__sansClic = (e) => { if (e.target.closest?.('.verif-stop')) e.stopImmediatePropagation(); };
+    document.addEventListener('click', window.__sansClic, true);
+  });
+  await page.click('[data-verif="toutes"]');
+  await page.waitForSelector('.verif-band');
+  await page.waitForFunction(() => /Vérification : \d/.test(document.querySelector('.verif-band')?.textContent || '')); // elle tourne
+  await page.tap('.verif-stop', { force: true });
+  await page.waitForSelector('.verif-result', { timeout: 5000 }).catch(() => fail('vérifier l’affichage : « Arrêter » touché, la vérification continue'));
+  if (!(await page.textContent('.verif-result')).includes('arrêtée avant la fin')) fail('vérifier l’affichage : arrêtée, mais le résultat ne le dit pas');
+  await page.evaluate(() => document.removeEventListener('click', window.__sansClic, true));
+  await page.click('.top-bar .icon-btn');
+  await page.waitForSelector('.settings-page[data-page="appareil"]');
   const before = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
   const spoken = await page.evaluate(() => (window.__spoken || []).length);
   await page.click('[data-verif="enfants"]');
@@ -373,7 +389,7 @@ async function checkVerif(page) {
   if (!screens || Number(screens) < 100) fail(`vérifier l’affichage : trop peu d’écrans vérifiés (${screens})`);
   await page.click('.top-bar .icon-btn');
   await page.waitForSelector('.settings-page[data-page="appareil"]');
-  console.log(`✔ vérifier l’affichage : ${screens} écrans des classes des enfants, tout tient ; rien n’est dit ni enregistré, rapport sans prénom`);
+  console.log(`✔ vérifier l’affichage : « Arrêter » au toucher (sans clic) ; ${screens} écrans des classes des enfants, tout tient ; rien n’est dit ni enregistré, rapport sans prénom`);
 }
 
 /**
