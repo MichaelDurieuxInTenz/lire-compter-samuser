@@ -200,6 +200,25 @@ function gateAnswer(text) {
 }
 
 /**
+ * Choisit le code parental (le code, puis encore une fois), puis l'enregistre. L'app met le curseur
+ * dans le premier champ 50 ms après l'écran : si cela tombe pendant la saisie du second champ, le
+ * second code finit dans le premier (Playwright tape dans le champ qui a le curseur), et l'app répond,
+ * à juste titre, que les deux codes ne sont pas les mêmes (CI de la PR #31). On relit donc les deux
+ * champs, et on les retape une fois si besoin : le curseur n'est posé qu'une fois par écran.
+ */
+async function chooseCode(page, code, again = code) {
+  const fields = page.locator('.gate-new-code input');
+  for (let k = 0; ; k++) {
+    await fields.nth(0).fill(code);
+    await fields.nth(1).fill(again);
+    const typed = await fields.evaluateAll((els) => els.map((el) => el.value));
+    if (typed[0] === code && typed[1] === again) break;
+    if (k) fail(`choix du code : « ${typed.join(' », « ')} » au lieu de « ${code} », « ${again} »`);
+  }
+  await page.click('[data-save-code]');
+}
+
+/**
  * Franchit la barrière de l'espace parents, quel que soit son écran : le calcul puis le choix du code
  * (la première fois), ou le code. `done` : l'écran attendu derrière la barrière.
  */
@@ -212,9 +231,7 @@ async function passGate(page, done = '.parents') {
       await page.fill('.gate-input', String(gateAnswer(await page.textContent('.gate-question'))));
       await page.click('.gate-form button[type="submit"]');
     } else if (state === 'nouveau') {
-      await page.locator('.gate-new-code input').nth(0).fill(TEST_CODE);
-      await page.locator('.gate-new-code input').nth(1).fill(TEST_CODE);
-      await page.click('[data-save-code]');
+      await chooseCode(page, TEST_CODE);
     } else if (state === 'code') {
       await page.fill('.gate-code', TEST_CODE);
       await page.click('.gate-form button[type="submit"]');
@@ -249,11 +266,7 @@ async function checkParentCode(page) {
     await page.fill('.gate-input', String(gateAnswer(await page.textContent('.gate-question'))));
     await page.click('.gate-form button[type="submit"]');
   };
-  const choose = async (code, again) => {
-    await page.locator('.gate-new-code input').nth(0).fill(code);
-    await page.locator('.gate-new-code input').nth(1).fill(again);
-    await page.click('[data-save-code]');
-  };
+  const choose = (code, again) => chooseCode(page, code, again);
   const errorSays = (re) => page.waitForFunction((src) => new RegExp(src).test(document.querySelector('.gate .gate-error')?.textContent || ''), re.source);
   // comme sur un appareil où le code n'a pas encore été choisi (le parcours a pu en choisir un avant)
   await page.evaluate((key) => {
@@ -1980,9 +1993,7 @@ await page.waitForSelector('[data-parent-code]');
 if (!/Choisi le \d/.test(await page.textContent('[data-parent-code]'))) fail('code parental : la date du choix manque');
 for (const code of ['2468', TEST_CODE]) {
   await page.click('[data-change-code]');
-  await page.locator('[data-parent-code] input').nth(0).fill(code);
-  await page.locator('[data-parent-code] input').nth(1).fill(code);
-  await page.click('[data-parent-code] [data-save-code]');
+  await chooseCode(page, code);
   await page.waitForSelector('[data-parent-code] .toast');
   if ((await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).settings.parentCode, STORAGE_KEY)) !== code) fail(`code parental : ${code} non enregistré`);
 }
