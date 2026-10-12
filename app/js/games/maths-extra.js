@@ -17,12 +17,14 @@ const COLORS = ['#ff5c5c', '#3d7dff', '#2fbf5b', '#ffb020', '#9b5cff', '#ff6fa8'
 export const SHAPE_SIDES = { rond: 0, triangle: 3, carré: 4, rectangle: 4 };
 
 // Devinettes : une seule forme convient parmi les choix (les autres sont dans « others »).
-const SHAPE_RIDDLES = [
+export const SHAPE_RIDDLES = [
   { text: 'la forme qui a 3 côtés', answer: 'triangle', others: ['rond', 'carré', 'rectangle', 'étoile', 'cœur'] },
   { text: 'la forme qui a 4 côtés tous pareils', answer: 'carré', others: ['rond', 'triangle', 'rectangle', 'étoile', 'cœur'] },
   { text: 'la forme qui a 2 grands côtés et 2 petits', answer: 'rectangle', others: ['rond', 'triangle', 'carré', 'étoile', 'cœur'] },
   { text: 'la forme qui n’a ni côté, ni pointe', answer: 'rond', others: ['triangle', 'carré', 'rectangle', 'étoile'] },
   { text: 'la forme qui a 5 pointes', answer: 'étoile', others: ['rond', 'triangle', 'carré', 'rectangle'] },
+  { text: 'la forme qui a 3 pointes', answer: 'triangle', others: ['rond', 'carré', 'rectangle', 'étoile', 'cœur'] },
+  { text: 'la forme qui a une seule pointe', answer: 'cœur', others: ['rond', 'triangle', 'carré', 'rectangle', 'étoile'] },
 ];
 
 // Formes en émojis, de plusieurs couleurs : c'est la forme qui compte, pas la couleur.
@@ -58,7 +60,7 @@ function shapeRiddle(rng) {
   const riddle = pick(rng, SHAPE_RIDDLES);
   const options = shuffle(rng, [riddle.answer, ...sample(rng, riddle.others, 3)]);
   return {
-    key: `formes:devinette:${riddle.answer}:${options.join('')}`,
+    key: `formes:devinette:${riddle.text}`,
     text: `Touche ${riddle.text}.`,
     instruction: `Touche ${riddle.text}.`,
     stage: { type: 'none' },
@@ -93,19 +95,24 @@ function shapeCount(rng) {
 }
 
 // Niveau 7 : des objets de tous les jours qui ont la forme d'un rond, d'un carré, d'un triangle, d'un rectangle.
+// Seulement des emoji de la même forme sur tous les appareils : pas la gaufre 🧇, carrée sur Android
+// mais ronde sur iPhone et iPad (l'enfant répondait « rond », compté faux).
 export const SHAPE_OBJECTS = {
   rond: [
     { emoji: '⚽', name: 'le ballon' }, { emoji: '🍪', name: 'le biscuit' }, { emoji: '🍩', name: 'le beignet' },
-    { emoji: '🎯', name: 'la cible' }, { emoji: '🌕', name: 'la pleine lune' },
+    { emoji: '🎯', name: 'la cible' }, { emoji: '🌕', name: 'la pleine lune' }, { emoji: '💿', name: 'le disque' },
   ],
-  carré: [{ emoji: '🧇', name: 'la gaufre' }, { emoji: '🎁', name: 'le cadeau' }, { emoji: '🧊', name: 'le glaçon' }],
-  triangle: [{ emoji: '🍕', name: 'la part de pizza' }, { emoji: '⛺', name: 'la tente' }, { emoji: '📐', name: 'l’équerre' }],
+  carré: [{ emoji: '🎁', name: 'le cadeau' }, { emoji: '🧊', name: 'le glaçon' }, { emoji: '📅', name: 'le calendrier' }],
+  triangle: [
+    { emoji: '🍕', name: 'la part de pizza' }, { emoji: '⛺', name: 'la tente' }, { emoji: '📐', name: 'l’équerre' },
+    { emoji: '⚠️', name: 'le panneau' },
+  ],
   rectangle: [
     { emoji: '🚪', name: 'la porte' }, { emoji: '📱', name: 'le téléphone' }, { emoji: '🍫', name: 'la tablette de chocolat' },
-    { emoji: '💵', name: 'le billet' },
+    { emoji: '💵', name: 'le billet' }, { emoji: '💳', name: 'la carte bancaire' },
   ],
 };
-// Formes qu'on pourrait confondre sur un objet (une gaufre presque carrée…) : jamais proposées ensemble.
+// Formes qu'on pourrait confondre sur un objet (un cadeau presque carré…) : jamais proposées ensemble.
 const SHAPE_LOOKALIKE = { carré: 'rectangle', rectangle: 'carré' };
 const SHAPE_A = { rond: 'un rond', carré: 'un carré', triangle: 'un triangle', rectangle: 'un rectangle' };
 
@@ -116,7 +123,7 @@ function shapeObject(rng) {
   const others = ['rond', 'carré', 'triangle', 'rectangle', 'étoile'].filter((s) => s !== shape && s !== SHAPE_LOOKALIKE[shape]);
   const options = shuffle(rng, [shape, ...sample(rng, others, 3)]);
   return {
-    key: `formes:objet:${object.emoji}:${options.join('')}`,
+    key: `formes:objet:${object.emoji}`,
     text: 'À quelle forme ressemble cet objet ?',
     instruction: 'Regarde bien l’objet. À quelle forme ressemble-t-il ? Touche la forme.',
     short: { key: 'formes:objet', text: 'À quelle forme ressemble-t-il ?' },
@@ -136,6 +143,10 @@ export const SHAPE_RIDDLES_2 = [
   { text: 'la forme toute arrondie, avec une pointe', answer: 'cœur', near: 'rond', others: ['triangle', 'carré', 'étoile'] },
   { text: 'la forme toute arrondie, sans pointe', answer: 'rond', near: 'cœur', others: ['triangle', 'carré', 'étoile'] },
   { text: 'la forme qui a plus de 4 pointes', answer: 'étoile', near: 'carré', others: ['rond', 'triangle', 'cœur'] },
+  { text: 'la forme qui a des côtés tout droits, et 3 pointes', answer: 'triangle', near: 'carré', others: ['rond', 'étoile', 'cœur'] },
+  { text: 'la forme qui a 4 pointes, et des côtés tous pareils', answer: 'carré', near: 'rectangle', others: ['rond', 'triangle', 'étoile', 'cœur'] },
+  { text: 'la forme qui a des côtés tout droits, et plus de 4 pointes', answer: 'étoile', near: 'carré', others: ['rond', 'triangle', 'cœur'] },
+  { text: 'la forme qui a 4 pointes, et 2 côtés plus longs que les autres', answer: 'rectangle', near: 'carré', others: ['rond', 'triangle', 'étoile', 'cœur'] },
 ];
 
 /** Niveau 8 : trouver la forme qui respecte deux indices. */
@@ -143,7 +154,7 @@ function shapeRiddle2(rng) {
   const riddle = pick(rng, SHAPE_RIDDLES_2);
   const options = shuffle(rng, [riddle.answer, riddle.near, ...sample(rng, riddle.others, 2)]);
   return {
-    key: `formes:indices:${riddle.answer}:${options.join('')}`,
+    key: `formes:indices:${riddle.text}`,
     text: `Touche ${riddle.text}.`,
     instruction: `Écoute bien les deux indices. Touche ${riddle.text}.`,
     stage: { type: 'none' },

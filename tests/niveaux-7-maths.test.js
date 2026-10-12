@@ -6,7 +6,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { findGame } from '../app/js/games/index.js';
-import { clockLabel, productWritings, SHAPE_OBJECTS, SHAPE_RIDDLES_2, SHADOW_LOOKALIKES } from '../app/js/games/maths-extra.js';
+import { clockLabel, productWritings, SHAPE_OBJECTS, SHAPE_RIDDLES, SHAPE_RIDDLES_2, SHADOW_LOOKALIKES } from '../app/js/games/maths-extra.js';
 import { fromClockMinutes, minusLabel, shiftClock, toClockMinutes } from '../app/js/games/horloge.js';
 import { createRng } from '../app/js/random.js';
 
@@ -99,10 +99,12 @@ test('formes : les formes autour de moi, devinettes à deux indices', () => {
     checkChoices(q, q.key);
     assert.equal(q.choices.length, 4);
     assert.ok(SHAPE_OBJECTS[q.answer].some((o) => o.emoji === q.stage.emoji), q.key);
-    // jamais carré et rectangle ensemble quand l'un des deux est la réponse (une gaufre presque carrée…)
+    // jamais carré et rectangle ensemble quand l'un des deux est la réponse (un cadeau presque carré…)
     if (q.answer === 'carré') assert.ok(!values(q).includes('rectangle'), q.key);
     if (q.answer === 'rectangle') assert.ok(!values(q).includes('carré'), q.key);
   }
+  // la gaufre 🧇 est carrée sur Android, ronde sur iPhone : jamais un objet « carré » (ni d'une autre forme)
+  assert.ok(!Object.values(SHAPE_OBJECTS).flat().some((o) => o.emoji === '🧇'), 'gaufre : pas la même forme sur tous les appareils');
   const SIDES = { rond: 0, triangle: 3, carré: 4, rectangle: 4, étoile: 10 };
   for (const q of draws('formes', 8)) {
     checkChoices(q, q.key);
@@ -117,6 +119,45 @@ test('formes : les formes autour de moi, devinettes à deux indices', () => {
     }
     if (riddle.answer === 'étoile') assert.deepEqual(values(q).filter((s) => SIDES[s] > 4), ['étoile'], q.key);
   }
+});
+
+test('formes : chaque devinette n’a qu’une bonne réponse parmi les formes qu’elle peut proposer', () => {
+  const FORMES = {
+    rond: { cotes: 0, pointes: 0, droits: false, arrondie: true },
+    triangle: { cotes: 3, pointes: 3, droits: true },
+    carré: { cotes: 4, pointes: 4, droits: true, pareils: true },
+    rectangle: { cotes: 4, pointes: 4, droits: true, pareils: false, longs: true },
+    étoile: { cotes: 10, pointes: 5, droits: true, pareils: true },
+    cœur: { cotes: 0, pointes: 1, droits: false, arrondie: true },
+  };
+  const INDICES = {
+    'la forme qui a 3 côtés': [(f) => f.cotes === 3],
+    'la forme qui a 4 côtés tous pareils': [(f) => f.cotes === 4 && f.pareils],
+    'la forme qui a 2 grands côtés et 2 petits': [(f) => f.longs],
+    'la forme qui n’a ni côté, ni pointe': [(f) => f.cotes === 0 && f.pointes === 0],
+    'la forme qui a 5 pointes': [(f) => f.pointes === 5],
+    'la forme qui a 3 pointes': [(f) => f.pointes === 3],
+    'la forme qui a une seule pointe': [(f) => f.pointes === 1],
+    'la forme qui a 4 côtés, mais pas tous pareils': [(f) => f.cotes === 4, (f) => !f.pareils],
+    'la forme qui a des côtés, mais moins de 4': [(f) => f.cotes > 0, (f) => f.cotes < 4],
+    'la forme toute arrondie, avec une pointe': [(f) => f.arrondie, (f) => f.pointes === 1],
+    'la forme toute arrondie, sans pointe': [(f) => f.arrondie, (f) => f.pointes === 0],
+    'la forme qui a plus de 4 pointes': [(f) => f.pointes > 4],
+    'la forme qui a des côtés tout droits, et 3 pointes': [(f) => f.droits, (f) => f.pointes === 3],
+    'la forme qui a 4 pointes, et des côtés tous pareils': [(f) => f.pointes === 4, (f) => f.pareils],
+    'la forme qui a des côtés tout droits, et plus de 4 pointes': [(f) => f.droits, (f) => f.pointes > 4],
+    'la forme qui a 4 pointes, et 2 côtés plus longs que les autres': [(f) => f.pointes === 4, (f) => f.longs],
+  };
+  for (const r of [...SHAPE_RIDDLES, ...SHAPE_RIDDLES_2]) {
+    const indices = INDICES[r.text];
+    assert.ok(indices, `nouvelle devinette : décrire ses indices ici (${r.text})`);
+    const convient = (forme) => indices.every((i) => i(FORMES[forme]));
+    assert.ok(convient(r.answer), r.text);
+    for (const autre of [...r.others, ...(r.near ? [r.near] : [])]) assert.ok(!convient(autre), `${r.text} : ${autre} convient aussi`);
+    // la forme « presque juste » respecte un des deux indices
+    if (r.near && indices.length > 1) assert.ok(indices.some((i) => i(FORMES[r.near])), `${r.text} : ${r.near}`);
+  }
+  assert.ok(SHAPE_RIDDLES.length >= 7 && SHAPE_RIDDLES_2.length >= 9, 'assez de devinettes pour une partie');
 });
 
 test('intrus : calculs de dizaines, plus et fois mélangés', () => {
