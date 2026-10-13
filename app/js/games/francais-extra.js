@@ -592,6 +592,11 @@ const SENTENCES = [
   { level: 1, emoji: '☀️', text: 'Le soleil brille.' }, { level: 1, emoji: '😴', text: 'Il dort.' },
   { level: 1, emoji: '📖', text: 'Elle lit un livre.' }, { level: 1, emoji: '🎨', text: 'Il peint.' },
   { level: 1, emoji: '🚀', text: 'La fusée décolle.' }, { level: 1, emoji: '🎂', text: 'Joyeux anniversaire !' },
+  { level: 1, emoji: '🌙', text: 'La lune brille.' }, { level: 1, emoji: '😢', text: 'Il pleure.' },
+  { level: 1, emoji: '🏃', text: 'Il court.' }, { level: 1, emoji: '🐟', text: 'Le poisson nage.' },
+  { level: 1, emoji: '🚗', text: 'La voiture roule.' }, { level: 1, emoji: '🔔', text: 'La cloche sonne.' },
+  { level: 1, emoji: '🐓', text: 'Le coq chante.' }, { level: 1, emoji: '🎄', text: 'Joyeux Noël !' },
+  { level: 1, emoji: '🤧', text: 'Il éternue.' },
   { level: 2, emoji: '🏊', text: 'Le garçon nage dans la piscine.' },
   { level: 2, emoji: '🚴', text: 'La fille fait du vélo dans le parc.' },
   { level: 2, emoji: '⚽', text: 'Les enfants jouent au football.' },
@@ -600,6 +605,16 @@ const SENTENCES = [
   { level: 2, emoji: '🪥', text: 'Je me brosse les dents.' },
   { level: 2, emoji: '🍦', text: 'Nous mangeons une glace à la vanille.' },
   { level: 2, emoji: '🎁', text: 'Papa ouvre un grand cadeau.' },
+  { level: 2, emoji: '🚜', text: 'Le fermier conduit son tracteur.' },
+  { level: 2, emoji: '⛵', text: 'Le bateau glisse sur la mer.' },
+  { level: 2, emoji: '🐘', text: 'L’éléphant a une longue trompe.' },
+  { level: 2, emoji: '🎸', text: 'Mon frère joue de la guitare.' },
+  { level: 2, emoji: '🎹', text: 'Ma sœur joue du piano.' },
+  { level: 2, emoji: '🦋', text: 'Le papillon vole dans le jardin.' },
+  { level: 2, emoji: '⛄', text: 'Nous faisons un bonhomme de neige.' },
+  { level: 2, emoji: '🛁', text: 'Le soir, je prends mon bain.' },
+  { level: 2, emoji: '🍎', text: 'Je croque une belle pomme rouge.' },
+  { level: 2, emoji: '🌈', text: 'Après la pluie, il y a un arc-en-ciel.' },
 ];
 
 /** Au-delà de 26 caractères, une phrase-réponse passe sur deux lignes (téléphone en paysage). */
