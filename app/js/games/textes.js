@@ -214,7 +214,7 @@ const TEXTS = [
     ['Où est Nathan ?', 'au cinéma', 'à l’école', 'à la piscine'],
     ['Que va faire Nathan ?', 'regarder un film', 'dormir', 'nager']] },
   { level: 4, title: 'Les baskets', text: 'Ce matin, Ilyes n’arrive pas à mettre ses baskets. Il pousse, il tire, mais son pied ne rentre pas. Maman sourit : « Tu as encore grandi ! Il faut en acheter d’autres. »', questions: [
-    ['Comment sont les baskets d’Ilyes ?', 'trop petites', 'trop grandes', 'toutes neuves'],
+    ['Comment sont ses baskets ?', 'trop petites', 'trop grandes', 'toutes neuves'],
     ['Que vont-ils acheter ?', 'des baskets', 'un pull', 'un ballon']] },
   { level: 4, title: 'Le fauteuil de papi', text: 'Après le repas, papi s’assoit dans son fauteuil avec son journal. Au bout de cinq minutes, le journal glisse par terre. Papi a les yeux fermés et il ronfle doucement.', questions: [
     ['Que fait papi ?', 'il dort', 'il lit', 'il mange'],
