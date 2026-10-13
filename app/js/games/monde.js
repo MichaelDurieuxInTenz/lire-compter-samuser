@@ -55,6 +55,22 @@ const ANIMALS = [
   { emoji: '🐢', name: 'la tortue', food: 'herbe', eggs: true, cover: 'écailles' },
   { emoji: '🐊', name: 'le crocodile', food: 'viande', eggs: true, cover: 'écailles' },
   { emoji: '🐍', name: 'le serpent', food: 'viande', eggs: true, cry: 'siffle', cover: 'écailles' },
+  { emoji: '🦎', name: 'le lézard', eggs: true, cover: 'écailles' },
+  { emoji: '🦜', name: 'le perroquet', eggs: true, cover: 'plumes' },
+  { emoji: '🦢', name: 'le cygne', eggs: true, cover: 'plumes' },
+  { emoji: '🦅', name: 'l’aigle', eggs: true, cover: 'plumes' },
+  // sans `cover` : ni poils, ni plumes, ni écailles (et pour l'oiseau, « l'oiseau a des plumes : c'est un
+  // oiseau » ne dirait rien) ; seulement pour les œufs et les maisons
+  { emoji: '🐸', name: 'la grenouille', eggs: true },
+  { emoji: '🦋', name: 'le papillon', eggs: true },
+  { emoji: '🐞', name: 'la coccinelle', eggs: true },
+  { emoji: '🐌', name: 'l’escargot', eggs: true, house: 'la coquille', inHouse: 'L’escargot rentre dans sa coquille.' },
+  { emoji: '🕷️', name: 'l’araignée', eggs: true, house: 'la toile', inHouse: 'L’araignée vit sur sa toile.' },
+  { emoji: '🐦', name: 'l’oiseau', eggs: true, house: 'le nid', inHouse: 'L’oiseau construit son nid.' },
+  { emoji: '🐺', name: 'le loup', baby: 'le louveteau', food: 'viande', eggs: false, cry: 'hurle', house: 'la tanière', cover: 'poils' },
+  // seule la reine pond : ni dans « Qui pond des œufs ? », ni parmi ceux qui n'en pondent pas
+  { emoji: '🐝', name: 'l’abeille', house: 'la ruche', inHouse: 'L’abeille vit dans la ruche.' },
+  { emoji: '🐜', name: 'la fourmi', house: 'la fourmilière', inHouse: 'La fourmi vit dans la fourmilière.' },
 ];
 
 // Ce qui couvre le corps : un indice pour reconnaître les mammifères, les oiseaux et les reptiles.
@@ -107,7 +123,7 @@ export const animauxMonde = {
         choices: options.map((h) => ({ value: h, label: h })),
         choiceStyle: 'answers',
         answer: animal.house,
-        success: { speak: `${capitalize(animal.name)} dort dans ${animal.house}.` },
+        success: { speak: animal.inHouse || `${capitalize(animal.name)} dort dans ${animal.house}.` },
       };
     }
     if (level === 7) {
@@ -176,7 +192,7 @@ export const animauxMonde = {
       };
     }
     const layer = pick(rng, ANIMALS.filter((a) => a.eggs));
-    const others = sample(rng, ANIMALS.filter((a) => !a.eggs), 2);
+    const others = sample(rng, ANIMALS.filter((a) => a.eggs === false), 2);
     const options = shuffle(rng, [layer, ...others]);
     return {
       key: `animaux:oeufs:${layer.name}`,
@@ -364,6 +380,13 @@ const PLACES = [
   { level: 1, clue: '💂', what: 'Les gardes de Londres', says: 'Les gardes sont au Royaume-Uni.', country: 'Royaume-Uni', continent: 'Europe' },
   { level: 1, clue: '🥘', what: 'La paella', says: 'La paella vient d’Espagne.', country: 'Espagne', continent: 'Europe' },
   { level: 1, clue: '🥨', what: 'Le bretzel', says: 'Le bretzel vient d’Allemagne.', country: 'Allemagne', continent: 'Europe' },
+  { level: 1, clue: '🏰', what: 'Le château de Versailles', says: 'Le château de Versailles est en France.', country: 'France', continent: 'Europe' },
+  { level: 1, clue: '🧀', what: 'Le camembert', says: 'Le camembert est un fromage de France.', country: 'France', continent: 'Europe' },
+  { level: 1, clue: '🍝', what: 'Les spaghettis', says: 'Les spaghettis viennent d’Italie.', country: 'Italie', continent: 'Europe' },
+  { level: 1, clue: '🕰️', what: 'L’horloge Big Ben', says: 'L’horloge Big Ben est à Londres, au Royaume-Uni.', country: 'Royaume-Uni', continent: 'Europe' },
+  { level: 1, clue: '💃', what: 'Le flamenco', says: 'Le flamenco est une danse d’Espagne.', country: 'Espagne', continent: 'Europe' },
+  { level: 1, clue: '🏛️', what: 'Le Parthénon d’Athènes', says: 'Le Parthénon est à Athènes, en Grèce.', country: 'Grèce', continent: 'Europe' },
+  { level: 1, clue: '🌷', what: 'Les champs de tulipes', says: 'Les Pays-Bas sont célèbres pour leurs champs de tulipes.', country: 'Pays-Bas', continent: 'Europe' },
   { level: 2, clue: '🗽', what: 'La statue de la Liberté', says: 'La statue de la Liberté est aux États-Unis.', country: 'États-Unis', continent: 'Amérique' },
   { level: 2, clue: '🗻', what: 'Le mont Fuji', says: 'Le mont Fuji est au Japon.', country: 'Japon', continent: 'Asie' },
   { level: 2, clue: '🐼', what: 'Le panda géant', says: 'Le panda géant vit en Chine.', country: 'Chine', continent: 'Asie' },
@@ -371,6 +394,11 @@ const PLACES = [
   { level: 2, clue: '🐪', what: 'Les pyramides', says: 'Les pyramides sont en Égypte.', country: 'Égypte', continent: 'Afrique' },
   { level: 2, clue: '🍁', what: 'La feuille d’érable', says: 'La feuille d’érable est le symbole du Canada.', country: 'Canada', continent: 'Amérique' },
   { level: 2, clue: '🕌', what: 'Le Taj Mahal', says: 'Le Taj Mahal est en Inde.', country: 'Inde', continent: 'Asie' },
+  { level: 2, clue: '🍣', what: 'Les sushis', says: 'Les sushis viennent du Japon.', country: 'Japon', continent: 'Asie' },
+  { level: 2, clue: '👘', what: 'Le kimono', says: 'Le kimono est un vêtement traditionnel du Japon.', country: 'Japon', continent: 'Asie' },
+  { level: 2, clue: '🧱', what: 'La Grande Muraille', says: 'La Grande Muraille est en Chine.', country: 'Chine', continent: 'Asie' },
+  { level: 2, clue: '🐨', what: 'Le koala', says: 'Le koala vit en Australie.', country: 'Australie', continent: 'Océanie' },
+  { level: 2, clue: '🎭', what: 'Le carnaval de Rio', says: 'Le carnaval de Rio est au Brésil.', country: 'Brésil', continent: 'Amérique' },
   { level: 3, clue: '🦁', what: 'Le lion', says: 'Le lion vit en Afrique.', continent: 'Afrique' },
   { level: 3, clue: '🐧', what: 'Le manchot empereur', says: 'Le manchot empereur vit en Antarctique.', continent: 'Antarctique' },
 ];
@@ -399,18 +427,26 @@ const HELLOS = [
   { word: 'Konnichiwa !', say: 'Konichiwa !', language: 'japonais', where: 'au Japon' },
   { word: 'Ni hao !', say: 'Ni hao !', language: 'chinois', where: 'en Chine' },
   { word: 'Salam !', say: 'Salam !', language: 'arabe', where: 'en Égypte' },
+  { word: 'Bom dia !', say: 'Bon dia !', lang: 'pt', language: 'portugais', where: 'au Portugal et au Brésil' },
+  { word: 'Kaliméra !', say: 'Kaliméra !', language: 'grec', where: 'en Grèce' },
+  { word: 'Namasté !', say: 'Namasté !', language: 'hindi', where: 'en Inde' },
+  { word: 'Jambo !', say: 'Djambo !', lang: 'sw', language: 'swahili', where: 'en Afrique de l’Est' },
+  { word: 'Shalom !', say: 'Chalom !', language: 'hébreu', where: 'en Israël' },
 ];
 
-// Niveau 7 : les pays qui touchent la France (en Europe). Pas de piège : le Royaume-Uni (relié par le
-// tunnel), les Pays-Bas et le Brésil (voisins de territoires d'outre-mer) ne sont jamais proposés.
+// Niveau 7 : les huit pays qui touchent la France (en Europe), avec Monaco et l'Andorre. Pas de piège :
+// le Royaume-Uni (relié par le tunnel), les Pays-Bas et le Brésil (voisins de territoires d'outre-mer)
+// ne sont jamais proposés.
 const FRANCE_NEIGHBOURS = [
   { label: 'Belgique', name: 'la Belgique' }, { label: 'Luxembourg', name: 'le Luxembourg' },
   { label: 'Allemagne', name: 'l’Allemagne' }, { label: 'Suisse', name: 'la Suisse' },
   { label: 'Italie', name: 'l’Italie' }, { label: 'Espagne', name: 'l’Espagne' },
+  { label: 'Monaco', name: 'Monaco' }, { label: 'Andorre', name: 'l’Andorre' },
 ];
 const NOT_NEIGHBOURS = ['Portugal', 'Pologne', 'Autriche', 'Grèce', 'Suède', 'Irlande', 'Danemark', 'Hongrie', 'Norvège', 'Roumanie'];
 
-// Niveau 8 : les cinq océans, repérés par rapport aux continents (comme sur un globe).
+// Niveau 8 : les cinq océans, repérés par rapport aux continents (comme sur un globe), à quelques
+// grandes îles (dont des îles françaises) et aux animaux des pôles.
 const OCEAN_NAMES = ['Atlantique', 'Pacifique', 'Indien', 'Arctique', 'Austral'];
 const OCEANS = [
   { clue: '🌍', ask: 'Entre l’Europe et l’Amérique, il y a l’océan…', answer: 'Atlantique' },
@@ -420,6 +456,16 @@ const OCEANS = [
   { clue: '🌏', ask: 'Entre l’Afrique et l’Australie, il y a l’océan…', answer: 'Indien' },
   { clue: '🐻‍❄️', ask: 'Au pôle Nord, il y a l’océan…', answer: 'Arctique' },
   { clue: '🐧', ask: 'Autour de l’Antarctique, il y a l’océan…', answer: 'Austral' },
+  { clue: '🌍', ask: 'Entre l’Amérique et l’Afrique, il y a l’océan…', answer: 'Atlantique' },
+  { clue: '🌍', ask: 'À l’est de l’Afrique, il y a l’océan…', answer: 'Indien' },
+  { clue: '🌊', ask: 'À l’ouest de l’Amérique, il y a l’océan…', answer: 'Pacifique' },
+  { clue: '🗻', ask: 'Le Japon est au bord de l’océan…', answer: 'Pacifique' },
+  { clue: '🌍', ask: 'Madagascar est une grande île de l’océan…', answer: 'Indien' },
+  { clue: '🌋', ask: 'La Réunion est une île française de l’océan…', answer: 'Indien' },
+  { clue: '🌴', ask: 'Tahiti est une île française de l’océan…', answer: 'Pacifique' },
+  { clue: '🧊', ask: 'Le plus petit océan du monde, c’est l’océan…', answer: 'Arctique' },
+  { clue: '🐻‍❄️', ask: 'Les ours blancs chassent sur la glace de l’océan…', answer: 'Arctique' },
+  { clue: '🐧', ask: 'Les manchots empereurs pêchent dans l’océan…', answer: 'Austral' },
 ];
 
 /** Niveaux 7 et 8 des pays : les voisins de la France, les océans. */

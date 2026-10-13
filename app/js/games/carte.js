@@ -86,16 +86,48 @@ function oceans(rng) {
 }
 
 // ---------------------------------------------------------------- 3. Où est la France ?
+// La France sur la carte d'Europe et sur celle du monde, son continent, sa capitale, les mers qui la
+// bordent et ses voisins (la France est alors hachurée, avec son drapeau).
 
 const FRENCH_SEAS = {
   mediterranee: 'Oui ! La mer Méditerranée est au sud de la France.',
   atlantique: 'Oui ! L’océan Atlantique est à l’ouest de la France.',
   'mer-du-nord': 'Oui ! La mer du Nord est au nord de la France.',
 };
+// les voisins qu'on peut toucher sur la carte d'Europe (le Luxembourg est trop petit)
+const FRENCH_NEIGHBOURS = COUNTRIES.fr.neighbours.filter((id) => EUROPE_TARGETS.includes(id));
 
 function france(rng) {
   const r = rng();
-  if (r < 0.45) {
+  if (r < 0.2) {
+    const id = pick(rng, FRENCH_NEIGHBOURS);
+    const c = COUNTRIES[id];
+    return mapQuestion({
+      key: `carte:france:voisin:${id}`,
+      text: `Touche ${c.name}, un pays voisin de la France.`,
+      view: 'europe',
+      layer: 'countries',
+      zones: EUROPE_DRAWN.filter((z) => z !== 'fr'),
+      start: 'fr',
+      answer: id,
+      clue: { icon: '📍', text: c.label },
+      success: `Oui ! ${capitalize(c.name)} ${is(c)} un pays voisin de la France.`,
+    });
+  }
+  if (r < 0.27) {
+    return mapQuestion({
+      key: 'carte:france:continent',
+      text: 'Touche le continent de la France.',
+      view: 'monde',
+      layer: 'continents',
+      zones: Object.keys(CONTINENTS),
+      answer: 'europe',
+      clue: { icon: '📍', text: 'France' },
+      success: 'Oui ! La France est en Europe.',
+    });
+  }
+  if (r < 0.34) return capitalOf(rng, 'europe', 'fr');
+  if (r < 0.6) {
     return mapQuestion({
       key: 'carte:france:europe',
       text: 'Touche la France.',
@@ -107,7 +139,7 @@ function france(rng) {
       success: 'Oui, voici la France !',
     });
   }
-  if (r < 0.65) {
+  if (r < 0.72) {
     return mapQuestion({
       key: 'carte:france:monde',
       text: 'Touche la France sur la carte du monde.',
@@ -228,7 +260,12 @@ const far = (view, a, b) => {
 function capital(rng) {
   const view = rng() < 0.6 ? 'europe' : 'monde';
   const pool = view === 'europe' ? EUROPE_TARGETS : WORLD_QUIZ;
-  const id = weighted(rng, pool, view === 'europe' ? ['fr', ...EUROPE_EASY] : WORLD_EASY);
+  return capitalOf(rng, view, weighted(rng, pool, view === 'europe' ? ['fr', ...EUROPE_EASY] : WORLD_EASY));
+}
+
+/** Touche la capitale du pays `id` sur la carte `view`. */
+function capitalOf(rng, view, id) {
+  const pool = view === 'europe' ? EUROPE_TARGETS : WORLD_QUIZ;
   // trois autres capitales, assez loin les unes des autres pour qu'un doigt ne les confonde pas
   const cities = [id];
   for (const other of shuffle(rng, pool)) {

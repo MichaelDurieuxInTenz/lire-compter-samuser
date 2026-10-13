@@ -38,12 +38,23 @@ export const LOOKALIKES = [
   [{ emoji: '🐟', name: 'le poisson' }, { emoji: '🐬', name: 'le dauphin' }, { emoji: '🐳', name: 'la baleine' }],
 ];
 
-/** Les visages (niveau des émotions) : « Trouve le visage triste. » */
-const FACES = [
-  { emoji: '😄', name: 'le visage content' }, { emoji: '😢', name: 'le visage triste' },
-  { emoji: '😠', name: 'le visage en colère' }, { emoji: '😨', name: 'le visage qui a peur' },
-  { emoji: '😲', name: 'le visage surpris' }, { emoji: '😴', name: 'le visage qui dort' },
+/**
+ * Les visages (niveau des émotions) : « Trouve le visage triste. » `near` : les visages qu'on pourrait
+ * prendre pour celui-ci (le clown sourit aussi, le visage qui a froid est bleu comme celui qui a peur…) ;
+ * ils ne sont jamais sur la même carte.
+ */
+export const FACES = [
+  { emoji: '😄', name: 'le visage content', near: ['🤡'] }, { emoji: '😢', name: 'le visage triste', near: ['🤕', '🤒'] },
+  { emoji: '😠', name: 'le visage en colère', near: ['🥵'] }, { emoji: '😨', name: 'le visage qui a peur', near: ['🥶'] },
+  { emoji: '😲', name: 'le visage surpris' }, { emoji: '😴', name: 'le visage qui dort', near: ['🤧'] },
+  { emoji: '🤢', name: 'le visage dégoûté', near: ['🤒', '🤧', '🤕'] }, { emoji: '🥶', name: 'le visage qui a froid', near: ['🤧'] },
+  { emoji: '🥵', name: 'le visage qui a chaud', near: ['🤒'] }, { emoji: '🤔', name: 'le visage qui réfléchit' },
+  { emoji: '🤫', name: 'le visage qui dit chut' }, { emoji: '🤡', name: 'le visage de clown' },
+  { emoji: '🤒', name: 'le visage avec un thermomètre' }, { emoji: '🤧', name: 'le visage avec un mouchoir' },
+  { emoji: '🤕', name: 'le visage avec un bandage' },
 ];
+/** Deux visages qu'on pourrait confondre (dans un sens ou dans l'autre). */
+export const lookAlike = (a, b) => (a.near || []).includes(b.emoji) || (b.near || []).includes(a.emoji);
 
 /** Les paires presque pareilles (niveau « Un seul est différent ») : beaucoup de l'une, une de l'autre. */
 const ODD_PAIRS = [
@@ -126,7 +137,7 @@ export const chercheTrouve = {
       ask = ODD_ASK;
     } else if (spec.kind === 'faces') {
       target = pick(rng, FACES);
-      others = fill(rng, FACES, spec.count - 1, [target.emoji]);
+      others = fill(rng, FACES, spec.count - 1, FACES.filter((f) => f === target || lookAlike(f, target)).map((f) => f.emoji));
       ask = `Trouve ${target.name}.`;
     } else if (spec.kind === 'alike') {
       const family = pick(rng, LOOKALIKES);
