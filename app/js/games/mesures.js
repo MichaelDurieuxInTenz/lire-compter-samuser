@@ -177,6 +177,16 @@ const UNITS = [
   { what: 'l’eau d’une bouteille', unit: 'des litres', wrong: ['des mètres', 'des kilos'] },
   { what: 'la distance jusqu’à l’école', unit: 'des kilomètres', wrong: ['des litres', 'des kilos'] },
   { what: 'le poids d’une lettre', unit: 'des grammes', wrong: ['des mètres', 'des litres'] },
+  { what: 'la longueur d’une gomme', unit: 'des centimètres', wrong: ['des kilos', 'des litres'] },
+  { what: 'la longueur d’un cahier', unit: 'des centimètres', wrong: ['des kilos', 'des litres'] },
+  { what: 'la hauteur d’un arbre', unit: 'des mètres', wrong: ['des kilos', 'des litres'] },
+  { what: 'la longueur d’une piscine', unit: 'des mètres', wrong: ['des kilos', 'des litres'] },
+  { what: 'le poids d’un chien', unit: 'des kilos', wrong: ['des mètres', 'des litres'] },
+  { what: 'le poids d’une valise', unit: 'des kilos', wrong: ['des mètres', 'des litres'] },
+  { what: 'le poids d’une fraise', unit: 'des grammes', wrong: ['des mètres', 'des litres'] },
+  { what: 'l’eau d’une baignoire', unit: 'des litres', wrong: ['des mètres', 'des kilos'] },
+  { what: 'l’eau d’un arrosoir', unit: 'des litres', wrong: ['des mètres', 'des kilos'] },
+  { what: 'la distance entre deux villes', unit: 'des kilomètres', wrong: ['des litres', 'des kilos'] },
 ];
 const BAR_COLORS = ['#ff5c5c', '#3d7dff', '#2fbf5b', '#ffb020'];
 
@@ -359,6 +369,20 @@ const FACTS = [
   { q: 'Combien y a-t-il de mois dans une année ?', a: 12 },
   { q: 'Combien y a-t-il de jours en janvier ?', a: 31 },
   { q: 'Combien y a-t-il de jours en avril ?', a: 30 },
+  // la longueur des autres mois (pas février : 28 ou 29 jours selon l'année)
+  { q: 'Combien y a-t-il de jours en mars ?', a: 31 },
+  { q: 'Combien y a-t-il de jours en mai ?', a: 31 },
+  { q: 'Combien y a-t-il de jours en juin ?', a: 30 },
+  { q: 'Combien y a-t-il de jours en juillet ?', a: 31 },
+  { q: 'Combien y a-t-il de jours en août ?', a: 31 },
+  { q: 'Combien y a-t-il de jours en septembre ?', a: 30 },
+  { q: 'Combien y a-t-il de jours en octobre ?', a: 31 },
+  { q: 'Combien y a-t-il de jours en novembre ?', a: 30 },
+  { q: 'Combien y a-t-il de jours en décembre ?', a: 31 },
+  { q: 'Combien y a-t-il de jours dans le week-end ?', a: 2 },
+  { q: 'Combien y a-t-il de jours dans deux semaines ?', a: 14 },
+  { q: 'Combien y a-t-il de saisons dans une année ?', a: 4 },
+  { q: 'Combien y a-t-il d’heures dans une journée ?', a: 24 },
 ];
 const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 // Se décaler de quelques jours dans la semaine (« après-demain », « il y a 3 jours »).

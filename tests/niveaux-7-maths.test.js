@@ -147,6 +147,14 @@ test('formes : chaque devinette n’a qu’une bonne réponse parmi les formes q
     'la forme qui a 4 pointes, et des côtés tous pareils': [(f) => f.pointes === 4, (f) => f.pareils],
     'la forme qui a des côtés tout droits, et plus de 4 pointes': [(f) => f.droits, (f) => f.pointes > 4],
     'la forme qui a 4 pointes, et 2 côtés plus longs que les autres': [(f) => f.pointes === 4, (f) => f.longs],
+    'la forme qui a 4 côtés': [(f) => f.cotes === 4],
+    'la forme qui a 4 pointes': [(f) => f.pointes === 4],
+    'la forme toute ronde': [(f) => f.arrondie, (f) => f.pointes === 0],
+    'la forme qui a le plus de pointes': [(f) => f.pointes === 5],
+    'la forme qui a le moins de côtés': [(f) => f.cotes === 3],
+    'la forme qui a plus de 2 pointes, mais moins de 4': [(f) => f.pointes > 2, (f) => f.pointes < 4],
+    'la forme qui a plus de 3 pointes, mais moins de 5': [(f) => f.pointes > 3, (f) => f.pointes < 5],
+    'la forme qui a des pointes, mais moins de 3': [(f) => f.pointes > 0, (f) => f.pointes < 3],
   };
   for (const r of [...SHAPE_RIDDLES, ...SHAPE_RIDDLES_2]) {
     const indices = INDICES[r.text];
