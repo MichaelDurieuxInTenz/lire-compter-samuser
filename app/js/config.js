@@ -4,13 +4,21 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.19.2',
+  version: '1.20.0',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.20.0',
+    date: '2026-10-12',
+    changes: [
+      'Tous les jeux : plus deux fois la même question dans une partie, même avec les réponses dans un autre ordre, tant que le niveau en propose d’autres.',
+      'Les formes autour de moi : plus de gaufre (ronde sur iPhone et iPad, carrée ailleurs) ; quatre nouveaux objets, le disque, le calendrier, le panneau et la carte bancaire.',
+    ],
+  },
   {
     version: '1.19.2',
     date: '2026-10-12',

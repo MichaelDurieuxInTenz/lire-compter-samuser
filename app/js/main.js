@@ -18,6 +18,7 @@ import {
 import { featuredGames, levelRange, MAX_FEATURED, nearestLevel, programFor, programForChild } from './programs.js';
 import { dailyPicks, dueReviews as reviewsDue, duoPlan, drawPool, PARTY_MAX } from './picks.js';
 import { createRng, pick, randInt, sample, shuffle } from './random.js';
+import { historique, noter, questionSuivante } from './repetition.js';
 import { palierStarsAfter, PALIER_MAX_STARS, recordAnswer, starsFor } from './progress.js';
 import { newStickers, STICKERS, starsToNextSticker, stickersUnlocked } from './rewards.js';
 import {
@@ -1166,7 +1167,7 @@ function startSession(game, { level, back, total, duo } = {}) {
     index: 0,
     total: questionsPerSession(game, total, store.settings.sessionLength), // défi chrono : toujours 10
     correct: 0,
-    recentKeys: [],
+    asked: historique(), // les questions déjà posées dans la partie (repetition.js)
     briefed: new Set(), // consignes déjà dites en entier pendant cette partie
     startedAt: Date.now(),
     // un niveau choisi à la main repart d'une série vierge
@@ -1180,23 +1181,24 @@ function startSession(game, { level, back, total, duo } = {}) {
 }
 
 function newQuestion(session) {
-  let q;
   const { skipListening, tapOnly } = access();
   // contexte : le prénom de l'enfant, la saison (histoires et textes de saison) et les sons vus en classe (textes déchiffrables)
   const generate = (level, index) => session.game.generate(level, rng, index, { name: me().name, season: currentSeason().id, sons: contexteSons(child()) });
-  for (let i = 0; i < 10; i++) {
-    const index = session.index + session.formatOffset;
-    if (skipListening) {
-      // niveaux d'écoute facultatifs : une autre question du même niveau, ou le niveau jouable le plus proche
-      const found = playableQuestion(generate, { level: session.levelState.level, levels: session.levels, index: index + i * PLAYABLE_STEP });
-      q = found.q;
-      if (found.level !== session.levelState.level) session.levelState = { ...session.levelState, level: found.level };
-    } else {
-      q = generate(session.levelState.level, index);
-    }
-    if (!session.recentKeys.includes(q.key)) break;
-  }
-  session.recentKeys = [...session.recentKeys, q.key].slice(-4);
+  const index = session.index + session.formatOffset;
+  // pas deux fois la même question dans la partie (ni la même avec les choix dans un autre ordre),
+  // tant que le niveau en propose d'autres (repetition.js)
+  let level = session.levelState.level;
+  const levelOf = new Map(); // le niveau de chaque question tirée
+  const q = questionSuivante((i) => {
+    if (!skipListening) return generate(level, index);
+    // niveaux d'écoute facultatifs : une autre question du même niveau, ou le niveau jouable le plus proche
+    const found = playableQuestion(generate, { level, levels: session.levels, index: index + i * PLAYABLE_STEP });
+    level = found.level;
+    levelOf.set(found.q, found.level);
+    return found.q;
+  }, session.asked);
+  if (levelOf.has(q) && levelOf.get(q) !== session.levelState.level) session.levelState = { ...session.levelState, level: levelOf.get(q) };
+  noter(session.asked, q);
   return tapOnly ? tapQuestion(q) : q;
 }
 
@@ -6346,7 +6348,7 @@ async function verifierAffichage(classes) {
         let trouve;
         try {
           nextQuestion({
-            game, min, max, levels, back: () => {}, index: k, total: 10, correct: 0, recentKeys: [], briefed: new Set(), startedAt: Date.now(),
+            game, min, max, levels, back: () => {}, index: k, total: 10, correct: 0, asked: historique(), briefed: new Set(), startedAt: Date.now(),
             levelState: { level: e.niveau, streak: 0, recent: [] }, formatOffset: 0, chrono: false, verif: true,
           });
           await apresAffichage();

@@ -16173,6 +16173,15 @@
   "file": "fr/52100d80db97eebe.mp3"
  },
  {
+  "key": "fr|1|Oui, c'est le carré !",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Oui, c'est le carré !",
+  "voice": "estelle",
+  "file": "fr/aeb3715ee55a2c87.mp3"
+ },
+ {
   "key": "fr|1|Agrandir, grandiose ou la grandeur ?",
   "lang": "fr",
   "rate": 1,
@@ -16774,15 +16783,6 @@
   "text": "La bataille, la victoire ou la paix ?",
   "voice": "estelle",
   "file": "fr/51c1e118fc45ef87.mp3"
- },
- {
-  "key": "fr|1|Oui, c'est le carré !",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Oui, c'est le carré !",
-  "voice": "estelle",
-  "file": "fr/aeb3715ee55a2c87.mp3"
  },
  {
   "key": "fr|1|La bataille, la paix ou la victoire ?",
@@ -27234,6 +27234,15 @@
   "file": "fr/b445f7b44c455539.mp3"
  },
  {
+  "key": "fr|1|Oui, c'est le triangle !",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Oui, c'est le triangle !",
+  "voice": "estelle",
+  "file": "fr/4089104183ef670e.mp3"
+ },
+ {
   "key": "fr|1|Quand le sujet est au singulier, le verbe finit souvent par e.",
   "lang": "fr",
   "rate": 1,
@@ -27889,15 +27898,6 @@
   "text": "Quel fleuve traverse Lyon et se jette dans la mer Méditerranée ?",
   "voice": "estelle",
   "file": "fr/67cf0e4917ec71d3.mp3"
- },
- {
-  "key": "fr|1|Oui, c'est le triangle !",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Oui, c'est le triangle !",
-  "voice": "estelle",
-  "file": "fr/4089104183ef670e.mp3"
  },
  {
   "key": "fr|1|La loi de séparation des Églises et de l'État est votée en 1905.",
@@ -34254,15 +34254,6 @@
   "file": "en/5ff2228bab2fc0dc.mp3"
  },
  {
-  "key": "fr|1|Oui, c'est le rond !",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Oui, c'est le rond !",
-  "voice": "estelle",
-  "file": "fr/fa125be2d61b3be0.mp3"
- },
- {
   "key": "fr|1|L'horloge montre une heure.",
   "lang": "fr",
   "rate": 1,
@@ -34810,6 +34801,15 @@
   "text": "red and green make brown!",
   "voice": "estelle",
   "file": "en/243dd4fddf9fb374.mp3"
+ },
+ {
+  "key": "fr|1|Oui, c'est le rond !",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Oui, c'est le rond !",
+  "voice": "estelle",
+  "file": "fr/fa125be2d61b3be0.mp3"
  },
  {
   "key": "fr|1|Oui : Louis quatorze fait les lois, rend la justice et commande l'armée : c'est la monarchie absolue.",
@@ -46134,15 +46134,6 @@
   "file": "fr/9b505cf59bde31c2.mp3"
  },
  {
-  "key": "fr|1|Oui, c'est le rectangle !",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Oui, c'est le rectangle !",
-  "voice": "estelle",
-  "file": "fr/16761782aa053a04.mp3"
- },
- {
   "key": "fr|1|chat",
   "lang": "fr",
   "rate": 1,
@@ -46303,6 +46294,15 @@
   "text": "parapluie",
   "voice": "estelle",
   "file": "fr/cf7a0188df695e81.mp3"
+ },
+ {
+  "key": "fr|1|Oui, c'est le rectangle !",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Oui, c'est le rectangle !",
+  "voice": "estelle",
+  "file": "fr/16761782aa053a04.mp3"
  },
  {
   "key": "fr|1|Trois calculs donnent le même nombre.",
@@ -48096,15 +48096,6 @@
   "file": "fr/019bb65878749064.mp3"
  },
  {
-  "key": "fr|1|Oui, c'est l'étoile !",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Oui, c'est l'étoile !",
-  "voice": "estelle",
-  "file": "fr/6ed1477213f07a3d.mp3"
- },
- {
   "key": "fr|1|Quel dessin est un patron de cube ?",
   "lang": "fr",
   "rate": 1,
@@ -49255,6 +49246,15 @@
   "text": "The clown is happy.",
   "voice": "estelle",
   "file": "en/1ec05238b3a24220.mp3"
+ },
+ {
+  "key": "fr|1|Oui, c'est l'étoile !",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Oui, c'est l'étoile !",
+  "voice": "estelle",
+  "file": "fr/6ed1477213f07a3d.mp3"
  },
  {
   "key": "fr|1|Touche le visage en colère.",
@@ -51579,6 +51579,15 @@
   "file": "en/22c36f680d723ec0.mp3"
  },
  {
+  "key": "fr|1|Oui, c'est le cœur !",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Oui, c'est le cœur !",
+  "voice": "estelle",
+  "file": "fr/697dbd292a6bbdd6.mp3"
+ },
+ {
   "key": "en|1|The dog is on the table.",
   "lang": "en",
   "rate": 1,
@@ -53260,15 +53269,6 @@
   "text": "Sing a song!",
   "voice": "estelle",
   "file": "en/e374a328dc6bdfd6.mp3"
- },
- {
-  "key": "fr|1|Oui, c'est le cœur !",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Oui, c'est le cœur !",
-  "voice": "estelle",
-  "file": "fr/697dbd292a6bbdd6.mp3"
  },
  {
   "key": "en|1|a blue heart",
@@ -65934,15 +65934,6 @@
   "file": "fr/0699f830e9da8197.mp3"
  },
  {
-  "key": "fr|1|Touche la forme qui a 3 côtés.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme qui a 3 côtés.",
-  "voice": "estelle",
-  "file": "fr/2573dfdebed3007a.mp3"
- },
- {
   "key": "fr|1|Oui, le chien est plus lourd !",
   "lang": "fr",
   "rate": 1,
@@ -68562,15 +68553,6 @@
   "file": "fr/6f1211e3d7c63d16.mp3"
  },
  {
-  "key": "fr|1|Touche la forme qui a plus de 4 pointes.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme qui a plus de 4 pointes.",
-  "voice": "estelle",
-  "file": "fr/241855834f5efbbc.mp3"
- },
- {
   "key": "fr|1|Touche un produit laitier.",
   "lang": "fr",
   "rate": 1,
@@ -69082,15 +69064,6 @@
   "text": "Non : un fil est débranché, le circuit est ouvert.",
   "voice": "estelle",
   "file": "fr/c7d6c586da0e52a8.mp3"
- },
- {
-  "key": "fr|1|Touche la forme qui a 5 pointes.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme qui a 5 pointes.",
-  "voice": "estelle",
-  "file": "fr/4edd81062c40c44a.mp3"
  },
  {
   "key": "fr|1|Guide la souris jusqu'au fromage, au centre.",
@@ -71188,15 +71161,6 @@
   "text": "Pour le poids d'une lettre ?",
   "voice": "estelle",
   "file": "fr/bc85d56903743e2e.mp3"
- },
- {
-  "key": "fr|1|Touche la forme toute arrondie, sans pointe.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme toute arrondie, sans pointe.",
-  "voice": "estelle",
-  "file": "fr/cb583b9267ead28f.mp3"
  },
  {
   "key": "fr|1|Quel petit mot va devant : ballon ?",
@@ -74871,15 +74835,6 @@
   "file": "fr/c4d37938bd770818.mp3"
  },
  {
-  "key": "fr|1|Touche la forme qui n'a ni côté, ni pointe.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme qui n'a ni côté, ni pointe.",
-  "voice": "estelle",
-  "file": "fr/b7a6989606fcccb4.mp3"
- },
- {
   "key": "fr|1|Le glaçon, c'est…",
   "lang": "fr",
   "rate": 1,
@@ -75184,6 +75139,15 @@
   "text": "Il prend sa lampe et s'approche.",
   "voice": "estelle",
   "file": "fr/c1c18566f3316927.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui a 3 pointes.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a 3 pointes.",
+  "voice": "estelle",
+  "file": "fr/e9b857406e1ff9ed.mp3"
  },
  {
   "key": "fr|1|La partie entière, c'est ce qui est écrit avant la virgule.",
@@ -78561,15 +78525,6 @@
   "file": "fr/17022aa671234a55.mp3"
  },
  {
-  "key": "fr|1|Touche la forme qui a 4 côtés tous pareils.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme qui a 4 côtés tous pareils.",
-  "voice": "estelle",
-  "file": "fr/334d96ba73602739.mp3"
- },
- {
   "key": "fr|1|On en mange un peu, pas trop souvent.",
   "lang": "fr",
   "rate": 1,
@@ -78577,15 +78532,6 @@
   "text": "On en mange un peu, pas trop souvent.",
   "voice": "estelle",
   "file": "fr/93a90d5a8fe12330.mp3"
- },
- {
-  "key": "fr|1|Touche la forme qui a 2 grands côtés et 2 petits.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme qui a 2 grands côtés et 2 petits.",
-  "voice": "estelle",
-  "file": "fr/dd1aa131dbe5a79b.mp3"
  },
  {
   "key": "fr|1|Dormir l'hiver, partir au chaud ou changer de poils ?",
@@ -78685,15 +78631,6 @@
   "text": "Le double de 8, c'est 16.",
   "voice": "estelle",
   "file": "fr/87c076eaadc4fb70.mp3"
- },
- {
-  "key": "fr|1|Touche la forme toute arrondie, avec une pointe.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme toute arrondie, avec une pointe.",
-  "voice": "estelle",
-  "file": "fr/dd30b5f3bedd5d09.mp3"
  },
  {
   "key": "fr|1|Les habitants de l'Allemagne s'appellent…",
@@ -80134,6 +80071,15 @@
   "text": "Où est le nombre 6 ?",
   "voice": "estelle",
   "file": "fr/b56f66835aa83793.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui a 3 côtés.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a 3 côtés.",
+  "voice": "estelle",
+  "file": "fr/2573dfdebed3007a.mp3"
  },
  {
   "key": "fr|1|La moitié de 50, c'est 25.",
@@ -82080,15 +82026,6 @@
   "file": "fr/e9de236266a7edc1.mp3"
  },
  {
-  "key": "fr|1|Touche la forme qui a 4 côtés, mais pas tous pareils.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme qui a 4 côtés, mais pas tous pareils.",
-  "voice": "estelle",
-  "file": "fr/6c88df949f6ed9c1.mp3"
- },
- {
   "key": "fr|1|À quelle distance du centre seront tous les points du cercle ?",
   "lang": "fr",
   "rate": 1,
@@ -83907,6 +83844,15 @@
   "file": "fr/1785d19e66554c0f.mp3"
  },
  {
+  "key": "fr|1|Touche la forme qui a 5 pointes.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a 5 pointes.",
+  "voice": "estelle",
+  "file": "fr/4edd81062c40c44a.mp3"
+ },
+ {
   "key": "fr|1|Fais des paquets de 5 pommes : touche-les un par un.",
   "lang": "fr",
   "rate": 1,
@@ -84094,6 +84040,15 @@
   "text": "L'eau et l'électricité ensemble, c'est très dangereux.",
   "voice": "estelle",
   "file": "fr/9949dc85b9f995a2.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui a une seule pointe.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a une seule pointe.",
+  "voice": "estelle",
+  "file": "fr/69c8e76fbf9ed228.mp3"
  },
  {
   "key": "fr|1|Où va la brique de jus ?",
@@ -87147,6 +87102,15 @@
   "file": "fr/c39ae82d0212179c.mp3"
  },
  {
+  "key": "fr|1|Touche la forme qui a 4 côtés tous pareils.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a 4 côtés tous pareils.",
+  "voice": "estelle",
+  "file": "fr/334d96ba73602739.mp3"
+ },
+ {
   "key": "fr|1|Que perd le têtard en grandissant ?",
   "lang": "fr",
   "rate": 1,
@@ -89496,15 +89460,6 @@
   "file": "fr/22bb934fa415e5e3.mp3"
  },
  {
-  "key": "fr|1|Touche la forme qui a des côtés, mais moins de 4.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Touche la forme qui a des côtés, mais moins de 4.",
-  "voice": "estelle",
-  "file": "fr/48c178c967005c9d.mp3"
- },
- {
   "key": "fr|1|Pour l'eau d'une bouteille, on compte des litres.",
   "lang": "fr",
   "rate": 1,
@@ -90448,6 +90403,15 @@
   "text": "Pourquoi Anna coupe-t-elle sa brioche ?",
   "voice": "estelle",
   "file": "fr/b830fff8ec048a34.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui n'a ni côté, ni pointe.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui n'a ni côté, ni pointe.",
+  "voice": "estelle",
+  "file": "fr/b7a6989606fcccb4.mp3"
  },
  {
   "key": "fr|1|Lequel de ces nombres est un multiple de 2 ?",
@@ -93573,6 +93537,15 @@
   "file": "fr/e2eed4e0a9d69cb0.mp3"
  },
  {
+  "key": "fr|1|Touche la forme qui a 2 grands côtés et 2 petits.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a 2 grands côtés et 2 petits.",
+  "voice": "estelle",
+  "file": "fr/dd1aa131dbe5a79b.mp3"
+ },
+ {
   "key": "fr|1|Aide le singe à sortir du labyrinthe.",
   "lang": "fr",
   "rate": 1,
@@ -95452,6 +95425,15 @@
   "text": "3 fois combien font 15 ?",
   "voice": "estelle",
   "file": "fr/de56f930bf578503.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui a plus de 4 pointes.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a plus de 4 pointes.",
+  "voice": "estelle",
+  "file": "fr/241855834f5efbbc.mp3"
  },
  {
   "key": "fr|1|Après samedi, c'est dimanche.",
@@ -98208,6 +98190,15 @@
   "file": "fr/8c28a0f92704a15e.mp3"
  },
  {
+  "key": "fr|1|Le glaçon ressemble à un carré.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Le glaçon ressemble à un carré.",
+  "voice": "estelle",
+  "file": "fr/7ff75de5a2a7173a.mp3"
+ },
+ {
   "key": "fr|1|Le cadeau ressemble à un carré.",
   "lang": "fr",
   "rate": 1,
@@ -98217,13 +98208,76 @@
   "file": "fr/82db5bb3b04d833b.mp3"
  },
  {
-  "key": "fr|1|La gaufre ressemble à un carré.",
+  "key": "en|0.9|hand!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "phrase",
+  "text": "hand!",
+  "voice": "estelle",
+  "file": "en/b54526a5be3de2cf.mp3"
+ },
+ {
+  "key": "en|0.9|wind!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "phrase",
+  "text": "wind!",
+  "voice": "estelle",
+  "file": "en/d092ed21aacbe574.mp3"
+ },
+ {
+  "key": "en|0.9|bear!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "phrase",
+  "text": "bear!",
+  "voice": "estelle",
+  "file": "en/a405fc2681d937ea.mp3"
+ },
+ {
+  "key": "en|0.9|pink!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "phrase",
+  "text": "pink!",
+  "voice": "estelle",
+  "file": "en/1bb26160d3938823.mp3"
+ },
+ {
+  "key": "en|0.9|nine!",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "phrase",
+  "text": "nine!",
+  "voice": "estelle",
+  "file": "en/4193738a99214219.mp3"
+ },
+ {
+  "key": "fr|1|un chien gentil",
   "lang": "fr",
   "rate": 1,
   "type": "phrase",
-  "text": "La gaufre ressemble à un carré.",
+  "text": "un chien gentil",
   "voice": "estelle",
-  "file": "fr/c7441a5d2912805f.mp3"
+  "file": "fr/7c4a29b8385d64ff.mp3"
+ },
+ {
+  "key": "fr|1|En octobre, on est en automne.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "En octobre, on est en automne.",
+  "voice": "estelle",
+  "file": "fr/3c56e5238ed80eca.mp3"
+ },
+ {
+  "key": "en|0.9|What is the opposite of white?",
+  "lang": "en",
+  "rate": 0.9,
+  "type": "phrase",
+  "text": "What is the opposite of white?",
+  "voice": "estelle",
+  "file": "en/e3c2077e811ba8dd.mp3"
  },
  {
   "key": "fr|1|Oui,",
@@ -108144,6 +108198,15 @@
   "file": "fr/04cf0391eac34b74.mp3"
  },
  {
+  "key": "fr|1|Touche la forme qui a 4 pointes,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Touche la forme qui a 4 pointes,",
+  "voice": "estelle",
+  "file": "fr/b94e33b9daf11288.mp3"
+ },
+ {
   "key": "fr|1|une année",
   "lang": "fr",
   "rate": 1,
@@ -108853,15 +108916,6 @@
   "text": "33",
   "voice": "estelle",
   "file": "fr/2d4c90a80cbb0533.mp3"
- },
- {
-  "key": "fr|1|on est en automne.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "on est en automne.",
-  "voice": "estelle",
-  "file": "fr/6b19b400f6c90c27.mp3"
  },
  {
   "key": "fr|1|3 paquets de 3",
@@ -111643,6 +111697,15 @@
   "text": "50 centimètres",
   "voice": "estelle",
   "file": "fr/31d0dc2f0c368e2b.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme toute arrondie,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Touche la forme toute arrondie,",
+  "voice": "estelle",
+  "file": "fr/0cb14b3beae0b225.mp3"
  },
  {
   "key": "fr|1|ou la tanière ?",
@@ -114453,6 +114516,15 @@
   "file": "fr/ec5f9004e74f053a.mp3"
  },
  {
+  "key": "fr|1|et plus de 4 pointes.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "et plus de 4 pointes.",
+  "voice": "estelle",
+  "file": "fr/b1973445f0dc3d7e.mp3"
+ },
+ {
   "key": "fr|1|Les dents de lait tombent,",
   "lang": "fr",
   "rate": 1,
@@ -114586,6 +114658,24 @@
   "text": "c'est 14.",
   "voice": "estelle",
   "file": "fr/00503f5dc032637e.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui a des côtés tout droits,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Touche la forme qui a des côtés tout droits,",
+  "voice": "estelle",
+  "file": "fr/e248fe788b8561c5.mp3"
+ },
+ {
+  "key": "fr|1|sans pointe.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "sans pointe.",
+  "voice": "estelle",
+  "file": "fr/a79b7ba3c7b79125.mp3"
  },
  {
   "key": "fr|1|champignon :",
@@ -115461,6 +115551,15 @@
   "file": "fr/48b9783c243ff703.mp3"
  },
  {
+  "key": "fr|1|mais moins de 4.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "mais moins de 4.",
+  "voice": "estelle",
+  "file": "fr/55a26e74d648e700.mp3"
+ },
+ {
   "key": "en|0.8|five,",
   "lang": "en",
   "rate": 0.8,
@@ -116010,6 +116109,15 @@
   "file": "fr/a7f22cdb65ee6c46.mp3"
  },
  {
+  "key": "fr|1|et des côtés tous pareils.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "et des côtés tous pareils.",
+  "voice": "estelle",
+  "file": "fr/591f604800fe8d5b.mp3"
+ },
+ {
   "key": "fr|1|80",
   "lang": "fr",
   "rate": 1,
@@ -116161,15 +116269,6 @@
   "text": "en tissu",
   "voice": "estelle",
   "file": "fr/e1c021688df1c8ee.mp3"
- },
- {
-  "key": "fr|1|En octobre,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "En octobre,",
-  "voice": "estelle",
-  "file": "fr/384264ac96406205.mp3"
  },
  {
   "key": "fr|1|Ottawa",
@@ -118528,6 +118627,15 @@
   "text": "À quatre heures,",
   "voice": "estelle",
   "file": "fr/65ff32d8bfbaba99.mp3"
+ },
+ {
+  "key": "fr|1|avec une pointe.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "avec une pointe.",
+  "voice": "estelle",
+  "file": "fr/02e1fbc060e1231f.mp3"
  },
  {
   "key": "fr|1|c'est comme trois chiens :",
@@ -121635,6 +121743,15 @@
   "file": "fr/c5a0daa885a53302.mp3"
  },
  {
+  "key": "fr|1|on est en automne.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "on est en automne.",
+  "voice": "estelle",
+  "file": "fr/6b19b400f6c90c27.mp3"
+ },
+ {
   "key": "fr|1|c'est 21.",
   "lang": "fr",
   "rate": 1,
@@ -121723,6 +121840,15 @@
   "text": "Le nez,",
   "voice": "estelle",
   "file": "fr/d5948b030016a31e.mp3"
+ },
+ {
+  "key": "fr|1|et 2 côtés plus longs que les autres.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "et 2 côtés plus longs que les autres.",
+  "voice": "estelle",
+  "file": "fr/baef228e8d51718b.mp3"
  },
  {
   "key": "fr|1|égale 78",
@@ -124191,6 +124317,15 @@
   "file": "fr/0f78b0d84edc28e1.mp3"
  },
  {
+  "key": "fr|1|et 3 pointes.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "et 3 pointes.",
+  "voice": "estelle",
+  "file": "fr/cdd7a587e497fa3c.mp3"
+ },
+ {
   "key": "fr|1|il sera 8 heures",
   "lang": "fr",
   "rate": 1,
@@ -124297,6 +124432,15 @@
   "text": "Le Soleil nous éclaire",
   "voice": "estelle",
   "file": "fr/e7be278a45734b28.mp3"
+ },
+ {
+  "key": "fr|1|mais pas tous pareils.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "mais pas tous pareils.",
+  "voice": "estelle",
+  "file": "fr/791faf2985b60bb4.mp3"
  },
  {
   "key": "fr|1|et des cailloux dans une passoire.",
@@ -125845,6 +125989,15 @@
   "text": "égale 73",
   "voice": "estelle",
   "file": "fr/0212fd2d9896c0e0.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui a des côtés,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Touche la forme qui a des côtés,",
+  "voice": "estelle",
+  "file": "fr/464883cd36ee6466.mp3"
  },
  {
   "key": "fr|1|c'est 50.",
@@ -130437,6 +130590,15 @@
   "file": "fr/c749d8568b206417.mp3"
  },
  {
+  "key": "fr|1|Touche la forme qui a 4 côtés,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Touche la forme qui a 4 côtés,",
+  "voice": "estelle",
+  "file": "fr/c738dcaf0ce15fc2.mp3"
+ },
+ {
   "key": "fr|1|égale 23",
   "lang": "fr",
   "rate": 1,
@@ -131542,186 +131704,6 @@
   "text": "et l'eau remonte dans le ciel.",
   "voice": "estelle",
   "file": "fr/9ac5e606d6d2314a.mp3"
- },
- {
-  "key": "fr|1|le verre se recycle très bien.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "le verre se recycle très bien.",
-  "voice": "estelle",
-  "file": "fr/60c4f3996b24ab25.mp3"
- },
- {
-  "key": "fr|1|on utilise le téléphone portable.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "on utilise le téléphone portable.",
-  "voice": "estelle",
-  "file": "fr/e683e30cb7e46fda.mp3"
- },
- {
-  "key": "fr|1|il y a 5 pommes.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "il y a 5 pommes.",
-  "voice": "estelle",
-  "file": "fr/382ac32bbda0c0e9.mp3"
- },
- {
-  "key": "fr|1|il y a 2 pommes.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "il y a 2 pommes.",
-  "voice": "estelle",
-  "file": "fr/dd2f4d7a47fea188.mp3"
- },
- {
-  "key": "fr|1|il y a 2 fleurs.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "il y a 2 fleurs.",
-  "voice": "estelle",
-  "file": "fr/75a362a63fd3b90a.mp3"
- },
- {
-  "key": "fr|1|La galette des rois,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "La galette des rois,",
-  "voice": "estelle",
-  "file": "fr/9441dc67e00811c2.mp3"
- },
- {
-  "key": "fr|1|et 5 centaines,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "et 5 centaines,",
-  "voice": "estelle",
-  "file": "fr/7c125d10ef4b0aef.mp3"
- },
- {
-  "key": "fr|1|et 8 centaines,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "et 8 centaines,",
-  "voice": "estelle",
-  "file": "fr/51c1ce288b11ee5d.mp3"
- },
- {
-  "key": "fr|1|Jupiter.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "Jupiter.",
-  "voice": "estelle",
-  "file": "fr/3e70fa70162b3da7.mp3"
- },
- {
-  "key": "fr|1|écharpe,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "écharpe,",
-  "voice": "estelle",
-  "file": "fr/24e5aebbc2e3337b.mp3"
- },
- {
-  "key": "fr|1|11 plus 9,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "11 plus 9,",
-  "voice": "estelle",
-  "file": "fr/cdea37e8fd54bb5e.mp3"
- },
- {
-  "key": "fr|1|été,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "été,",
-  "voice": "estelle",
-  "file": "fr/973b45414f5a831b.mp3"
- },
- {
-  "key": "fr|1|125.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "125.",
-  "voice": "estelle",
-  "file": "fr/8858b17e98bdbf30.mp3"
- },
- {
-  "key": "fr|1|116.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "116.",
-  "voice": "estelle",
-  "file": "fr/8abe16dfb0ea000e.mp3"
- },
- {
-  "key": "fr|0.9|et les biscuits ont disparu.",
-  "lang": "fr",
-  "rate": 0.9,
-  "type": "proposition",
-  "text": "et les biscuits ont disparu.",
-  "voice": "estelle",
-  "file": "fr/dc03ee28e18dbdd4.mp3"
- },
- {
-  "key": "fr|1|On part à l'école,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "On part à l'école,",
-  "voice": "estelle",
-  "file": "fr/d1503fb660e912bd.mp3"
- },
- {
-  "key": "fr|1|égale 33",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "égale 33",
-  "voice": "estelle",
-  "file": "fr/57d89ea712d3d9f2.mp3"
- },
- {
-  "key": "fr|1|égale 58",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "égale 58",
-  "voice": "estelle",
-  "file": "fr/379c5dca9331c900.mp3"
- },
- {
-  "key": "fr|1|ou En colère ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "ou En colère ?",
-  "voice": "estelle",
-  "file": "fr/2e3e8c3b983ab1d8.mp3"
- },
- {
-  "key": "fr|1|et le cochon ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "et le cochon ?",
-  "voice": "estelle",
-  "file": "fr/8f9f68af921cfff0.mp3"
  },
  {
   "key": "fr|1|Bravo",
@@ -139617,6 +139599,15 @@
   "file": "fr/f0f6979f148abad2.mp3"
  },
  {
+  "key": "fr|1|pommes.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "pommes.",
+  "voice": "estelle",
+  "file": "fr/f33608aa64991b48.mp3"
+ },
+ {
   "key": "fr|1|mille plus",
   "lang": "fr",
   "rate": 1,
@@ -139660,15 +139651,6 @@
   "text": "Place",
   "voice": "estelle",
   "file": "fr/f9ddf45cad37ced4.mp3"
- },
- {
-  "key": "fr|1|pommes.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "pommes.",
-  "voice": "estelle",
-  "file": "fr/f33608aa64991b48.mp3"
  },
  {
   "key": "fr|1|Il faut",
@@ -139770,6 +139752,15 @@
   "file": "fr/97293e7076d3f85e.mp3"
  },
  {
+  "key": "fr|1|il y a",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "il y a",
+  "voice": "estelle",
+  "file": "fr/4d9b132bdcea7a55.mp3"
+ },
+ {
   "key": "fr|1|Comment poser",
   "lang": "fr",
   "rate": 1,
@@ -139849,15 +139840,6 @@
   "text": "il lui reste",
   "voice": "estelle",
   "file": "fr/d0f26f253b3284ed.mp3"
- },
- {
-  "key": "fr|1|il y a",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "il y a",
-  "voice": "estelle",
-  "file": "fr/4d9b132bdcea7a55.mp3"
  },
  {
   "key": "fr|1|euros,",
@@ -140985,6 +140967,15 @@
   "file": "fr/528359e2827c5597.mp3"
  },
  {
+  "key": "fr|1|fleurs.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "fleurs.",
+  "voice": "estelle",
+  "file": "fr/180224f6123920d3.mp3"
+ },
+ {
   "key": "fr|1|bananes dans le panier.",
   "lang": "fr",
   "rate": 1,
@@ -141217,15 +141208,6 @@
   "text": "minutes,",
   "voice": "estelle",
   "file": "fr/88c5eefa92d56779.mp3"
- },
- {
-  "key": "fr|1|fleurs.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "fleurs.",
-  "voice": "estelle",
-  "file": "fr/180224f6123920d3.mp3"
  },
  {
   "key": "fr|1|étoiles ?",
@@ -142657,6 +142639,15 @@
   "text": "marguerites.",
   "voice": "estelle",
   "file": "fr/8dcfe818b95e45b9.mp3"
+ },
+ {
+  "key": "fr|1|centaines,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "centaines,",
+  "voice": "estelle",
+  "file": "fr/9ddf0f933c957620.mp3"
  },
  {
   "key": "fr|1|unités,",
@@ -144459,15 +144450,6 @@
   "file": "en/90ef6095f3b64f50.mp3"
  },
  {
-  "key": "fr|1|centaines,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "centaines,",
-  "voice": "estelle",
-  "file": "fr/9ddf0f933c957620.mp3"
- },
- {
   "key": "fr|1|Cela fait",
   "lang": "fr",
   "rate": 1,
@@ -145701,69 +145683,6 @@
   "file": "fr/2cf4d19c4eed98d5.mp3"
  },
  {
-  "key": "en|0.9|hand!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "morceau",
-  "text": "hand!",
-  "voice": "estelle",
-  "file": "en/b54526a5be3de2cf.mp3"
- },
- {
-  "key": "en|0.9|wind!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "morceau",
-  "text": "wind!",
-  "voice": "estelle",
-  "file": "en/d092ed21aacbe574.mp3"
- },
- {
-  "key": "en|0.9|bear!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "morceau",
-  "text": "bear!",
-  "voice": "estelle",
-  "file": "en/a405fc2681d937ea.mp3"
- },
- {
-  "key": "en|0.9|pink!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "morceau",
-  "text": "pink!",
-  "voice": "estelle",
-  "file": "en/1bb26160d3938823.mp3"
- },
- {
-  "key": "en|0.9|nine!",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "morceau",
-  "text": "nine!",
-  "voice": "estelle",
-  "file": "en/4193738a99214219.mp3"
- },
- {
-  "key": "fr|1|un chien gentil",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "un chien gentil",
-  "voice": "estelle",
-  "file": "fr/7c4a29b8385d64ff.mp3"
- },
- {
-  "key": "en|0.9|What is the opposite of white?",
-  "lang": "en",
-  "rate": 0.9,
-  "type": "morceau",
-  "text": "What is the opposite of white?",
-  "voice": "estelle",
-  "file": "en/e3c2077e811ba8dd.mp3"
- },
- {
   "key": "en|1|It's snowy.",
   "lang": "en",
   "rate": 1,
@@ -146043,6 +145962,15 @@
   "file": "fr/2c9f33349b85a10b.mp3"
  },
  {
+  "key": "fr|1|le verre se recycle très bien.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "le verre se recycle très bien.",
+  "voice": "estelle",
+  "file": "fr/60c4f3996b24ab25.mp3"
+ },
+ {
   "key": "fr|1|Mes cousins sont venus à la fête.",
   "lang": "fr",
   "rate": 1,
@@ -146070,6 +145998,15 @@
   "file": "fr/ce2801714f36c21e.mp3"
  },
  {
+  "key": "fr|1|on utilise le téléphone portable.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "on utilise le téléphone portable.",
+  "voice": "estelle",
+  "file": "fr/e683e30cb7e46fda.mp3"
+ },
+ {
   "key": "fr|1|Comment dit-on pomme en anglais ?",
   "lang": "fr",
   "rate": 1,
@@ -146077,6 +146014,15 @@
   "text": "Comment dit-on pomme en anglais ?",
   "voice": "estelle",
   "file": "fr/432f175a78db6af4.mp3"
+ },
+ {
+  "key": "fr|1|La galette des rois,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "La galette des rois,",
+  "voice": "estelle",
+  "file": "fr/9441dc67e00811c2.mp3"
  },
  {
   "key": "fr|1|Où vit la chouette ?",
@@ -146095,6 +146041,24 @@
   "text": "décoller",
   "voice": "estelle",
   "file": "fr/bdb8df33eeb1530a.mp3"
+ },
+ {
+  "key": "fr|1|Jupiter.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "Jupiter.",
+  "voice": "estelle",
+  "file": "fr/3e70fa70162b3da7.mp3"
+ },
+ {
+  "key": "fr|1|écharpe,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "écharpe,",
+  "voice": "estelle",
+  "file": "fr/24e5aebbc2e3337b.mp3"
  },
  {
   "key": "fr|1|Quel mot dit la plus grande colère ?",
@@ -146142,6 +146106,15 @@
   "file": "fr/33489dfaa1d3c3af.mp3"
  },
  {
+  "key": "fr|1|été,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "été,",
+  "voice": "estelle",
+  "file": "fr/973b45414f5a831b.mp3"
+ },
+ {
   "key": "fr|1|bois",
   "lang": "fr",
   "rate": 1,
@@ -146169,6 +146142,15 @@
   "file": "fr/706fe03701e2aca8.mp3"
  },
  {
+  "key": "fr|0.9|et les biscuits ont disparu.",
+  "lang": "fr",
+  "rate": 0.9,
+  "type": "morceau",
+  "text": "et les biscuits ont disparu.",
+  "voice": "estelle",
+  "file": "fr/dc03ee28e18dbdd4.mp3"
+ },
+ {
   "key": "fr|1|Une fourmi mesure à peu près",
   "lang": "fr",
   "rate": 1,
@@ -146176,6 +146158,15 @@
   "text": "Une fourmi mesure à peu près",
   "voice": "estelle",
   "file": "fr/215ad7454417b2cb.mp3"
+ },
+ {
+  "key": "fr|1|On part à l'école,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "On part à l'école,",
+  "voice": "estelle",
+  "file": "fr/d1503fb660e912bd.mp3"
  },
  {
   "key": "fr|1|Où vit le cheval ?",
@@ -146194,6 +146185,24 @@
   "text": "Le bébé du chien ?",
   "voice": "estelle",
   "file": "fr/8f89ee7375ddd646.mp3"
+ },
+ {
+  "key": "fr|1|ou En colère ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "ou En colère ?",
+  "voice": "estelle",
+  "file": "fr/2e3e8c3b983ab1d8.mp3"
+ },
+ {
+  "key": "fr|1|et le cochon ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "et le cochon ?",
+  "voice": "estelle",
+  "file": "fr/8f9f68af921cfff0.mp3"
  },
  {
   "key": "fr|1|Il reste mille",
@@ -148363,69 +148372,6 @@
   "text": "Comment dit-on gâteau en anglais ?",
   "voice": "estelle",
   "file": "fr/c73f99ad13026a0b.mp3"
- },
- {
-  "key": "fr|1|Papa met ses chaussures sur la tête.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "Papa met ses chaussures sur la tête.",
-  "voice": "estelle",
-  "file": "fr/678558a754e9cc17.mp3"
- },
- {
-  "key": "fr|1|des manteaux ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "des manteaux ?",
-  "voice": "estelle",
-  "file": "fr/a3004365e06a5125.mp3"
- },
- {
-  "key": "fr|1|des cailloux ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "des cailloux ?",
-  "voice": "estelle",
-  "file": "fr/eec5c2c4ae176cd2.mp3"
- },
- {
-  "key": "fr|1|des marteaux ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "des marteaux ?",
-  "voice": "estelle",
-  "file": "fr/e8c644f7926712c6.mp3"
- },
- {
-  "key": "fr|1|un joli bateau",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "un joli bateau",
-  "voice": "estelle",
-  "file": "fr/cae9941cb5d94dbc.mp3"
- },
- {
-  "key": "fr|1|Dans le poème,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "Dans le poème,",
-  "voice": "estelle",
-  "file": "fr/2c947e77a0c4819b.mp3"
- },
- {
-  "key": "fr|1|Touche Moscou,",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "Touche Moscou,",
-  "voice": "estelle",
-  "file": "fr/45175da0700470b7.mp3"
  },
  {
   "key": "fr|1|frappe",
@@ -184707,13 +184653,13 @@
   "file": "fr/97677588b250540e.mp3"
  },
  {
-  "key": "fr|1|tente",
+  "key": "fr|1|l'équerre",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "tente",
+  "text": "l'équerre",
   "voice": "estelle",
-  "file": "fr/336e01eb064d6dee.mp3"
+  "file": "fr/41e4303982782402.mp3"
  },
  {
   "key": "fr|1|cible",
@@ -184725,22 +184671,40 @@
   "file": "fr/88dd095b7b490002.mp3"
  },
  {
-  "key": "fr|1|gaufre",
+  "key": "fr|1|panneau",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "gaufre",
+  "text": "panneau",
   "voice": "estelle",
-  "file": "fr/0e380052091c7928.mp3"
+  "file": "fr/d58f36542dd4e2e5.mp3"
  },
  {
-  "key": "fr|1|l'équerre",
+  "key": "fr|1|tente",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "l'équerre",
+  "text": "tente",
   "voice": "estelle",
-  "file": "fr/41e4303982782402.mp3"
+  "file": "fr/336e01eb064d6dee.mp3"
+ },
+ {
+  "key": "fr|1|calendrier",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "calendrier",
+  "voice": "estelle",
+  "file": "fr/20fb867901064acf.mp3"
+ },
+ {
+  "key": "fr|1|bancaire",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "bancaire",
+  "voice": "estelle",
+  "file": "fr/9226769bef778b27.mp3"
  },
  {
   "key": "fr|1|indices",
@@ -184750,6 +184714,15 @@
   "text": "indices",
   "voice": "estelle",
   "file": "fr/37f7172a135aa5df.mp3"
+ },
+ {
+  "key": "fr|1|droits",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "droits",
+  "voice": "estelle",
+  "file": "fr/40ff04032c712ac6.mp3"
  },
  {
   "key": "fr|1|arrondie",
@@ -185364,15 +185337,6 @@
   "file": "fr/389dd1f09edc6c14.mp3"
  },
  {
-  "key": "fr|1|droits",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "droits",
-  "voice": "estelle",
-  "file": "fr/40ff04032c712ac6.mp3"
- },
- {
   "key": "fr|1|égaux",
   "lang": "fr",
   "rate": 1,
@@ -185947,15 +185911,6 @@
   "text": "c'était",
   "voice": "estelle",
   "file": "fr/e62b438df91314e3.mp3"
- },
- {
-  "key": "fr|1|calendrier",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "calendrier",
-  "voice": "estelle",
-  "file": "fr/20fb867901064acf.mp3"
  },
  {
   "key": "fr|1|février",
@@ -200842,15 +200797,6 @@
   "text": "ris",
   "voice": "estelle",
   "file": "fr/c4bdd930a08c1ac9.mp3"
- },
- {
-  "key": "fr|1|panneau",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "panneau",
-  "voice": "estelle",
-  "file": "fr/d58f36542dd4e2e5.mp3"
  },
  {
   "key": "fr|1|stop",
@@ -217827,6 +217773,69 @@
   "file": "fr/d74d3e908a4944f5.mp3"
  },
  {
+  "key": "fr|1|Papa met ses chaussures sur la tête.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Papa met ses chaussures sur la tête.",
+  "voice": "estelle",
+  "file": "fr/678558a754e9cc17.mp3"
+ },
+ {
+  "key": "fr|1|des manteaux ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "des manteaux ?",
+  "voice": "estelle",
+  "file": "fr/a3004365e06a5125.mp3"
+ },
+ {
+  "key": "fr|1|des cailloux ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "des cailloux ?",
+  "voice": "estelle",
+  "file": "fr/eec5c2c4ae176cd2.mp3"
+ },
+ {
+  "key": "fr|1|des marteaux ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "des marteaux ?",
+  "voice": "estelle",
+  "file": "fr/e8c644f7926712c6.mp3"
+ },
+ {
+  "key": "fr|1|un joli bateau",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "un joli bateau",
+  "voice": "estelle",
+  "file": "fr/cae9941cb5d94dbc.mp3"
+ },
+ {
+  "key": "fr|1|Dans le poème,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Dans le poème,",
+  "voice": "estelle",
+  "file": "fr/2c947e77a0c4819b.mp3"
+ },
+ {
+  "key": "fr|1|Touche Moscou,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Touche Moscou,",
+  "voice": "estelle",
+  "file": "fr/45175da0700470b7.mp3"
+ },
+ {
   "key": "fr|1|s chaussettes,",
   "lang": "fr",
   "rate": 1,
@@ -218689,15 +218698,6 @@
   "text": "Il en trouve un sous une fleur.",
   "voice": "estelle",
   "file": "fr/6d8446064d25b52e.mp3"
- },
- {
-  "key": "fr|1|Le glaçon ressemble à un carré.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "Le glaçon ressemble à un carré.",
-  "voice": "estelle",
-  "file": "fr/7ff75de5a2a7173a.mp3"
  },
  {
   "key": "fr|1|Le pain cuit.",
@@ -220183,15 +220183,6 @@
   "text": "dans une boîte spéciale.",
   "voice": "estelle",
   "file": "fr/1ae7d8abf861909d.mp3"
- },
- {
-  "key": "fr|1|Le billet ressemble à un rectangle.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "Le billet ressemble à un rectangle.",
-  "voice": "estelle",
-  "file": "fr/bbfbbdf424500fd7.mp3"
  },
  {
   "key": "fr|1|le boulanger travaillait la nuit.",
@@ -221686,6 +221677,15 @@
   "text": "Où est la bibliothèque ?",
   "voice": "estelle",
   "file": "fr/4172ae576b12fddc.mp3"
+ },
+ {
+  "key": "fr|1|Le calendrier ressemble à un carré.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Le calendrier ressemble à un carré.",
+  "voice": "estelle",
+  "file": "fr/7d222c59d0380b7d.mp3"
  },
  {
   "key": "fr|1|Il ne pleut pas.",
@@ -227448,15 +227448,6 @@
   "file": "fr/9ef027cc3950e8db.mp3"
  },
  {
-  "key": "fr|1|La part de pizza ressemble à un triangle.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "La part de pizza ressemble à un triangle.",
-  "voice": "estelle",
-  "file": "fr/267e6ba26d8ea7af.mp3"
- },
- {
   "key": "fr|1|Dire bravo au gagnant",
   "lang": "fr",
   "rate": 1,
@@ -227707,15 +227698,6 @@
   "text": "un adulte ira chercher le ballon.",
   "voice": "estelle",
   "file": "fr/2c4f75496c0c83b3.mp3"
- },
- {
-  "key": "fr|1|La porte ressemble à un rectangle.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "La porte ressemble à un rectangle.",
-  "voice": "estelle",
-  "file": "fr/ce79dcb9ab1132ee.mp3"
  },
  {
   "key": "fr|1|Combien de ballons lui donne-t-on ?",
@@ -229957,15 +229939,6 @@
   "text": "one plus seventeen?",
   "voice": "estelle",
   "file": "en/0aade62618734760.mp3"
- },
- {
-  "key": "en|0.8|five plus thirteen?",
-  "lang": "en",
-  "rate": 0.8,
-  "type": "proposition",
-  "text": "five plus thirteen?",
-  "voice": "estelle",
-  "file": "en/4bed7fe326166104.mp3"
  },
  {
   "key": "fr|1|poisson : 2 syllabes !",
@@ -247176,13 +247149,13 @@
   "file": "fr/6dfe662f842ff317.mp3"
  },
  {
-  "key": "fr|1|La tente ressemble à un triangle.",
+  "key": "fr|1|L'équerre ressemble à un triangle.",
   "lang": "fr",
   "rate": 1,
   "type": "phrase",
-  "text": "La tente ressemble à un triangle.",
+  "text": "L'équerre ressemble à un triangle.",
   "voice": "estelle",
-  "file": "fr/4474d75b0b2bc35e.mp3"
+  "file": "fr/24365070775a5578.mp3"
  },
  {
   "key": "fr|1|La cible ressemble à un rond.",
@@ -247194,40 +247167,13 @@
   "file": "fr/74987ccdc740f6fd.mp3"
  },
  {
-  "key": "fr|1|Le téléphone ressemble à un rectangle.",
+  "key": "fr|1|La part de pizza ressemble à un triangle.",
   "lang": "fr",
   "rate": 1,
   "type": "phrase",
-  "text": "Le téléphone ressemble à un rectangle.",
+  "text": "La part de pizza ressemble à un triangle.",
   "voice": "estelle",
-  "file": "fr/74537ef8e478f2fb.mp3"
- },
- {
-  "key": "fr|1|Le biscuit ressemble à un rond.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Le biscuit ressemble à un rond.",
-  "voice": "estelle",
-  "file": "fr/32c84deb1f7f2231.mp3"
- },
- {
-  "key": "fr|1|La pleine lune ressemble à un rond.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "La pleine lune ressemble à un rond.",
-  "voice": "estelle",
-  "file": "fr/246fde5e0e826c57.mp3"
- },
- {
-  "key": "fr|1|L'équerre ressemble à un triangle.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "L'équerre ressemble à un triangle.",
-  "voice": "estelle",
-  "file": "fr/24365070775a5578.mp3"
+  "file": "fr/267e6ba26d8ea7af.mp3"
  },
  {
   "key": "fr|1|La tablette de chocolat ressemble à un rectangle.",
@@ -247239,6 +247185,60 @@
   "file": "fr/91166b1e7dd0b28a.mp3"
  },
  {
+  "key": "fr|1|Le biscuit ressemble à un rond.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Le biscuit ressemble à un rond.",
+  "voice": "estelle",
+  "file": "fr/32c84deb1f7f2231.mp3"
+ },
+ {
+  "key": "fr|1|Le téléphone ressemble à un rectangle.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Le téléphone ressemble à un rectangle.",
+  "voice": "estelle",
+  "file": "fr/74537ef8e478f2fb.mp3"
+ },
+ {
+  "key": "fr|1|La tente ressemble à un triangle.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "La tente ressemble à un triangle.",
+  "voice": "estelle",
+  "file": "fr/4474d75b0b2bc35e.mp3"
+ },
+ {
+  "key": "fr|1|La porte ressemble à un rectangle.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "La porte ressemble à un rectangle.",
+  "voice": "estelle",
+  "file": "fr/ce79dcb9ab1132ee.mp3"
+ },
+ {
+  "key": "fr|1|Le billet ressemble à un rectangle.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Le billet ressemble à un rectangle.",
+  "voice": "estelle",
+  "file": "fr/bbfbbdf424500fd7.mp3"
+ },
+ {
+  "key": "fr|1|La pleine lune ressemble à un rond.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "La pleine lune ressemble à un rond.",
+  "voice": "estelle",
+  "file": "fr/246fde5e0e826c57.mp3"
+ },
+ {
   "key": "fr|1|Le ballon ressemble à un rond.",
   "lang": "fr",
   "rate": 1,
@@ -247246,6 +247246,42 @@
   "text": "Le ballon ressemble à un rond.",
   "voice": "estelle",
   "file": "fr/3078d641ffa9aa3a.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui a des côtés, mais moins de 4.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a des côtés, mais moins de 4.",
+  "voice": "estelle",
+  "file": "fr/48c178c967005c9d.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme toute arrondie, avec une pointe.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme toute arrondie, avec une pointe.",
+  "voice": "estelle",
+  "file": "fr/dd30b5f3bedd5d09.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme qui a 4 côtés, mais pas tous pareils.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme qui a 4 côtés, mais pas tous pareils.",
+  "voice": "estelle",
+  "file": "fr/6c88df949f6ed9c1.mp3"
+ },
+ {
+  "key": "fr|1|Touche la forme toute arrondie, sans pointe.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche la forme toute arrondie, sans pointe.",
+  "voice": "estelle",
+  "file": "fr/cb583b9267ead28f.mp3"
  },
  {
   "key": "fr|1|Les autres finissent par 4.",
@@ -251485,15 +251521,6 @@
   "text": "En été, au printemps, en automne ou en hiver ?",
   "voice": "estelle",
   "file": "fr/c3f47557f444b538.mp3"
- },
- {
-  "key": "fr|1|En octobre, on est en automne.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "En octobre, on est en automne.",
-  "voice": "estelle",
-  "file": "fr/3c56e5238ed80eca.mp3"
  },
  {
   "key": "fr|1|En été, en automne, au printemps ou en hiver ?",
@@ -264348,6 +264375,15 @@
   "file": "en/9c03d28c2cc60599.mp3"
  },
  {
+  "key": "en|0.8|five plus thirteen?",
+  "lang": "en",
+  "rate": 0.8,
+  "type": "phrase",
+  "text": "five plus thirteen?",
+  "voice": "estelle",
+  "file": "en/4bed7fe326166104.mp3"
+ },
+ {
   "key": "en|0.8|nine plus ten?",
   "lang": "en",
   "rate": 0.8,
@@ -273951,6 +273987,15 @@
   "file": "fr/1401952bf92aa3e8.mp3"
  },
  {
+  "key": "fr|1|125.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "125.",
+  "voice": "estelle",
+  "file": "fr/8858b17e98bdbf30.mp3"
+ },
+ {
   "key": "fr|1|124.",
   "lang": "fr",
   "rate": 1,
@@ -273985,6 +274030,15 @@
   "text": "108.",
   "voice": "estelle",
   "file": "fr/4f7fd7980c7de2fb.mp3"
+ },
+ {
+  "key": "fr|1|116.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "116.",
+  "voice": "estelle",
+  "file": "fr/8abe16dfb0ea000e.mp3"
  },
  {
   "key": "fr|1|104.",
@@ -274059,6 +274113,15 @@
   "file": "fr/68b43c5ffdd7b00b.mp3"
  },
  {
+  "key": "fr|1|et 5 centaines,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "et 5 centaines,",
+  "voice": "estelle",
+  "file": "fr/7c125d10ef4b0aef.mp3"
+ },
+ {
   "key": "fr|1|et 3 centaines :",
   "lang": "fr",
   "rate": 1,
@@ -274084,6 +274147,15 @@
   "text": "et 8 centaines :",
   "voice": "estelle",
   "file": "fr/5f5915d9ce7b83d5.mp3"
+ },
+ {
+  "key": "fr|1|et 8 centaines,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "et 8 centaines,",
+  "voice": "estelle",
+  "file": "fr/51c1ce288b11ee5d.mp3"
  },
  {
   "key": "fr|1|et 2 dizaines :",
@@ -276111,6 +276183,15 @@
   "file": "fr/996e96f68c4b312f.mp3"
  },
  {
+  "key": "fr|1|11 plus 9,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "11 plus 9,",
+  "voice": "estelle",
+  "file": "fr/cdea37e8fd54bb5e.mp3"
+ },
+ {
   "key": "fr|1|égale 24",
   "lang": "fr",
   "rate": 1,
@@ -276147,6 +276228,15 @@
   "file": "fr/16f5fbb79d9e0a8b.mp3"
  },
  {
+  "key": "fr|1|égale 33",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "égale 33",
+  "voice": "estelle",
+  "file": "fr/57d89ea712d3d9f2.mp3"
+ },
+ {
   "key": "fr|1|égale 49",
   "lang": "fr",
   "rate": 1,
@@ -276174,6 +276264,15 @@
   "file": "fr/8984ca1894ddd013.mp3"
  },
  {
+  "key": "fr|1|égale 58",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "égale 58",
+  "voice": "estelle",
+  "file": "fr/379c5dca9331c900.mp3"
+ },
+ {
   "key": "fr|1|il y a 5 fleurs.",
   "lang": "fr",
   "rate": 1,
@@ -276183,6 +276282,15 @@
   "file": "fr/6059f934f487f089.mp3"
  },
  {
+  "key": "fr|1|il y a 5 pommes.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "il y a 5 pommes.",
+  "voice": "estelle",
+  "file": "fr/382ac32bbda0c0e9.mp3"
+ },
+ {
   "key": "fr|1|il y a 2 crayons.",
   "lang": "fr",
   "rate": 1,
@@ -276190,6 +276298,15 @@
   "text": "il y a 2 crayons.",
   "voice": "estelle",
   "file": "fr/a5c3c6fa1f9ca40f.mp3"
+ },
+ {
+  "key": "fr|1|il y a 2 pommes.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "il y a 2 pommes.",
+  "voice": "estelle",
+  "file": "fr/dd2f4d7a47fea188.mp3"
  },
  {
   "key": "fr|1|il y a 10 bonbons.",
@@ -276262,6 +276379,15 @@
   "text": "il y a 5 crayons.",
   "voice": "estelle",
   "file": "fr/564af55bb81718b6.mp3"
+ },
+ {
+  "key": "fr|1|il y a 2 fleurs.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "il y a 2 fleurs.",
+  "voice": "estelle",
+  "file": "fr/75a362a63fd3b90a.mp3"
  },
  {
   "key": "fr|1|il y a 4 bonbons.",
