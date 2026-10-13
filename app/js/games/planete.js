@@ -599,7 +599,7 @@ export const EXPERIMENTS = [
   { title: 'Le sable tombe-t-il au fond ?', steps: [['🤔', 'je pense que oui'], ['⏳', 'j’attends un peu'], ['👀', 'le sable est au fond']] },
   { title: 'Reste-t-il du sel quand l’eau s’évapore ?', steps: [['🤔', 'je pense que oui'], ['🔥', 'je fais chauffer'], ['👀', 'il reste du sel']] },
   { title: 'Le riz se dissout-il dans l’eau ?', steps: [['🤔', 'je pense que non'], ['🥄', 'je mélange'], ['👀', 'je vois les grains']] },
-  { title: 'L’aimant sépare-t-il les trombones du sable ?', steps: [['🤔', 'je pense que oui'], ['🧲', 'j’approche l’aimant'], ['👀', 'les trombones collent']] },
+  { title: 'L’aimant peut-il séparer les trombones du sable ?', steps: [['🤔', 'je pense que oui'], ['🧲', 'j’approche l’aimant'], ['👀', 'les trombones collent']] },
   { title: 'Le tamis garde-t-il les cailloux ?', steps: [['🤔', 'je pense que oui'], ['🪨', 'je verse dans le tamis'], ['👀', 'les cailloux restent']] },
   { title: 'Le sucre se dissout-il plus vite dans l’eau chaude ?', steps: [['🤔', 'je pense que oui'], ['🔥', 'je chauffe l’eau'], ['👀', 'il disparaît plus vite']] },
   { title: 'La passoire garde-t-elle les pâtes ?', steps: [['🤔', 'je pense que oui'], ['🍝', 'je verse les pâtes'], ['👀', 'les pâtes restent']] },

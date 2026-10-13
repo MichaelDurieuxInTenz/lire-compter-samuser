@@ -28,7 +28,7 @@ export const TEXTES_CM = [
       ['vf', 'Le bateau de pêche a heurté les rochers.', 'faux', []],
       ['genre', '', 'recit', []],
       ['ordre', 'Que se passe-t-il le lendemain matin ?', 'Un pêcheur frappe à la porte du phare.', ['La lampe s’éteint.', 'Le gardien allume la grande lampe.']],
-      ['sentiment', 'Que ressent sans doute le gardien quand la lampe s’éteint ?', 'de l’inquiétude', ['de la joie', 'de l’ennui']],
+      ['sentiment', 'Que ressent sans doute le gardien quand la lumière disparaît ?', 'de l’inquiétude', ['de la joie', 'de l’ennui']],
     ],
   },
   {
@@ -124,7 +124,7 @@ export const TEXTES_CM = [
       ['vf', 'L’enfant n’arrive pas à dormir.', 'faux', []], ['vf', 'Demain, les enfants visitent une fromagerie.', 'vrai', []],
       ['vf', 'Le moniteur a eu froid.', 'on ne sait pas', []],
       ['mot', 'Dans la lettre, que veut dire « personne n’a osé » ?', 'personne n’a eu le courage', ['personne n’a eu le temps', 'personne n’a eu le droit']],
-      ['ordre', 'Qu’ont fait les enfants avant de griller des châtaignes ?', 'Ils ont marché jusqu’au lac.', ['Ils ont visité une fromagerie.', 'Ils ont pris le car du retour.']],
+      ['ordre', 'Qu’est-ce que les enfants ont fait avant de griller des châtaignes ?', 'Ils ont marché jusqu’au lac.', ['Ils ont visité une fromagerie.', 'Ils ont pris le car du retour.']],
       ['titre', 'Quel autre titre irait bien à ce texte ?', 'Des nouvelles de la colonie', ['Une journée à la plage', 'Une visite au zoo']],
     ],
   },

@@ -386,7 +386,7 @@ const PLACES = [
   { level: 1, clue: '🕰️', what: 'L’horloge Big Ben', says: 'L’horloge Big Ben est à Londres, au Royaume-Uni.', country: 'Royaume-Uni', continent: 'Europe' },
   { level: 1, clue: '💃', what: 'Le flamenco', says: 'Le flamenco est une danse d’Espagne.', country: 'Espagne', continent: 'Europe' },
   { level: 1, clue: '🏛️', what: 'Le Parthénon d’Athènes', says: 'Le Parthénon est à Athènes, en Grèce.', country: 'Grèce', continent: 'Europe' },
-  { level: 1, clue: '🌷', what: 'Les champs de tulipes', says: 'Les Pays-Bas sont célèbres pour leurs champs de tulipes.', country: 'Pays-Bas', continent: 'Europe' },
+  { level: 1, clue: '🌷', what: 'Les tulipes', says: 'Les Pays-Bas sont célèbres pour leurs tulipes.', country: 'Pays-Bas', continent: 'Europe' },
   { level: 2, clue: '🗽', what: 'La statue de la Liberté', says: 'La statue de la Liberté est aux États-Unis.', country: 'États-Unis', continent: 'Amérique' },
   { level: 2, clue: '🗻', what: 'Le mont Fuji', says: 'Le mont Fuji est au Japon.', country: 'Japon', continent: 'Asie' },
   { level: 2, clue: '🐼', what: 'Le panda géant', says: 'Le panda géant vit en Chine.', country: 'Chine', continent: 'Asie' },

@@ -434,7 +434,7 @@ const TEXTS = [
   { level: 7, title: 'Le pain', text: 'Le pain est fait avec de la farine. La farine vient du blé, qui pousse dans les champs. Le meunier écrase les grains pour faire la farine. Le boulanger la mélange avec de l’eau, du sel et de la levure.', questions: [
     ['D’où vient la farine ?', 'du blé', 'du lait', 'des pommes'],
     ['Qui écrase les grains de blé ?', 'le meunier', 'le boulanger', 'le facteur'],
-    ['Où pousse le blé ?', 'dans les champs', 'dans la mer', 'dans le four']] },
+    ['Qui mélange la farine avec de l’eau ?', 'le boulanger', 'le meunier', 'le fermier']] },
 
   // ---- Niveau 8 : consignes et recettes (dans quel ordre ? avec quoi ?)
   { level: 8, title: 'La salade de fruits', text: 'D’abord, lave une pomme et une poire. Ensuite, épluche une banane. Coupe tous les fruits en petits morceaux. Mets-les dans un saladier avec un peu de jus d’orange. Pour finir, mélange doucement.', questions: [
@@ -480,8 +480,8 @@ const TEXTS = [
     ['Quand prépare-t-on son cartable ?', 'le soir', 'le matin', 'à midi'],
     ['Où pose-t-on le cartable ?', 'près de la porte', 'sous le lit', 'dans la cuisine'],
     ['Pourquoi le poser près de la porte ?', 'pour ne pas l’oublier', 'pour le cacher', 'pour qu’il sèche']] },
-  { level: 8, title: 'Cache-cache', text: 'Un enfant compte jusqu’à vingt contre un arbre, les yeux fermés. Pendant ce temps, les autres se cachent. Puis il crie : « J’arrive ! » et il part les chercher. Le premier trouvé comptera à la partie suivante.', questions: [
-    ['Jusqu’à combien compte l’enfant ?', 'vingt', 'cinq', 'cent'],
+  { level: 8, title: 'Cache-cache', text: 'Un enfant compte jusqu’à dix contre un arbre, les yeux fermés. Pendant ce temps, les autres se cachent. Puis il crie : « J’arrive ! » et il part les chercher. Le premier trouvé comptera à la partie suivante.', questions: [
+    ['Jusqu’à combien compte l’enfant ?', 'dix', 'cinq', 'cent'],
     ['Que font les autres pendant ce temps ?', 'ils se cachent', 'ils comptent', 'ils dorment'],
     ['Qui comptera à la partie suivante ?', 'le premier trouvé', 'le dernier trouvé', 'le plus petit']] },
   { level: 8, title: 'Pour les mésanges', text: 'Prends une pomme de pin. Recouvre-la de graisse végétale. Roule-la dans des graines de tournesol. Accroche-la à une branche avec une ficelle. Les mésanges viendront picorer tout l’hiver !', questions: [

@@ -365,7 +365,7 @@ export const WHAT_IF = [
   { emoji: '🔥', text: 'Tu trouves des allumettes. Que fais-tu ?', answer: 'Je les donne à un adulte', wrong: ['J’en allume une', 'Je joue avec'], says: 'Les allumettes, c’est pour les adultes : on ne joue jamais avec le feu.' },
   { emoji: '🌊', text: 'À la plage, ton ballon part dans l’eau. Que fais-tu ?', answer: 'J’appelle un adulte', wrong: ['Je nage pour le chercher', 'Je vais loin dans l’eau'], says: 'On ne va jamais seul dans l’eau : un adulte ira chercher le ballon.' },
   { emoji: '🧴', text: 'Tu trouves une bouteille de produit pour nettoyer. Que fais-tu ?', answer: 'Je n’y touche pas', wrong: ['Je la goûte', 'Je l’ouvre pour la sentir'], says: 'Les produits pour nettoyer sont dangereux : on n’y touche pas, et on prévient un adulte.' },
-  { emoji: '🍄', text: 'Tu trouves des champignons dans la forêt. Que fais-tu ?', answer: 'Je ne les mange pas', wrong: ['Je les goûte', 'Je les croque tout crus'], says: 'Certains champignons sont très dangereux : on ne les mange jamais sans un adulte qui les connaît.' },
+  { emoji: '🍄', text: 'Tu trouves des champignons dans la forêt. Que fais-tu ?', answer: 'Je ne les mange pas', wrong: ['Je les goûte', 'Je les mange vite'], says: 'Certains champignons sont très dangereux : on ne les mange jamais sans un adulte qui les connaît.' },
 ];
 
 // Les numéros d'urgence en France.

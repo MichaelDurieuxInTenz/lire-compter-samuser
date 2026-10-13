@@ -78840,15 +78840,6 @@
   "file": "fr/431307c96527ed12.mp3"
  },
  {
-  "key": "fr|1|Où pousse le blé ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Où pousse le blé ?",
-  "voice": "estelle",
-  "file": "fr/a0e7f54ae9bbf7d6.mp3"
- },
- {
   "key": "fr|1|Trouve la baleine.",
   "lang": "fr",
   "rate": 1,
@@ -83673,6 +83664,15 @@
   "file": "fr/34e6175050482e23.mp3"
  },
  {
+  "key": "fr|1|Où dorment Léo et sa sœur ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Où dorment Léo et sa sœur ?",
+  "voice": "estelle",
+  "file": "fr/83a3e2f84252af86.mp3"
+ },
+ {
   "key": "fr|1|10 plus combien égale 100 ?",
   "lang": "fr",
   "rate": 1,
@@ -85228,15 +85228,6 @@
   "text": "Quel mot rime avec : souris ?",
   "voice": "estelle",
   "file": "fr/00838a0c7bcfe302.mp3"
- },
- {
-  "key": "fr|1|Où dorment Yanis et sa sœur ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Où dorment Yanis et sa sœur ?",
-  "voice": "estelle",
-  "file": "fr/fe7cf9e6183d9bc9.mp3"
  },
  {
   "key": "fr|1|Comment se sent-il sans doute à la fin ?",
@@ -90864,6 +90855,15 @@
   "file": "fr/cadc4eea82760783.mp3"
  },
  {
+  "key": "fr|1|Les tulipes… dans quel pays ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Les tulipes… dans quel pays ?",
+  "voice": "estelle",
+  "file": "fr/a09693e944d4e5dd.mp3"
+ },
+ {
   "key": "fr|1|Oui : content.",
   "lang": "fr",
   "rate": 1,
@@ -96309,6 +96309,15 @@
   "file": "fr/e39e0bc159546aed.mp3"
  },
  {
+  "key": "fr|1|Qui mélange la farine avec de l'eau ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Qui mélange la farine avec de l'eau ?",
+  "voice": "estelle",
+  "file": "fr/6b75e6622b893a92.mp3"
+ },
+ {
   "key": "fr|1|Pourquoi personne ne peut-il dormir ?",
   "lang": "fr",
   "rate": 1,
@@ -100672,15 +100681,6 @@
   "text": "Dans le bois, le loup voit un hibou !",
   "voice": "estelle",
   "file": "fr/b1de007bec24b0b8.mp3"
- },
- {
-  "key": "fr|1|Les champs de tulipes… dans quel pays ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Les champs de tulipes… dans quel pays ?",
-  "voice": "estelle",
-  "file": "fr/5a26fdf828196752.mp3"
  },
  {
   "key": "fr|1|Le robot fait un quart de tour à droite, puis encore un à droite.",
@@ -123228,6 +123228,15 @@
   "file": "fr/9f8baea3d3fd2f21.mp3"
  },
  {
+  "key": "fr|0.9|Léo",
+  "lang": "fr",
+  "rate": 0.9,
+  "type": "proposition",
+  "text": "Léo",
+  "voice": "estelle",
+  "file": "fr/cc51ff1da2e7ee54.mp3"
+ },
+ {
   "key": "fr|1|Agacé,",
   "lang": "fr",
   "rate": 1,
@@ -125935,15 +125944,6 @@
   "text": "et en donne 4 à son copain.",
   "voice": "estelle",
   "file": "fr/deb8392294ed2ab2.mp3"
- },
- {
-  "key": "fr|0.9|Yanis",
-  "lang": "fr",
-  "rate": 0.9,
-  "type": "proposition",
-  "text": "Yanis",
-  "voice": "estelle",
-  "file": "fr/5a11b9f4058e37cb.mp3"
  },
  {
   "key": "fr|0.9|Chloé",
@@ -129121,6 +129121,15 @@
   "text": "2 mille 800,",
   "voice": "estelle",
   "file": "fr/ce766c6adb3d5c9f.mp3"
+ },
+ {
+  "key": "fr|1|Les tulipes…",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "Les tulipes…",
+  "voice": "estelle",
+  "file": "fr/e2c5d6979ecd7ff7.mp3"
  },
  {
   "key": "fr|1|et 4 pommes.",
@@ -135736,15 +135745,6 @@
   "text": "l'ombre tourne",
   "voice": "estelle",
   "file": "fr/4487369fc2b183e3.mp3"
- },
- {
-  "key": "fr|1|et 7 centimètres de large.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "et 7 centimètres de large.",
-  "voice": "estelle",
-  "file": "fr/51c96a4c35c27a5d.mp3"
  },
  {
   "key": "fr|1|Bravo",
@@ -146385,6 +146385,15 @@
   "file": "fr/e9ba1d8efe7ed324.mp3"
  },
  {
+  "key": "fr|1|centimètres de large.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "centimètres de large.",
+  "voice": "estelle",
+  "file": "fr/5b3614564607b98b.mp3"
+ },
+ {
   "key": "fr|1|L'album a",
   "lang": "fr",
   "rate": 1,
@@ -146977,15 +146986,6 @@
   "text": "caisses.",
   "voice": "estelle",
   "file": "fr/c827f6b0642db47b.mp3"
- },
- {
-  "key": "fr|1|centimètres de large.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "centimètres de large.",
-  "voice": "estelle",
-  "file": "fr/5b3614564607b98b.mp3"
  },
  {
   "key": "fr|1|Deux canards pèsent",
@@ -174231,13 +174231,13 @@
   "file": "fr/6afca031243fbc67.mp3"
  },
  {
-  "key": "fr|1|cueillent-elles",
+  "key": "fr|1|ramassent-elles",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "cueillent-elles",
+  "text": "ramassent-elles",
   "voice": "estelle",
-  "file": "fr/de8c84249f3da71b.mp3"
+  "file": "fr/b86867d0c9f5a6b8.mp3"
  },
  {
   "key": "fr|1|cueillent",
@@ -175221,13 +175221,13 @@
   "file": "fr/72320d8784b9e5b9.mp3"
  },
  {
-  "key": "fr|1|mettras",
+  "key": "fr|1|porteras",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "mettras",
+  "text": "porteras",
   "voice": "estelle",
-  "file": "fr/2c477af7a93e721b.mp3"
+  "file": "fr/4b1274108362b147.mp3"
  },
  {
   "key": "fr|1|croissants",
@@ -175390,15 +175390,6 @@
   "text": "semaines",
   "voice": "estelle",
   "file": "fr/5a231767f4d4d016.mp3"
- },
- {
-  "key": "fr|1|yanis",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "yanis",
-  "voice": "estelle",
-  "file": "fr/e8ba8a0b3e58e024.mp3"
  },
  {
   "key": "fr|1|tente",
@@ -176607,13 +176598,13 @@
   "file": "fr/6060626bda2a09e8.mp3"
  },
  {
-  "key": "fr|1|couine",
+  "key": "fr|1|caoutchouc",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "couine",
+  "text": "caoutchouc",
   "voice": "estelle",
-  "file": "fr/5fe1f385642666a4.mp3"
+  "file": "fr/dbe296b598dff62e.mp3"
  },
  {
   "key": "fr|1|chaussettes",
@@ -177838,15 +177829,6 @@
   "text": "nour",
   "voice": "estelle",
   "file": "fr/7c8d52f6673f3443.mp3"
- },
- {
-  "key": "fr|1|paille",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "paille",
-  "voice": "estelle",
-  "file": "fr/37571222aed2d6b4.mp3"
  },
  {
   "key": "fr|1|noisette",
@@ -179226,6 +179208,15 @@
   "file": "fr/38f7087db7189f74.mp3"
  },
  {
+  "key": "fr|1|mélange",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "mélange",
+  "voice": "estelle",
+  "file": "fr/5002e5b11ff48a7f.mp3"
+ },
+ {
   "key": "fr|1|protège",
   "lang": "fr",
   "rate": 1,
@@ -179512,15 +179503,6 @@
   "text": "cresson",
   "voice": "estelle",
   "file": "fr/86378ba5e64ecccb.mp3"
- },
- {
-  "key": "fr|1|vingt",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "vingt",
-  "voice": "estelle",
-  "file": "fr/d2a88930c78fbec4.mp3"
  },
  {
   "key": "fr|1|servent",
@@ -180414,6 +180396,15 @@
   "file": "fr/1502cbe06042d490.mp3"
  },
  {
+  "key": "fr|1|yanis",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "yanis",
+  "voice": "estelle",
+  "file": "fr/e8ba8a0b3e58e024.mp3"
+ },
+ {
   "key": "fr|1|fier",
   "lang": "fr",
   "rate": 1,
@@ -180682,15 +180673,6 @@
   "text": "pots",
   "voice": "estelle",
   "file": "fr/2071b8ed6dbad356.mp3"
- },
- {
-  "key": "fr|1|mélange",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "mélange",
-  "voice": "estelle",
-  "file": "fr/5002e5b11ff48a7f.mp3"
  },
  {
   "key": "fr|1|l'oisillon",
@@ -181944,15 +181926,6 @@
   "file": "fr/7f781b052cd5a70c.mp3"
  },
  {
-  "key": "fr|1|qu'ont",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "qu'ont",
-  "voice": "estelle",
-  "file": "fr/0a5c5a2bbb257276.mp3"
- },
- {
   "key": "fr|1|griller",
   "lang": "fr",
   "rate": 1,
@@ -182005,6 +181978,15 @@
   "text": "l'évaporation",
   "voice": "estelle",
   "file": "fr/763702828e19b0b6.mp3"
+ },
+ {
+  "key": "fr|1|qu'ont",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "qu'ont",
+  "voice": "estelle",
+  "file": "fr/0a5c5a2bbb257276.mp3"
  },
  {
   "key": "fr|1|grillé",
@@ -182257,15 +182239,6 @@
   "text": "soulagement",
   "voice": "estelle",
   "file": "fr/30b54342a18a38c2.mp3"
- },
- {
-  "key": "fr|1|s'éteint",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "s'éteint",
-  "voice": "estelle",
-  "file": "fr/50a22ba9d4bd6fc1.mp3"
  },
  {
   "key": "fr|1|l'inquiétude",
@@ -200871,6 +200844,15 @@
   "file": "fr/0c57a16c11e051c8.mp3"
  },
  {
+  "key": "fr|1|vingt",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "vingt",
+  "voice": "estelle",
+  "file": "fr/d2a88930c78fbec4.mp3"
+ },
+ {
   "key": "fr|1|unième",
   "lang": "fr",
   "rate": 1,
@@ -208881,15 +208863,6 @@
   "file": "fr/c5e093b90f92b98d.mp3"
  },
  {
-  "key": "fr|1|crus",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "crus",
-  "voice": "estelle",
-  "file": "fr/c25feff287e5f6af.mp3"
- },
- {
   "key": "fr|1|sauveteur",
   "lang": "fr",
   "rate": 1,
@@ -215190,15 +215163,6 @@
   "file": "fr/b1b6868a4c7c0293.mp3"
  },
  {
-  "key": "fr|1|sépare-t-il",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "sépare-t-il",
-  "voice": "estelle",
-  "file": "fr/5c31f6aaaaf5bae6.mp3"
- },
- {
   "key": "fr|1|trombones",
   "lang": "fr",
   "rate": 1,
@@ -215836,15 +215800,6 @@
   "text": "baudruche",
   "voice": "estelle",
   "file": "fr/bfde3d0eef074d35.mp3"
- },
- {
-  "key": "fr|1|caoutchouc",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "caoutchouc",
-  "voice": "estelle",
-  "file": "fr/dbe296b598dff62e.mp3"
  },
  {
   "key": "fr|1|baguettes",
@@ -230283,15 +230238,6 @@
   "file": "fr/a27ce42fc38329cf.mp3"
  },
  {
-  "key": "fr|1|Les champs de tulipes…",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "Les champs de tulipes…",
-  "voice": "estelle",
-  "file": "fr/90c9c6c65963ad57.mp3"
- },
- {
   "key": "fr|1|Touche le Royaume-Uni.",
   "lang": "fr",
   "rate": 1,
@@ -239650,6 +239596,15 @@
   "text": "Combien y a-t-il de jours dans le week-end ?",
   "voice": "estelle",
   "file": "fr/394324016a0eb030.mp3"
+ },
+ {
+  "key": "fr|1|car il est fatigué.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "car il est fatigué.",
+  "voice": "estelle",
+  "file": "fr/f1c66983d56cba01.mp3"
  },
  {
   "key": "fr|1|poisson : 2 syllabes !",
@@ -285840,15 +285795,6 @@
   "file": "fr/13b2143d8603fa24.mp3"
  },
  {
-  "key": "fr|1|car il est fatigué.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "car il est fatigué.",
-  "voice": "estelle",
-  "file": "fr/f1c66983d56cba01.mp3"
- },
- {
   "key": "fr|1|car elle est contente.",
   "lang": "fr",
   "rate": 1,
@@ -295333,6 +295279,15 @@
   "text": "9 kilomètres,",
   "voice": "estelle",
   "file": "fr/1077f1548cfdefe6.mp3"
+ },
+ {
+  "key": "fr|1|et 7 centimètres de large.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "et 7 centimètres de large.",
+  "voice": "estelle",
+  "file": "fr/51c96a4c35c27a5d.mp3"
  },
  {
   "key": "fr|1|Le bébé de l'ours blanc,",

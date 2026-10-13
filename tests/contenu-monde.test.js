@@ -107,7 +107,7 @@ test('pays : le bon pays pour chaque lieu, plat ou animal ; « bonjour » dans d
       'La tour Eiffel': 'France', 'La baguette': 'France', 'Le château de Versailles': 'France', 'Le camembert': 'France',
       'La pizza': 'Italie', 'Les spaghettis': 'Italie', 'Le Colisée de Rome': 'Italie', 'Les gardes de Londres': 'Royaume-Uni',
       'L’horloge Big Ben': 'Royaume-Uni', 'La paella': 'Espagne', 'Le flamenco': 'Espagne', 'Le bretzel': 'Allemagne',
-      'Le Parthénon d’Athènes': 'Grèce', 'Les champs de tulipes': 'Pays-Bas',
+      'Le Parthénon d’Athènes': 'Grèce', 'Les tulipes': 'Pays-Bas',
     },
     2: {
       'La statue de la Liberté': 'États-Unis', 'Le mont Fuji': 'Japon', 'Les sushis': 'Japon', 'Le kimono': 'Japon',
