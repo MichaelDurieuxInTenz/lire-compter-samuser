@@ -291,7 +291,7 @@ test('le ciel, niveaux 8 et 9 : la Terre tourne, les saisons', () => {
 
 test('la météo, niveaux 1 et 2 : les symboles, s’habiller', () => {
   for (const q of draw('meteo', 1)) {
-    const w = WEATHER.find((x) => q.text.startsWith(x.says));
+    const w = WEATHER.find((x) => q.text.startsWith(x.says) || q.text.startsWith(x.also));
     assert.equal(q.answer, w.id);
     // le soleil et « soleil et nuages » ne sont jamais proposés ensemble
     const ids = q.choices.map((c) => c.value);

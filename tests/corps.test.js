@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DOMAINS, findGame } from '../app/js/games/index.js';
 import {
-  AGES, AWAKE, BITES, BODY_VIEWS, BONES, BREATHING, CHAINS, CLASSES, CLUES, DIETS, DIGESTION, DWELLERS, EATERS, FOOD_PATH,
+  AGES, AWAKE, BITES, BODY_VIEWS, BONE_RIDDLES, BONES, BREATHING, CHAINS, CLASSES, CLUES, DIETS, DIGESTION, DWELLERS, EATERS, FOOD_PATH,
   HEART, INSECTS, INVERTEBRATES, JOINT_SPOTS, JOINT_USES, JOINTS, LEG_COUNTS, MEMBERS, MILK_TEETH, MOVERS, MOVES, NEED_CASES,
   NEEDS, NOT_INSECTS, ORGANS, PLACES, TEETH, VERTEBRATES, WINTER, bodySvg,
 } from '../app/js/games/corps.js';
@@ -149,8 +149,14 @@ test('le corps, niveaux 1 et 2 : les os et les articulations à toucher sur le d
   assert.match(BONES.cotes.says, /cœur et les poumons/);
   for (const q of draw('corps', 1)) {
     assert.equal(q.stage.view, 'squelette');
-    assert.equal(q.text, `Touche ${BONES[q.answer].name}.`);
+    const riddle = BONE_RIDDLES.find((r) => r.text === q.text);
+    if (riddle) assert.equal(q.answer, riddle.id, q.text);
+    else assert.equal(q.text, `Touche ${BONES[q.answer].name}.`);
   }
+  const riddleOf = Object.fromEntries(BONE_RIDDLES.map((r) => [r.text, r.id]));
+  assert.equal(riddleOf['Touche l’os qui protège le cerveau.'], 'crane');
+  assert.equal(riddleOf['Touche l’os de la cuisse.'], 'femur');
+  assert.equal(riddleOf['Touche les os qui protègent le cœur et les poumons.'], 'cotes');
   for (const q of draw('corps', 2)) {
     if (q.interaction === 'body') {
       assert.equal(q.text, `Touche ${JOINTS[q.answer].name}.`);
@@ -181,6 +187,12 @@ test('le corps, niveaux 3 et 4 : les besoins du corps, grandir dans l’ordre', 
     if (q.interaction === 'order') {
       assert.equal(q.items.length, 5);
       for (const it of q.items) assert.equal(AGES[it.value].name, it.label);
+      continue;
+    }
+    const extreme = q.text.match(/^Qui est le plus (jeune|âgé) \?$/);
+    if (extreme) {
+      const ranks = q.choices.map((c) => AGES.findIndex((a) => a.name === c.value));
+      assert.equal(q.answer, AGES[extreme[1] === 'jeune' ? Math.min(...ranks) : Math.max(...ranks)].name, q.key);
       continue;
     }
     const [, where, name] = q.text.match(/juste (après|avant) (.+) \?$/);

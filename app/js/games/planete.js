@@ -419,6 +419,7 @@ export const SOLUBLE = [
   { part: 'du sel', emoji: '🧂', says: 'Oui : on ne voit plus le sel, mais l’eau a un goût salé.' },
   { part: 'du sirop', says: 'Oui : le sirop se mélange à toute l’eau, qui devient colorée.' },
   { part: 'du miel', emoji: '🍯', says: 'Oui : le miel se dissout, surtout dans l’eau chaude.' },
+  { part: 'du jus de citron', emoji: '🍋', says: 'Oui : le jus de citron se mélange à toute l’eau, qui devient acide.' },
 ];
 export const INSOLUBLE = [
   { part: 'du sable', emoji: '🏖️', says: 'Non : on voit encore les grains de sable.' },
@@ -426,6 +427,10 @@ export const INSOLUBLE = [
   { part: 'des cailloux', emoji: '🪨', says: 'Non : les cailloux restent au fond, on les voit encore.' },
   { part: 'du riz', emoji: '🍚', says: 'Non : on voit encore les grains de riz.' },
   { part: 'des pâtes', emoji: '🍝', says: 'Non : on voit encore les pâtes.' },
+  { part: 'de la farine', emoji: '🌾', says: 'Non : l’eau devient blanche, puis la farine retombe au fond.' },
+  { part: 'de la terre', emoji: '🪣', says: 'Non : l’eau devient boueuse, puis la terre retombe au fond.' },
+  { part: 'des grains de maïs', emoji: '🌽', says: 'Non : on voit encore les grains de maïs.' },
+  { part: 'des feuilles mortes', emoji: '🍂', says: 'Non : les feuilles flottent, on les voit encore.' },
 ];
 
 function dissolve(rng) {
@@ -451,6 +456,13 @@ export const MIXES = [
   { emoji: '🧂', mix: 'de l’eau et du sel', visible: false, says: 'Non : le sel s’est dissous, on ne le voit plus.' },
   { emoji: '🥄', mix: 'de l’eau et du sucre', visible: false, says: 'Non : le sucre s’est dissous, on ne le voit plus.' },
   { emoji: '🥤', mix: 'de l’eau et du sirop', visible: false, says: 'Non : le sirop s’est mélangé à toute l’eau.' },
+  { emoji: '🧊', mix: 'de l’eau et des glaçons', visible: true },
+  { emoji: '🥣', mix: 'du lait et des céréales', visible: true },
+  { emoji: '🐚', mix: 'du sable et des coquillages', visible: true },
+  { emoji: '🍒', mix: 'des cerises et des pommes', visible: true },
+  { emoji: '🥛', mix: 'du lait et du sucre', visible: false, says: 'Non : le sucre s’est dissous dans le lait, on ne le voit plus.' },
+  { emoji: '🍵', mix: 'du thé chaud et du sucre', visible: false, says: 'Non : le sucre s’est dissous dans le thé, on ne le voit plus.' },
+  { emoji: '🍯', mix: 'de l’eau chaude et du miel', visible: false, says: 'Non : le miel s’est dissous dans l’eau chaude.' },
 ];
 
 function visible(rng) {
@@ -507,6 +519,14 @@ export const SETTLE = [
   { emoji: '🪨', part: 'des cailloux', name: 'les cailloux', where: 'au fond', says: 'Oui : les cailloux tombent au fond.' },
   { emoji: '🍚', part: 'du riz', name: 'le riz', where: 'au fond', says: 'Oui : les grains de riz tombent au fond.' },
   { emoji: '🫒', part: 'de l’huile', name: 'l’huile', where: 'en haut', says: 'Oui : l’huile remonte et flotte sur l’eau.' },
+  { emoji: '🌾', part: 'de la farine', name: 'la farine', where: 'au fond', says: 'Oui : la farine se dépose doucement au fond.' },
+  { emoji: '🪙', part: 'des pièces de monnaie', name: 'les pièces', where: 'au fond', says: 'Oui : les pièces en métal tombent au fond.' },
+  { emoji: '🔩', part: 'des boulons', name: 'les boulons', where: 'au fond', says: 'Oui : les boulons en métal tombent au fond.' },
+  { emoji: '🪵', part: 'des morceaux de bois', name: 'les morceaux de bois', where: 'en haut', says: 'Oui : le bois flotte sur l’eau.' },
+  { emoji: '🪶', part: 'des plumes', name: 'les plumes', where: 'en haut', says: 'Oui : les plumes, très légères, flottent sur l’eau.' },
+  { emoji: '🦆', part: 'des petits canards en plastique', name: 'les petits canards', where: 'en haut', says: 'Oui : les canards en plastique, pleins d’air, flottent.' },
+  { emoji: '🎾', part: 'des balles de tennis', name: 'les balles de tennis', where: 'en haut', says: 'Oui : les balles de tennis, pleines d’air, flottent.' },
+  { emoji: '🍾', part: 'des bouchons en liège', name: 'les bouchons', where: 'en haut', says: 'Oui : le liège est très léger, il flotte.' },
 ];
 const WHERE = ['au fond', 'en haut'];
 
@@ -541,6 +561,13 @@ export const OIL = [
   { emoji: '💧', ask: 'Quel liquide flotte sur l’eau ?', answer: 'l’huile', others: ['le sirop', 'le lait'], says: 'Oui : l’huile flotte sur l’eau.' },
   { emoji: '🫒', ask: 'L’huile se dissout-elle dans l’eau ?', answer: 'non', others: ['oui'], says: 'Non : l’huile et l’eau ne se mélangent pas.' },
   { emoji: '🍳', ask: 'Qu’est-ce qui aide l’eau à enlever l’huile de la poêle ?', answer: 'le savon', others: ['le sel', 'le sucre'], says: 'Oui : le savon aide l’eau à enlever l’huile.' },
+  { emoji: '💧', ask: 'L’huile est-elle plus légère ou plus lourde que l’eau ?', answer: 'plus légère', others: ['plus lourde'], says: 'Oui : l’huile est plus légère que l’eau, c’est pour ça qu’elle flotte.' },
+  { emoji: '🫗', ask: ['On verse d’abord l’huile, puis l’eau par-dessus.', 'Où va l’huile ?'], answer: 'elle remonte', others: ['elle reste au fond', 'elle disparaît'], says: 'Oui : même versée en premier, l’huile remonte au-dessus de l’eau.' },
+  { emoji: '🧈', ask: ['On verse du beurre fondu dans de l’eau chaude.', 'Où va le beurre ?'], answer: 'au-dessus de l’eau', others: ['au fond', 'il disparaît'], says: 'Oui : le beurre fondu flotte sur l’eau, comme l’huile.' },
+  { emoji: '🌊', ask: 'Le pétrole renversé dans la mer…', answer: 'flotte sur l’eau', others: ['coule au fond', 'se dissout'], says: 'Oui : le pétrole flotte et forme une marée noire.' },
+  { emoji: '👕', ask: ['Une goutte d’huile tombe sur ton tee-shirt.', 'Avec de l’eau seule, la tache part-elle ?'], answer: 'non', others: ['oui'], says: 'Non : l’eau seule n’enlève pas l’huile. Il faut du savon.' },
+  { emoji: '🧼', ask: 'Pour enlever l’huile sur tes mains, tu utilises de l’eau et…', answer: 'du savon', others: ['du sel', 'du sable'], says: 'Oui : le savon aide l’eau à enlever l’huile.' },
+  { emoji: '🍝', ask: ['On ajoute un peu d’huile dans l’eau des pâtes.', 'Où sont les gouttes d’huile ?'], answer: 'à la surface', others: ['au fond', 'dans les pâtes'], says: 'Oui : les gouttes d’huile flottent à la surface de l’eau.' },
 ];
 
 // ---------------------------------------------------------------- 6. Faire évaporer l'eau
@@ -553,6 +580,13 @@ export const EVAPORATE = [
   { emoji: '💨', ask: 'Quand l’eau s’évapore, elle devient…', answer: 'de la vapeur', others: ['de la glace', 'du sel'], says: 'Oui : elle devient de la vapeur, un gaz invisible.' },
   { emoji: '🔥', ask: 'Pour que l’eau s’évapore plus vite, il faut…', answer: 'la chauffer', others: ['la refroidir', 'la mettre à l’ombre'], says: 'Oui : plus l’eau est chaude, plus elle s’évapore vite.' },
   { emoji: '👕', ask: ['Le linge mouillé sèche au soleil.', 'Où part son eau ?'], answer: 'dans l’air', others: ['dans le soleil', 'dans le linge'], says: 'Oui : l’eau s’évapore dans l’air.' },
+  { emoji: '🏖️', ask: ['Après une baignade dans la mer, ta peau sèche au soleil.', 'Que reste-t-il sur ta peau ?'], answer: 'du sel', others: ['du sucre', 'de la glace'], says: 'Oui : l’eau de mer s’évapore, de petits grains de sel restent sur la peau.' },
+  { emoji: '🍲', ask: ['On laisse bouillir la soupe longtemps, sans couvercle.', 'Que se passe-t-il ?'], answer: 'il y en a moins', others: ['il y en a plus', 'elle gèle'], says: 'Oui : une partie de son eau s’évapore.' },
+  { emoji: '💧', ask: ['On laisse un verre d’eau sur la table pendant une semaine.', 'Que devient l’eau ?'], answer: 'elle diminue', others: ['elle augmente', 'elle devient du sel'], says: 'Oui : l’eau s’évapore peu à peu dans l’air.' },
+  { emoji: '☀️', ask: 'Où une flaque sèche-t-elle le plus vite ?', answer: 'au soleil', others: ['à l’ombre'], says: 'Oui : au soleil, l’eau chauffe et s’évapore plus vite.' },
+  { emoji: '🥵', ask: ['Tu transpires, puis la sueur sèche sur ta peau.', 'L’eau de la sueur…'], answer: 's’évapore', others: ['devient de la glace', 'devient du sable'], says: 'Oui : l’eau de la sueur s’évapore, et ça rafraîchit le corps.' },
+  { emoji: '🌬️', ask: 'Le linge mouillé sèche plus vite quand…', answer: 'il y a du vent', others: ['il pleut', 'il y a du brouillard'], says: 'Oui : le vent emporte l’eau qui s’évapore.' },
+  { emoji: '🌊', ask: 'L’eau qui s’évapore de la mer finit par former…', answer: 'les nuages', others: ['le sable', 'les étoiles'], says: 'Oui : la vapeur monte, se refroidit et forme les nuages.' },
 ];
 
 // ---------------------------------------------------------------- 7. Mener une expérience
@@ -564,14 +598,22 @@ export const EXPERIMENTS = [
   { title: 'L’huile se mélange-t-elle à l’eau ?', steps: [['🤔', 'je pense que non'], ['🫗', 'je verse l’huile'], ['👀', 'elle reste au-dessus']] },
   { title: 'Le sable tombe-t-il au fond ?', steps: [['🤔', 'je pense que oui'], ['⏳', 'j’attends un peu'], ['👀', 'le sable est au fond']] },
   { title: 'Reste-t-il du sel quand l’eau s’évapore ?', steps: [['🤔', 'je pense que oui'], ['🔥', 'je fais chauffer'], ['👀', 'il reste du sel']] },
+  { title: 'Le riz se dissout-il dans l’eau ?', steps: [['🤔', 'je pense que non'], ['🥄', 'je mélange'], ['👀', 'je vois les grains']] },
+  { title: 'L’aimant sépare-t-il les trombones du sable ?', steps: [['🤔', 'je pense que oui'], ['🧲', 'j’approche l’aimant'], ['👀', 'les trombones collent']] },
+  { title: 'Le tamis garde-t-il les cailloux ?', steps: [['🤔', 'je pense que oui'], ['🪨', 'je verse dans le tamis'], ['👀', 'les cailloux restent']] },
+  { title: 'Le sucre se dissout-il plus vite dans l’eau chaude ?', steps: [['🤔', 'je pense que oui'], ['🔥', 'je chauffe l’eau'], ['👀', 'il disparaît plus vite']] },
+  { title: 'La passoire garde-t-elle les pâtes ?', steps: [['🤔', 'je pense que oui'], ['🍝', 'je verse les pâtes'], ['👀', 'les pâtes restent']] },
 ];
 export const STEPS = [
   { emoji: '🤔', name: 'je pense' }, { emoji: '🧪', name: 'j’essaie' }, { emoji: '👀', name: 'j’observe' },
 ];
-const STEP_ASKS = [
+export const STEP_ASKS = [
   { ask: 'Que fait-on en premier ?', answer: 0 },
   { ask: 'Que fait-on après avoir dit ce que l’on pense ?', answer: 1 },
   { ask: 'Que fait-on à la fin ?', answer: 2 },
+  { ask: 'Que fait-on avant d’essayer ?', answer: 0 },
+  { ask: 'Que fait-on juste avant d’observer ?', answer: 1 },
+  { ask: 'Que fait-on après avoir essayé ?', answer: 2 },
 ];
 const EXPERIMENT_SAYS = 'Je pense, j’essaie, puis j’observe : c’est une expérience !';
 
@@ -620,6 +662,13 @@ export const KITCHEN = [
   { emoji: '🍝', ask: 'Pour égoutter les pâtes, on utilise…', answer: 'une passoire', others: ['une fourchette', 'une assiette'], says: 'Oui : l’eau passe, les pâtes restent.' },
   { emoji: '🥚', ask: 'Pour bien mélanger la pâte, on utilise…', answer: 'un fouet', others: ['un marteau', 'des ciseaux'], says: 'Oui : on mélange avec un fouet.' },
   { emoji: '🥤', ask: 'Pour faire un sirop à l’eau, on verse le sirop dans…', answer: 'l’eau', others: ['l’huile', 'le sable'], says: 'Oui : le sirop se mélange à l’eau.' },
+  { emoji: '🍫', ask: 'Pour faire fondre le chocolat doucement, on le met…', answer: 'au bain-marie', others: ['au congélateur', 'dans l’eau froide'], says: 'Oui : le bol de chocolat chauffe doucement au-dessus de l’eau chaude.' },
+  { emoji: '🍞', ask: 'Pour faire du pain, on mélange la farine, l’eau, le sel et…', answer: 'la levure', others: ['le savon', 'le sable'], says: 'Oui : la levure fait gonfler la pâte.' },
+  { emoji: '🍳', ask: 'Pour faire une omelette, on bat…', answer: 'des œufs', others: ['du sable', 'du savon'], says: 'Oui : on bat les œufs, puis on les fait cuire.' },
+  { emoji: '🥛', ask: 'Pour fabriquer des yaourts, on utilise…', answer: 'du lait', others: ['de l’huile', 'du jus d’orange'], says: 'Oui : les yaourts sont faits avec du lait.' },
+  { emoji: '🍓', ask: 'Pour faire de la confiture, on fait cuire les fruits avec…', answer: 'du sucre', others: ['du sel', 'du poivre'], says: 'Oui : on fait cuire les fruits avec du sucre.' },
+  { emoji: '🥚', ask: 'Pour la mayonnaise, on mélange un jaune d’œuf, de la moutarde et…', answer: 'de l’huile', others: ['du chocolat', 'du jus d’orange'], says: 'Oui : on verse l’huile peu à peu en fouettant.' },
+  { emoji: '🍵', ask: 'Pour faire du thé, on met les feuilles dans…', answer: 'l’eau chaude', others: ['l’huile', 'le sable'], says: 'Oui : l’eau chaude prend le goût des feuilles de thé.' },
 ];
 
 // ---------------------------------------------------------------- 9. Comment séparer ?
@@ -632,6 +681,12 @@ export const SEPARATE = [
   { emoji: '🪨', ask: 'Pour séparer le sable et les cailloux, on utilise…', answer: 'un tamis', others: ['un aimant', 'un verre d’eau'], says: 'Oui : le sable passe, les cailloux restent dans le tamis.' },
   { emoji: '🥔', ask: 'Pour séparer les pommes de terre de leur eau de cuisson, on utilise…', answer: 'une passoire', others: ['un aimant', 'une loupe'], says: 'Oui : l’eau passe, les pommes de terre restent.' },
   { emoji: '🪣', ask: 'Pour avoir de l’eau plus claire avec de l’eau boueuse, on…', answer: 'la filtre', others: ['la secoue', 'ajoute de la terre'], says: 'Oui : le filtre garde la terre.' },
+  { emoji: '🌾', ask: 'Pour enlever les grumeaux de la farine, on utilise…', answer: 'un tamis', others: ['un aimant', 'de l’eau'], says: 'Oui : la farine fine passe, les grumeaux restent dans le tamis.' },
+  { emoji: '🧂', ask: 'Pour séparer du sel et du sable, on commence par ajouter…', answer: 'de l’eau', others: ['de l’huile', 'du sucre'], says: 'Oui : le sel se dissout dans l’eau. Puis on filtre pour garder le sable.' },
+  { emoji: '🥛', ask: 'Pour séparer la crème du lait de la ferme, on…', answer: 'laisse reposer', others: ['ajoute du sel', 'secoue fort'], says: 'Oui : la crème, plus légère, remonte en haut du lait.' },
+  { emoji: '🪣', ask: ['L’eau boueuse a reposé.', 'Pour garder l’eau claire du dessus, on…'], answer: 'la verse doucement', others: ['secoue le seau', 'ajoute de la terre'], says: 'Oui : on verse doucement l’eau claire, la boue reste au fond.' },
+  { emoji: '🥄', ask: 'Pour récupérer le sucre de l’eau sucrée, on…', answer: 'fait évaporer l’eau', others: ['filtre l’eau', 'secoue l’eau'], says: 'Oui : l’eau s’évapore, le sucre reste.' },
+  { emoji: '🍵', ask: 'Pour enlever les feuilles de la tisane, on utilise…', answer: 'une passoire', others: ['un aimant', 'un thermomètre'], says: 'Oui : la tisane passe, les feuilles restent dans la passoire.' },
 ];
 
 // ---------------------------------------------------------------- Le jeu

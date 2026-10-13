@@ -163,26 +163,34 @@ test('électricité, niveaux 3 et 4 : les dangers, économiser', () => {
 test('électricité, niveaux 5 à 8 : le circuit, l’ampoule, l’interrupteur', () => {
   for (const q of draw('electricite', 5)) {
     const part = PARTS.find((p) => p.part === q.answer);
-    assert.ok(q.text === part.ask || q.text === `Touche ${part.name}.`, q.text);
+    assert.ok([part.ask, ...part.more.map((m) => m.ask), `Touche ${part.name}.`].includes(q.text), q.text);
     // le dessin montre le circuit complet, ampoule allumée (avec ses rayons)
     assert.equal(q.stage.drawing.lit, true);
   }
   // seul le circuit branché sur les deux bornes, sans interrupteur ouvert, allume l'ampoule
   assert.deepEqual(Object.keys(CIRCUITS).filter((k) => CIRCUITS[k].lights), ['ok']);
+  // l'ampoule ne s'allume que si tout est bien branché et que l'interrupteur (s'il y en a un) est fermé
+  const lightsUp = (d) => CIRCUITS[d.state].lights && d.sw !== 'open';
   for (const q of draw('electricite', 6)) {
-    assert.equal(q.answer, CIRCUITS[q.stage.drawing.state].lights ? 'oui' : 'non', q.key);
+    assert.equal(q.answer, lightsUp(q.stage.drawing) ? 'oui' : 'non', q.key);
     assert.ok(!q.stage.drawing.lit, 'on ne montre pas la réponse');
   }
   for (const q of draw('electricite', 7)) {
-    const lights = (c) => c.drawing.state === 'ok' && c.drawing.sw !== 'open';
-    assert.equal(q.choices.filter(lights).length, 1, q.key);
-    assert.equal(q.answer, q.choices.find(lights).value);
+    const lights = (c) => lightsUp(c.drawing);
+    const wanted = q.text.includes('ne va pas') ? (c) => !lights(c) : lights;
+    assert.equal(q.choices.filter(wanted).length, 1, q.key);
+    assert.equal(q.answer, q.choices.find(wanted).value);
   }
   for (const q of draw('electricite', 8)) {
     const { sw, lit } = q.stage.drawing;
-    if (q.text === 'L’ampoule va-t-elle s’allumer ?') {
-      assert.equal(q.answer, sw === 'closed' ? 'oui' : 'non');
+    if (q.choices[0].value === 'vrai') {
+      assert.equal(q.answer, /fermé laisse passer/.test(q.text) ? 'vrai' : 'faux', q.text);
+    } else if (q.text.endsWith('L’ampoule va-t-elle s’allumer ?')) {
+      assert.equal(q.answer, lightsUp(q.stage.drawing) ? 'oui' : 'non', q.key);
       assert.ok(!lit);
+    } else if (q.choices[0].value === 'ouvert') {
+      assert.equal(lit, sw === 'closed');
+      assert.equal(q.answer, sw === 'closed' ? 'fermé' : 'ouvert', q.key);
     } else {
       // allumée = interrupteur fermé ; pour éteindre, on l'ouvre
       assert.equal(lit, sw === 'closed');
