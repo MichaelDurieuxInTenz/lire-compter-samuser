@@ -167,6 +167,8 @@ test('parle anglais, niveaux 7 et 8 : être poli, répondre selon l’image', ()
   const polite = {
     bousculé: 'Sorry!', passer: 'Excuse me!', biscuit: 'A cookie, please!', merci: 'You’re welcome!',
     livre: 'Here you are!', tombé: 'Are you OK?', sœur: 'This is my sister.', compris: 'Can you repeat, please?',
+    retard: 'Sorry, I’m late!', frappes: 'May I come in?', toilettes: 'May I go to the toilet?', rencontres: 'Nice to meet you!',
+    offres: 'This is for you!', repas: 'Enjoy your meal!', pleure: 'What’s wrong?',
   };
   for (const q of draw('parle-anglais', 7)) {
     checkChoices('parle-anglais', 7, q);
