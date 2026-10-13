@@ -445,7 +445,9 @@ function ouEstHistoire(level, rng) {
     instruction: ['Écoute la petite histoire, puis la question.', story, question],
     short: { key: `ou-est:histoire${level}`, text: 'Écoute et touche.', speak: [story, question] },
     replay: [story, question],
-    stage: { type: 'listen' },
+    // l'histoire entendue (sans l'ordre des phrases) fait partie du sujet de la question : deux
+    // histoires différentes sont deux questions différentes, même si la réponse est le même animal
+    stage: { type: 'listen', story: told.map((t) => `${t.pet.en} ${t.place.key}`).sort().join(', ') },
     listenOnly: true,
     success,
   };
@@ -522,6 +524,36 @@ function withTraps(rng, items, traps) {
   return all;
 }
 
+// Des mots de plus à épeler aux niveaux à thèmes 3 à 6 (dans les thèmes, seuls 3 à 9 mots ont des
+// lettres toutes différentes) : même thème, 3 à 6 lettres toutes différentes, une image claire.
+// Le mot est dit à ces niveaux. Les niveaux mélangés (7 à 10) gardent les mots des thèmes.
+export const SPELL_MORE = {
+  3: [
+    { en: 'pear', fr: 'la poire', emoji: '🍐' }, { en: 'lemon', fr: 'le citron', emoji: '🍋' },
+    { en: 'grapes', fr: 'le raisin', emoji: '🍇' }, { en: 'melon', fr: 'le melon', emoji: '🍈' },
+    { en: 'orange', fr: 'l’orange', emoji: '🍊' }, { en: 'juice', fr: 'le jus de fruits', emoji: '🧃' },
+    { en: 'honey', fr: 'le miel', emoji: '🍯' }, { en: 'rice', fr: 'le riz', emoji: '🍚' },
+    { en: 'pie', fr: 'la tarte', emoji: '🥧' }, { en: 'mango', fr: 'la mangue', emoji: '🥭' },
+    { en: 'meat', fr: 'la viande', emoji: '🍖' },
+  ],
+  4: [
+    { en: 'hat', fr: 'le chapeau', emoji: '👒' }, { en: 'shoe', fr: 'la chaussure', emoji: '👟' },
+    { en: 'arm', fr: 'le bras', emoji: '💪' }, { en: 'finger', fr: 'le doigt', emoji: '👆' },
+    { en: 'thumb', fr: 'le pouce', emoji: '👍' }, { en: 'tongue', fr: 'la langue', emoji: '👅' },
+  ],
+  5: [
+    { en: 'chair', fr: 'la chaise', emoji: '🪑' }, { en: 'crayon', fr: 'la craie grasse', emoji: '🖍️' },
+    { en: 'brush', fr: 'le pinceau', emoji: '🖌️' }, { en: 'map', fr: 'la carte', emoji: '🗺️' },
+    { en: 'music', fr: 'la musique', emoji: '🎵' }, { en: 'storm', fr: 'l’orage', emoji: '⛈️' },
+  ],
+  6: [
+    { en: 'cold', fr: 'froid', emoji: '🥶' }, { en: 'hot', fr: 'chaud', emoji: '🥵' },
+    { en: 'smile', fr: 'le sourire', emoji: '😊' }, { en: 'laugh', fr: 'le rire', emoji: '😄' },
+    { en: 'hug', fr: 'le câlin', emoji: '🤗' }, { en: 'child', fr: 'l’enfant', emoji: '🧒' },
+    { en: 'home', fr: 'la maison', emoji: '🏠' },
+  ],
+};
+
 export const epelleAnglais = {
   id: 'epelle-anglais',
   domain: 'anglais',
@@ -530,7 +562,7 @@ export const epelleAnglais = {
   skill: 'Écrire un mot anglais en remettant ses lettres dans l’ordre',
   levels: [...LEVELS, 'Tous les thèmes mélangés', 'Écoute sans l’image', 'L’image sans le son', 'Sans son, lettres pièges'],
   generate(level, rng) {
-    const pool = level <= THEMES ? GROUPS[level - 1].themes.flatMap((t) => t.words) : ALL_WORDS;
+    const pool = level <= THEMES ? [...GROUPS[level - 1].themes.flatMap((t) => t.words), ...(SPELL_MORE[level] || [])] : ALL_WORDS;
     const word = pick(rng, pool.filter(spellable));
     const letters = word.en.split('');
     let order = shuffle(rng, letters.map((_, i) => i));
@@ -568,14 +600,37 @@ export const epelleAnglais = {
 
 // Parler anglais : saluer, répondre à une question simple, finir une comptine.
 
+// `group` : deux formules du même groupe ne sont jamais proposées ensemble (hello / good morning /
+// trick or treat, goodbye / see you tomorrow, thank you / yes, please…) : l'autre pourrait aussi se dire.
 const GREETINGS = [
-  { emoji: '👋', situation: 'Tu arrives à l’école. Tu dis…', en: 'Hello!' },
-  { emoji: '🚪', situation: 'Tu rentres chez toi. Tu dis à ta copine…', en: 'Goodbye!' },
-  { emoji: '🎁', situation: 'On te donne un cadeau. Tu dis…', en: 'Thank you!' },
-  { emoji: '🌙', situation: 'C’est l’heure de dormir. Tu dis…', en: 'Good night!' },
-  { emoji: '🌅', situation: 'C’est le matin. Tu dis…', en: 'Good morning!' },
-  { emoji: '🎂', situation: 'C’est l’anniversaire de ton ami. Tu dis…', en: 'Happy birthday!' },
+  { emoji: '👋', situation: 'Tu arrives à l’école. Tu dis…', en: 'Hello!', group: 'hello' },
+  { emoji: '🚪', situation: 'Tu rentres chez toi. Tu dis à ta copine…', en: 'Goodbye!', group: 'bye' },
+  { emoji: '🎁', situation: 'On te donne un cadeau. Tu dis…', en: 'Thank you!', group: 'thanks' },
+  { emoji: '🌙', situation: 'C’est l’heure de dormir. Tu dis…', en: 'Good night!', group: 'bye' },
+  { emoji: '🌅', situation: 'C’est le matin. Tu dis…', en: 'Good morning!', group: 'hello' },
+  { emoji: '🎂', situation: 'C’est l’anniversaire de ton ami. Tu dis…', en: 'Happy birthday!', group: 'birthday' },
+  { emoji: '🏫', situation: 'Tu quittes l’école jusqu’à demain. Tu dis…', en: 'See you tomorrow!', group: 'bye' },
+  { emoji: '🍰', situation: 'Tu veux bien du gâteau. Tu dis…', en: 'Yes, please!', group: 'thanks' },
+  { emoji: '🥦', situation: 'Tu ne veux pas de brocoli. Tu dis…', en: 'No, thank you!', group: 'thanks' },
+  { emoji: '🤧', situation: 'Ta copine éternue. Tu lui dis…', en: 'Bless you!', group: 'bless' },
+  { emoji: '🏆', situation: 'Ton ami a gagné la course. Tu lui dis…', en: 'Well done!', group: 'well' },
+  { emoji: '🎄', situation: 'C’est Noël. Tu dis…', en: 'Merry Christmas!', group: 'winter' },
+  { emoji: '🎆', situation: 'C’est le premier jour de l’année. Tu dis…', en: 'Happy New Year!', group: 'winter' },
+  { emoji: '🐣', situation: 'C’est Pâques. Tu dis…', en: 'Happy Easter!', group: 'easter' },
+  { emoji: '🎃', situation: 'C’est Halloween. Tu frappes aux portes. Tu dis…', en: 'Trick or treat!', group: 'hello' },
 ];
+
+/**
+ * La bonne réponse et deux autres, jamais deux du même groupe (sorry / excuse me ; hello / good
+ * morning ; over the moon / over the mountain) : un élément sans groupe est seul dans le sien.
+ */
+function formulaOptions(rng, list, target) {
+  const group = (p) => p.group || p;
+  const first = pick(rng, list.filter((p) => group(p) !== group(target)));
+  const second = pick(rng, list.filter((p) => group(p) !== group(target) && group(p) !== group(first)));
+  return shuffle(rng, [target, first, second]);
+}
+
 // Les consignes de la classe d'anglais.
 const COMMANDS = [
   { en: 'Stand up!', emoji: '🧍', fr: 'Lève-toi !' },
@@ -590,15 +645,28 @@ const COMMANDS = [
   { en: 'Look at the board!', emoji: '👀', fr: 'Regarde le tableau !' },
 ];
 
-/** Petites conversations : une question et sa réponse (avec le prénom et l'âge de l'enfant). */
+/**
+ * Petites conversations : une question et sa réponse (avec le prénom et l'âge de l'enfant).
+ * `groups` : pour « trouve la question », deux questions qui ont un groupe en commun ne sont jamais
+ * proposées ensemble (la réponse pourrait aller avec les deux : « It’s red. », « Yes, it is. »).
+ */
 function conversations(name, age) {
   return [
     { q: 'What’s your name?', a: `My name is ${name}.`, wrong: [`I’m ${age}.`, 'I’m fine, thank you.'] },
     { q: 'How old are you?', a: `I’m ${age}.`, wrong: [`My name is ${name}.`, 'I like cats.'] },
     { q: 'How are you?', a: 'I’m fine, thank you.', wrong: [`I’m ${age}.`, 'Goodbye!'] },
-    { q: 'What colour is it?', a: 'It’s red.', wrong: ['It’s a dog.', `My name is ${name}.`], emoji: '🍎' },
-    { q: 'What is it?', a: 'It’s a cat.', wrong: ['It’s blue.', 'I’m fine.'], emoji: '🐱' },
-    { q: 'Do you like ice cream?', a: 'Yes, I do!', wrong: ['It’s a cat.', 'Good night!'], emoji: '🍦' },
+    { q: 'What colour is it?', a: 'It’s red.', wrong: ['It’s a dog.', `My name is ${name}.`], emoji: '🍎', groups: ['colour'] },
+    { q: 'What is it?', a: 'It’s a cat.', wrong: ['It’s blue.', 'I’m fine.'], emoji: '🐱', groups: ['what'] },
+    { q: 'Do you like ice cream?', a: 'Yes, I do!', wrong: ['It’s a cat.', 'Good night!'], emoji: '🍦', groups: ['yes'] },
+    { q: 'What’s the weather like?', a: 'It’s sunny.', wrong: [`My name is ${name}.`, 'Yes, I do!'], emoji: '☀️' },
+    { q: 'Can you swim?', a: 'Yes, I can swim.', wrong: ['It’s red.', `I’m ${age}.`], emoji: '🏊', groups: ['yes'] },
+    { q: 'Have you got a pet?', a: 'Yes, I’ve got a dog.', wrong: ['It’s sunny.', 'I’m fine, thank you.'], emoji: '🐶', groups: ['yes'] },
+    { q: 'What time is it?', a: 'It’s three o’clock.', wrong: ['It’s a cat.', `My name is ${name}.`], emoji: '🕒', groups: ['when'] },
+    { q: 'What day is it today?', a: 'It’s Monday.', wrong: [`I’m ${age}.`, 'Yes, I do!'], groups: ['when'] },
+    { q: 'Do you like carrots?', a: 'No, I don’t.', wrong: ['It’s three o’clock.', 'Good night!'], emoji: '🥕', groups: ['yes'] },
+    { q: 'Who is she?', a: 'She’s my grandma.', wrong: ['It’s blue.', 'Yes, I can swim.'], emoji: '👵', groups: ['what'] },
+    { q: 'What’s your favourite colour?', a: 'My favourite colour is green.', wrong: ['It’s a cat.', `I’m ${age}.`], emoji: '🎨', groups: ['colour'] },
+    { q: 'Is it a cat?', a: 'Yes, it is.', wrong: ['I’m fine, thank you.', 'It’s Monday.'], emoji: '🐱', groups: ['what', 'yes'] },
   ];
 }
 
@@ -613,18 +681,36 @@ function gapSentences(name, age) {
     { s: 'Good ___! Time for bed.', a: 'night', wrong: ['morning', 'thank'] },
     { s: 'I’m fine, ___ you.', a: 'thank', wrong: ['like', 'how'] },
     { s: 'Happy ___ to you!', a: 'birthday', wrong: ['night', 'name'] },
+    { s: 'Where ___ the cat?', a: 'is', wrong: ['am', 'are'] },
+    { s: 'I ___ swim like a fish.', a: 'can', wrong: ['am', 'is'] },
+    { s: 'What ___ is it? It’s red.', a: 'colour', wrong: ['name', 'old'] },
+    { s: 'Good ___! Time for school.', a: 'morning', wrong: ['night', 'birthday'] },
+    { s: '___ are you? I’m fine, thank you.', a: 'How', wrong: ['What', 'Who'] },
+    { s: 'I have two ___: a dog and a cat.', a: 'pets', wrong: ['red', 'happy'] },
+    { s: '___ down, please.', a: 'Sit', wrong: ['Clap', 'Open'] },
+    { s: 'Merry ___!', a: 'Christmas', wrong: ['birthday', 'morning'] },
+    { s: 'I like apples and ___.', a: 'bananas', wrong: ['sad', 'is'] },
   ];
 }
 
+// `group` : deux comptines qui finissent pareil (« over the moon », « over the mountain ») ou dont le
+// mot irait aussi (« sat on a wall », « jumping on the bed ») ne sont jamais proposées ensemble.
 const NURSERY = [
-  { line: 'Twinkle, twinkle, little…', word: 'star', emoji: '⭐', fr: 'étoile' },
+  { line: 'Twinkle, twinkle, little…', word: 'star', emoji: '⭐', fr: 'étoile', group: 'ciel' },
   { line: 'Baa, baa, black…', word: 'sheep', emoji: '🐑', fr: 'mouton' },
   { line: 'Old MacDonald had a…', word: 'farm', emoji: '🚜', fr: 'ferme' },
-  { line: 'Head, shoulders, knees and…', word: 'toes', emoji: '🦶', fr: 'orteils' },
-  { line: 'Humpty Dumpty sat on a…', word: 'wall', emoji: '🧱', fr: 'mur' },
+  { line: 'Head, shoulders, knees and…', word: 'toes', emoji: '🦶', fr: 'orteils', group: 'corps' },
+  { line: 'Humpty Dumpty sat on a…', word: 'wall', emoji: '🧱', fr: 'mur', group: 'sur' },
   { line: 'Incy Wincy…', word: 'spider', emoji: '🕷️', fr: 'araignée' },
   { line: 'Row, row, row your…', word: 'boat', emoji: '🚣', fr: 'bateau' },
   { line: 'The wheels on the…', word: 'bus', emoji: '🚌', fr: 'bus' },
+  { line: 'Hickory, dickory, dock. The mouse ran up the…', word: 'clock', emoji: '🕰️', fr: 'horloge' },
+  { line: 'If you’re happy and you know it, clap your…', word: 'hands', emoji: '👏', fr: 'mains', group: 'corps' },
+  { line: 'Hey diddle diddle, the cow jumped over the…', word: 'moon', emoji: '🌙', fr: 'lune', group: 'ciel' },
+  { line: 'Five little monkeys jumping on the…', word: 'bed', emoji: '🛏️', fr: 'lit', group: 'sur' },
+  { line: 'One, two, buckle my…', word: 'shoe', emoji: '👟', fr: 'chaussure' },
+  { line: 'One, two, three, four, five, once I caught a…', word: 'fish', emoji: '🐟', fr: 'poisson' },
+  { line: 'The bear went over the…', word: 'mountain', emoji: '⛰️', fr: 'montagne', group: 'ciel' },
 ];
 
 // Les formules de politesse : s'excuser, demander poliment, répondre à un merci…
@@ -638,6 +724,13 @@ const POLITE = [
   { emoji: '🤕', situation: 'Ton copain est tombé. Tu lui demandes…', en: 'Are you OK?', group: 'ok' },
   { emoji: '👧', situation: 'Tu présentes ta sœur. Tu dis…', en: 'This is my sister.', group: 'this' },
   { emoji: '❓', situation: 'Tu n’as pas compris. Tu dis…', en: 'Can you repeat, please?', group: 'repeat' },
+  { emoji: '⏰', situation: 'Tu es en retard à l’école. Tu dis…', en: 'Sorry, I’m late!', group: 'pardon' },
+  { emoji: '🚪', situation: 'Tu frappes à la porte de la classe. Tu demandes…', en: 'May I come in?', group: 'pardon' },
+  { emoji: '🙋', situation: 'Tu veux aller aux toilettes. Tu demandes…', en: 'May I go to the toilet?', group: 'pardon' },
+  { emoji: '🤝', situation: 'Tu rencontres un nouvel ami. Tu lui dis…', en: 'Nice to meet you!', group: 'nice' },
+  { emoji: '🎁', situation: 'Tu offres un cadeau à ta copine. Tu dis…', en: 'This is for you!', group: 'here' },
+  { emoji: '🍽️', situation: 'C’est l’heure du repas. Tu dis à tes amis…', en: 'Enjoy your meal!', group: 'meal' },
+  { emoji: '😢', situation: 'Ta copine pleure. Tu lui demandes…', en: 'What’s wrong?', group: 'ok' },
 ];
 
 const WEATHER = [
@@ -687,10 +780,7 @@ function pictureTalk(rng) {
 function parlePlus(level, rng, name) {
   if (level === 7) {
     const target = pick(rng, POLITE);
-    const first = pick(rng, POLITE.filter((p) => p.group !== target.group));
-    const second = pick(rng, POLITE.filter((p) => p.group !== target.group && p.group !== first.group));
-    const others = [first, second];
-    const options = shuffle(rng, [target, ...others]);
+    const options = formulaOptions(rng, POLITE, target);
     return {
       key: `parle:politesse:${target.en}`,
       text: target.situation,
@@ -746,7 +836,11 @@ function parlePlus(level, rng, name) {
       { q: 'How many cats?', a: 'Three cats.' },
     ];
     const talk = pick(rng, talks);
-    const options = shuffle(rng, [talk, ...sample(rng, talks.filter((t) => t !== talk), 2)]).map((t) => t.q);
+    // deux questions d'un même groupe ne sont pas proposées ensemble : la réponse irait avec les deux
+    const clash = (a, b) => a === b || (a.groups || []).some((g) => (b.groups || []).includes(g));
+    const first = pick(rng, talks.filter((t) => !clash(t, talk)));
+    const second = pick(rng, talks.filter((t) => !clash(t, talk) && !clash(t, first)));
+    const options = shuffle(rng, [talk, first, second]).map((t) => t.q);
     const reply = { text: talk.a, lang: EN, rate: 0.85 };
     return {
       key: `parle:question:${talk.q}`,
@@ -794,7 +888,7 @@ export const parleAnglais = {
     if (level >= 4) return parlePlus(level, rng, name);
     if (level === 1) {
       const target = pick(rng, GREETINGS);
-      const options = shuffle(rng, [target, ...sample(rng, GREETINGS.filter((g) => g !== target), 2)]);
+      const options = formulaOptions(rng, GREETINGS, target);
       return {
         key: `parle:salut:${target.en}`,
         text: target.situation,
@@ -826,7 +920,7 @@ export const parleAnglais = {
       };
     }
     const rhyme = pick(rng, NURSERY);
-    const options = shuffle(rng, [rhyme, ...sample(rng, NURSERY.filter((r) => r !== rhyme), 2)]);
+    const options = formulaOptions(rng, NURSERY, rhyme);
     return {
       key: `parle:comptine:${rhyme.word}`,
       text: 'Finis la comptine !',
@@ -841,5 +935,8 @@ export const parleAnglais = {
     };
   },
 };
+
+// Les données de « Parle anglais » (pour les tests).
+export const PARLE_DATA = { GREETINGS, POLITE, NURSERY, conversations, gapSentences };
 
 export const ANGLAIS_GAMES = [ecoute, lisAnglais, motAnglais, relieAnglais, compteAnglais, ouEst, epelleAnglais, parleAnglais];

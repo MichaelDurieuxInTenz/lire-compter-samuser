@@ -256,7 +256,7 @@ test('mélanges, niveaux 1 et 2 : ce qui se dissout dans l’eau, ce qu’on voi
     assert.equal(q.answer, soluble.includes(part) ? 'oui' : 'non', q.text);
   }
   // on ne voit plus le sel, le sucre, le sirop ; on voit encore le sable, l'huile…
-  for (const m of MIXES) assert.equal(m.visible, !/du sel|du sucre|du sirop/.test(m.mix), m.mix);
+  for (const m of MIXES) assert.equal(m.visible, !/du sel|du sucre|du sirop|du miel/.test(m.mix), m.mix);
   for (const q of draw('melanges', 2)) {
     const item = MIXES.find((m) => q.instruction[0] === `On mélange ${m.mix}.`);
     assert.equal(q.answer, item.visible ? 'oui' : 'non', q.text);
@@ -274,7 +274,9 @@ test('mélanges, niveaux 3 et 4 : filtrer, laisser reposer', () => {
     assert.deepEqual(q.choices.map((c) => c.value), [item.stays, item.passes]);
     assert.equal(q.answer, q.instruction[1].includes('reste') ? item.stays : item.passes, q.text);
   }
-  for (const s of SETTLE) assert.equal(s.where, s.name === 'l’huile' ? 'en haut' : 'au fond', s.name);
+  // l'huile, le bois, les plumes, le liège et les jouets pleins d'air flottent ; le reste tombe au fond
+  const floating = ['l’huile', 'les morceaux de bois', 'les plumes', 'les petits canards', 'les balles de tennis', 'les bouchons'];
+  for (const s of SETTLE) assert.equal(s.where, floating.includes(s.name) ? 'en haut' : 'au fond', s.name);
   for (const q of draw('melanges', 4)) {
     if (q.key === 'melanges:reposer:claire') {
       assert.equal(q.answer, 'en haut');
@@ -321,7 +323,10 @@ test('mélanges, niveau 7 : les étapes d’une expérience dans l’ordre (je p
       for (const it of q.items) assert.deepEqual(exp.steps[it.value], [it.emoji, it.caption]);
       continue;
     }
-    const expected = { 'Que fait-on en premier ?': 'je pense', 'Que fait-on à la fin ?': 'j’observe' }[q.text] ?? 'j’essaie';
+    const expected = {
+      'Que fait-on en premier ?': 'je pense', 'Que fait-on à la fin ?': 'j’observe',
+      'Que fait-on avant d’essayer ?': 'je pense', 'Que fait-on après avoir essayé ?': 'j’observe',
+    }[q.text] ?? 'j’essaie';
     assert.equal(q.answer, expected, q.text);
   }
 });

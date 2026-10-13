@@ -144,18 +144,27 @@ function livingOrNot(rng) {
 // cycle : « Que devient la graine ? » ne propose jamais l'arbre à côté de la pousse.
 export const GROWTH = [
   { cycle: 'arbre', from: 'la graine', emoji: '🌰', to: { emoji: '🌱', name: 'la pousse' }, says: 'La graine germe : elle devient une petite pousse.' },
-  { cycle: 'poule', from: 'l’œuf de la poule', emoji: '🥚', to: { emoji: '🐥', name: 'le poussin' }, says: 'Le poussin sort de l’œuf.' },
+  { cycle: 'poule', group: 'œuf', from: 'l’œuf de la poule', emoji: '🥚', to: { emoji: '🐥', name: 'le poussin' }, says: 'Le poussin sort de l’œuf.' },
   { cycle: 'poule', from: 'le poussin', emoji: '🐥', to: { emoji: '🐔', name: 'la poule' }, says: 'Le poussin grandit : il devient une poule ou un coq.' },
   { cycle: 'papillon', from: 'la chenille', emoji: '🐛', to: { emoji: '🦋', name: 'le papillon' }, says: 'La chenille fait une chrysalide, puis elle devient un papillon.' },
   { cycle: 'grenouille', from: 'le têtard', to: { emoji: '🐸', name: 'la grenouille' }, says: 'Le têtard perd sa queue et devient une grenouille.' },
   { cycle: 'humain', from: 'le bébé', emoji: '👶', to: { emoji: '🧒', name: 'l’enfant' }, says: 'Le bébé grandit : il devient un enfant.' },
   { cycle: 'humain', from: 'l’enfant', emoji: '🧒', to: { emoji: '🧑', name: 'l’adulte' }, says: 'L’enfant grandit : il devient un adulte.' },
-  { cycle: 'pommier', from: 'la fleur du pommier', emoji: '🌸', to: { emoji: '🍎', name: 'la pomme' }, says: 'La fleur du pommier devient une pomme.' },
+  { cycle: 'pommier', group: 'fruit', from: 'la fleur du pommier', emoji: '🌸', to: { emoji: '🍎', name: 'la pomme' }, says: 'La fleur du pommier devient une pomme.' },
+  { cycle: 'papillon', group: 'œuf', from: 'l’œuf du papillon', emoji: '🥚', to: { emoji: '🐛', name: 'la chenille' }, says: 'Une petite chenille sort de l’œuf du papillon.' },
+  { cycle: 'papillon', from: 'la chrysalide', to: { emoji: '🦋', name: 'le papillon' }, says: 'Le papillon sort de la chrysalide.' },
+  { cycle: 'arbre', from: 'la pousse', emoji: '🌱', to: { emoji: '🌳', name: 'l’arbre' }, says: 'La pousse grandit pendant des années : elle devient un arbre.' },
+  { cycle: 'humain', from: 'l’adulte', emoji: '🧑', to: { emoji: '🧓', name: 'la personne âgée' }, says: 'L’adulte vieillit : il devient une personne âgée.' },
+  { cycle: 'chat', from: 'le chaton', to: { emoji: '🐈', name: 'le chat' }, says: 'Le chaton grandit : il devient un chat.' },
+  { cycle: 'vache', from: 'le veau', to: { emoji: '🐄', name: 'la vache' }, says: 'Le veau grandit : il devient une vache ou un taureau.' },
+  { cycle: 'cerisier', group: 'fruit', from: 'la fleur du cerisier', emoji: '🌸', to: { emoji: '🍒', name: 'la cerise' }, says: 'La fleur du cerisier devient une cerise.' },
 ];
 
 function growth(rng) {
   const step = pick(rng, GROWTH);
-  const pool = [...new Map(GROWTH.filter((g) => g.cycle !== step.cycle).map((g) => [g.to.name, g.to])).values()];
+  // ni le même cycle, ni ce qui sort d'un autre œuf (« Que devient l'œuf de la poule ? » : pas la
+  // chenille), ni le fruit d'une autre fleur
+  const pool = [...new Map(GROWTH.filter((g) => g.cycle !== step.cycle && (!step.group || g.group !== step.group)).map((g) => [g.to.name, g.to])).values()];
   return pictureQuestion({
     key: `vivant:devient:${step.from}`,
     text: `Que devient ${step.from} ?`,
@@ -175,6 +184,13 @@ export const CYCLES = [
   { title: 'La vie de l’arbre.', steps: [['🌰', 'la graine'], ['🌱', 'la pousse'], ['🌳', 'l’arbre']], says: 'La graine, la pousse, puis l’arbre.' },
   { title: 'La vie du pommier.', steps: [['🌱', 'la pousse'], ['🌳', 'le pommier'], ['🌸', 'la fleur'], ['🍎', 'la pomme']], says: 'La pousse, le pommier, la fleur, puis la pomme.' },
   { title: 'La vie d’un être humain.', steps: [['👶', 'le bébé'], ['🧒', 'l’enfant'], ['🧑', 'l’adulte'], ['🧓', 'la personne âgée']], says: 'Le bébé, l’enfant, l’adulte, puis la personne âgée.' },
+  { title: 'La vie du canard.', steps: [['🥚', 'l’œuf'], ['🐣', 'le caneton qui sort de l’œuf'], ['🦆', 'le canard']], says: 'L’œuf, le caneton, puis le canard.' },
+  { title: 'La vie de la tomate.', steps: [['🌱', 'la pousse'], ['🌼', 'la fleur'], ['🍅', 'la tomate']], says: 'La pousse, la fleur, puis la tomate.' },
+  { title: 'La vie du tournesol.', steps: [['🌱', 'la pousse'], ['🌿', 'la jeune plante'], ['🌻', 'le tournesol en fleur']], says: 'La pousse, la jeune plante, puis le tournesol en fleur.' },
+  { title: 'La vie du cerisier.', steps: [['🌱', 'la pousse'], ['🌳', 'le cerisier'], ['🌸', 'la fleur'], ['🍒', 'la cerise']], says: 'La pousse, le cerisier, la fleur, puis la cerise.' },
+  { title: 'La vie du pêcher.', steps: [['🌱', 'la pousse'], ['🌳', 'le pêcher'], ['🌸', 'la fleur'], ['🍑', 'la pêche']], says: 'La pousse, le pêcher, la fleur, puis la pêche.' },
+  { title: 'La vie du concombre.', steps: [['🌱', 'la pousse'], ['🌼', 'la fleur'], ['🥒', 'le concombre']], says: 'La pousse, la fleur, puis le concombre.' },
+  { title: 'La vie du maïs.', steps: [['🌱', 'la pousse'], ['🌿', 'la jeune plante'], ['🌽', 'l’épi de maïs']], says: 'La pousse, la jeune plante, puis l’épi de maïs.' },
 ];
 
 function cycleOrder(rng) {
@@ -205,6 +221,15 @@ export const PLANT_CASES = [
   { text: 'Cette plante est près de la fenêtre et on l’arrose.', grows: true },
   { text: 'On n’arrose jamais cette plante.', grows: false, why: 'Sans eau, la plante se fane.' },
   { text: 'Cette plante est dans un placard tout noir.', grows: false, why: 'Sans lumière, la plante jaunit et pousse mal.' },
+  { text: 'Cette plante est au soleil et on l’arrose chaque semaine.', grows: true },
+  { text: 'Cette plante est dans le jardin, sous le soleil et la pluie.', grows: true },
+  { text: 'On arrose cette plante quand sa terre devient sèche.', grows: true },
+  { text: 'Cette plante est sur le balcon et on l’arrose souvent.', grows: true },
+  { text: 'On arrose cette plante, mais elle reste dans une boîte fermée.', grows: false, why: 'Sans lumière, la plante jaunit et pousse mal.' },
+  { text: 'Cette plante est au soleil, mais sa terre est sèche depuis des semaines.', grows: false, why: 'Sans eau, la plante se fane.' },
+  { text: 'Cette plante est restée dans la cave, sans lumière.', grows: false, why: 'Sans lumière, la plante jaunit et pousse mal.' },
+  { text: 'Pendant les vacances, personne n’a arrosé cette plante.', grows: false, why: 'Sans eau, la plante se fane.' },
+  { text: 'Cette plante est cachée sous un carton, dans le noir.', grows: false, why: 'Sans lumière, la plante jaunit et pousse mal.' },
 ];
 
 function plantNeeds(rng) {
@@ -434,6 +459,13 @@ export const WATER_FORMS = [
   { emoji: '🚿', text: 'Dans la douche, il coule…', answer: LIQUID, says: 'Dans la douche, il coule de l’eau liquide.' },
   { emoji: '♨️', text: 'Quand l’eau bout, elle devient…', answer: VAPOUR, says: 'L’eau devient de la vapeur : un gaz invisible.' },
   { emoji: '👕', text: 'Le linge sèche : son eau devient…', answer: VAPOUR, says: 'L’eau devient de la vapeur : un gaz invisible.' },
+  { emoji: '🏔️', text: 'Le glacier, en haut de la montagne, c’est…', answer: ICE, says: 'Le glacier, c’est une énorme couche de glace.' },
+  { emoji: '❄️', text: 'Le givre blanc sur la vitre, c’est…', answer: ICE, says: 'Le givre, c’est de la glace en tout petits cristaux.' },
+  { emoji: '🏞️', text: 'La rivière, c’est…', answer: LIQUID, says: 'La rivière, c’est de l’eau liquide qui coule.' },
+  { emoji: '🛁', text: 'Dans la baignoire, il y a…', answer: LIQUID, says: 'Dans la baignoire, il y a de l’eau liquide.' },
+  { emoji: '🏊', text: 'Dans la piscine, on nage dans…', answer: LIQUID, says: 'Dans la piscine, on nage dans de l’eau liquide.' },
+  { emoji: '🍲', text: 'La soupe bout : une partie de son eau devient…', answer: VAPOUR, says: 'L’eau devient de la vapeur : un gaz invisible.' },
+  { emoji: '🌬️', text: 'Le vent sèche la route mouillée : son eau devient…', answer: VAPOUR, says: 'L’eau devient de la vapeur : un gaz invisible.' },
 ];
 export const CHANGES = [
   { emoji: '☀️', text: 'On laisse un glaçon au soleil. Il devient…', answer: LIQUID, says: 'Il fond : la glace devient de l’eau liquide.' },
@@ -604,6 +636,13 @@ export const NATURE = [
   { emoji: '🌦️', text: 'Avec du soleil et de la pluie, on peut voir…', answer: 'un arc-en-ciel', others: ['des étoiles', 'de la neige'], says: 'Le soleil éclaire les gouttes de pluie : c’est l’arc-en-ciel.' },
   { emoji: '❄️', text: 'Quand il gèle, l’eau de la flaque devient…', answer: 'de la glace', others: ['du sable', 'de la vapeur'], says: 'Quand il gèle, l’eau devient de la glace.' },
   { emoji: '☃️', text: 'Quand la neige fond, elle devient…', answer: 'de l’eau', others: ['du sel', 'du sable'], says: 'La neige fond : elle devient de l’eau.' },
+  { emoji: '🌫️', text: 'Le brouillard, c’est…', answer: 'un nuage tout bas', others: ['de la fumée', 'de la neige'], says: 'Le brouillard est un nuage tout près du sol.' },
+  { emoji: '🌿', text: 'Le matin, les petites gouttes d’eau sur l’herbe, c’est…', answer: 'la rosée', others: ['la neige', 'la grêle'], says: 'La rosée, ce sont de petites gouttes d’eau qui se déposent pendant la nuit.' },
+  { emoji: '🏔️', text: 'Au printemps, la neige des montagnes fond. Son eau coule dans…', answer: 'les rivières', others: ['les nuages', 'les maisons'], says: 'L’eau de la neige fondue coule dans les ruisseaux et les rivières.' },
+  { emoji: '🌊', text: 'L’eau de la mer est…', answer: 'salée', others: ['sucrée', 'pétillante'], says: 'L’eau de la mer est salée : on ne peut pas la boire.' },
+  { emoji: '🏞️', text: 'Dans les rivières et les lacs, il y a…', answer: 'de l’eau douce', others: ['de l’eau salée', 'de l’huile'], says: 'Les rivières et les lacs sont remplis d’eau douce, qui n’est pas salée.' },
+  { emoji: '🧊', text: 'Un iceberg, c’est un énorme bloc de…', answer: 'glace', others: ['sel', 'sable'], says: 'Un iceberg est un énorme bloc de glace qui flotte sur la mer.' },
+  { emoji: '🌧️', text: 'Quand il pleut, une partie de l’eau s’enfonce dans…', answer: 'le sol', others: ['le ciel', 'la lune'], says: 'L’eau s’enfonce dans le sol : les plantes la boivent avec leurs racines.' },
 ];
 
 function nature(rng) {

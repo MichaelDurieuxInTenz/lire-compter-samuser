@@ -163,11 +163,14 @@ test('les pays : les voisins de la France, les océans', () => {
     assert.ok(q.success.speak.includes('voisin de la France'));
     seen.add(q.answer);
   }
-  assert.equal(seen.size, 6, 'tous les voisins sont demandés');
+  assert.equal(seen.size, 8, 'tous les voisins sont demandés');
   const oceans = ['Atlantique', 'Pacifique', 'Indien', 'Arctique', 'Austral'];
   const expected = [
     ['l’Europe et l’Amérique', 'Atlantique'], ['La France', 'Atlantique'], ['l’Asie et l’Amérique', 'Pacifique'],
     ['plus grand océan', 'Pacifique'], ['l’Afrique et l’Australie', 'Indien'], ['pôle Nord', 'Arctique'], ['l’Antarctique', 'Austral'],
+    ['l’Amérique et l’Afrique', 'Atlantique'], ['l’est de l’Afrique', 'Indien'], ['l’ouest de l’Amérique', 'Pacifique'],
+    ['Le Japon', 'Pacifique'], ['Madagascar', 'Indien'], ['La Réunion', 'Indien'], ['Tahiti', 'Pacifique'],
+    ['plus petit océan', 'Arctique'], ['ours blancs', 'Arctique'], ['manchots empereurs', 'Austral'],
   ];
   for (const q of draw('pays', 8)) {
     checkChoices(q, 3);

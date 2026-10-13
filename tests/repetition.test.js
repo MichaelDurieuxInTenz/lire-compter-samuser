@@ -83,10 +83,9 @@ test('les formes : pas deux fois le même objet, ni la même devinette, dans une
     const objets = partie(formes, 7, rng);
     assert.deepEqual(doublons(objets).map(({ q }) => q.key), []);
     assert.equal(new Set(objets.map((q) => q.stage.emoji)).size, 10);
-    // 9 devinettes : toutes avant d'en revoir une, et pas une des 4 dernières
+    // 12 devinettes : 10 différentes dans une partie
     const devinettes = partie(formes, 8, rng);
-    assert.equal(new Set(devinettes.slice(0, 9).map((q) => q.text)).size, 9);
-    assert.ok(devinettes.slice(0, 6).some((q) => q.text === devinettes[9].text));
+    assert.equal(new Set(devinettes.map((q) => q.text)).size, 10);
   }
 });
 

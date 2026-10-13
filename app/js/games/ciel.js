@@ -866,13 +866,16 @@ export const ciel = {
 
 // ================================================================= La météo
 
+// `also` : le même temps dit autrement (« Des gouttes d'eau tombent du ciel. ») ; le brouillard n'est
+// jamais dans la météo de la semaine (niveau 9).
 export const WEATHER = [
-  { id: 'soleil', emoji: '☀️', name: 'le soleil', says: 'Il y a du soleil.', found: 'Oui : un grand soleil, il fait beau.' },
-  { id: 'nuages', emoji: '⛅', name: 'le soleil et les nuages', says: 'Il y a du soleil et des nuages.', found: 'Oui : le soleil est à moitié caché par un nuage.' },
-  { id: 'pluie', emoji: '🌧️', name: 'la pluie', says: 'Il pleut.', found: 'Oui : un nuage et des gouttes, c’est la pluie.' },
-  { id: 'neige', emoji: '❄️', name: 'la neige', says: 'Il neige.', found: 'Oui : le flocon, c’est la neige.' },
-  { id: 'orage', emoji: '🌩️', name: 'l’orage', says: 'Il y a de l’orage.', found: 'Oui : un nuage et un éclair, c’est l’orage.' },
-  { id: 'vent', emoji: '🌬️', name: 'le vent', says: 'Il y a du vent.', found: 'Oui : le visage qui souffle, c’est le vent.' },
+  { id: 'soleil', emoji: '☀️', name: 'le soleil', says: 'Il y a du soleil.', also: 'Il fait beau, le ciel est tout bleu.', found: 'Oui : un grand soleil, il fait beau.' },
+  { id: 'nuages', emoji: '⛅', name: 'le soleil et les nuages', says: 'Il y a du soleil et des nuages.', also: 'Le soleil se cache à moitié derrière un nuage.', found: 'Oui : le soleil est à moitié caché par un nuage.' },
+  { id: 'pluie', emoji: '🌧️', name: 'la pluie', says: 'Il pleut.', also: 'Des gouttes d’eau tombent du ciel.', found: 'Oui : un nuage et des gouttes, c’est la pluie.' },
+  { id: 'neige', emoji: '❄️', name: 'la neige', says: 'Il neige.', also: 'Des flocons blancs tombent du ciel.', found: 'Oui : le flocon, c’est la neige.' },
+  { id: 'orage', emoji: '🌩️', name: 'l’orage', says: 'Il y a de l’orage.', also: 'Il y a des éclairs et le tonnerre gronde.', found: 'Oui : un nuage et un éclair, c’est l’orage.' },
+  { id: 'vent', emoji: '🌬️', name: 'le vent', says: 'Il y a du vent.', also: 'L’air souffle fort et fait bouger les arbres.', found: 'Oui : le visage qui souffle, c’est le vent.' },
+  { id: 'brouillard', emoji: '🌫️', name: 'le brouillard', says: 'Il y a du brouillard.', also: 'Un nuage touche le sol, on ne voit pas loin.', found: 'Oui : le brouillard, c’est un nuage tout près du sol.' },
 ];
 const WEATHER_BY_ID = Object.fromEntries(WEATHER.map((w) => [w.id, w]));
 const weatherChoice = (w) => ({ value: w.id, label: w.emoji, name: w.name });
@@ -887,10 +890,11 @@ function symbols(rng) {
   if (sunny.includes(target.id)) others = sample(rng, WEATHER.filter((w) => !sunny.includes(w.id)), 2);
   else if (others.every((w) => sunny.includes(w.id))) others = [others[0], pick(rng, WEATHER.filter((w) => w !== target && !sunny.includes(w.id)))];
   const options = shuffle(rng, [target, ...others]);
+  const said = rng() < 0.5 ? target.says : target.also;
   return {
-    key: `meteo:symbole:${target.id}:${options.map((w) => w.id).join(',')}`,
-    text: `${target.says} Touche le bon dessin.`,
-    instruction: [target.says, 'Touche le bon dessin.'],
+    key: `meteo:symbole:${target.id}:${said}`,
+    text: `${said} Touche le bon dessin.`,
+    instruction: [said, 'Touche le bon dessin.'],
     stage: NONE,
     choices: options.map(weatherChoice),
     choiceStyle: 'pictures',
@@ -906,19 +910,23 @@ function symbols(rng) {
 export const CLOTHES = [
   {
     emoji: '🌧️', text: 'Il pleut. Que prends-tu pour sortir ?',
-    good: [{ emoji: '☂️', name: 'le parapluie' }],
+    good: [{ emoji: '☂️', name: 'le parapluie' }, { emoji: '🧥', name: 'l’imperméable', says: 'Oui, l’imperméable ne laisse pas passer la pluie.' }],
     bad: [{ emoji: '🩱', name: 'le maillot de bain' }, { emoji: '🕶️', name: 'les lunettes de soleil' }, { emoji: '🩳', name: 'le short' }],
     says: 'Oui, le parapluie protège de la pluie.',
   },
   {
     emoji: '❄️', text: 'Il neige et il fait froid. Que mets-tu pour sortir ?',
-    good: [{ emoji: '🧤', name: 'les gants' }, { emoji: '🧣', name: 'l’écharpe' }, { emoji: '🧥', name: 'le manteau' }],
+    good: [{ emoji: '🧤', name: 'les gants' }, { emoji: '🧣', name: 'l’écharpe' }, { emoji: '🧥', name: 'le manteau' }, { emoji: '🥾', name: 'les bottes' }],
     bad: [{ emoji: '🩱', name: 'le maillot de bain' }, { emoji: '🩳', name: 'le short' }, { emoji: '🩴', name: 'les tongs' }],
     says: 'Oui, ça tient chaud quand il fait froid.',
   },
   {
     emoji: '☀️', text: 'Il fait très chaud et il y a du soleil. Que mets-tu pour sortir ?',
-    good: [{ emoji: '🧢', name: 'la casquette' }, { emoji: '🕶️', name: 'les lunettes de soleil' }, { emoji: '🧴', name: 'la crème solaire' }],
+    good: [
+      { emoji: '🧢', name: 'la casquette' }, { emoji: '🕶️', name: 'les lunettes de soleil' }, { emoji: '🧴', name: 'la crème solaire' },
+      { emoji: '👒', name: 'le chapeau' }, { emoji: '🩳', name: 'le short', says: 'Oui, avec un short, on a moins chaud.' },
+      { emoji: '🩴', name: 'les tongs', says: 'Oui, avec des tongs, on a moins chaud aux pieds.' },
+    ],
     bad: [{ emoji: '🧤', name: 'les gants' }, { emoji: '🧣', name: 'l’écharpe' }, { emoji: '🧥', name: 'le manteau' }],
     says: 'Oui, ça protège du soleil.',
   },
@@ -933,7 +941,7 @@ function clothes(rng) {
     stage: picture(item.emoji),
     answer,
     others: sample(rng, item.bad, 2),
-    success: item.says,
+    success: answer.says || item.says,
     rng,
   });
 }
@@ -953,6 +961,12 @@ export const RAIN_FACTS = [
   vf('🧊', 'La grêle, ce sont de petites boules de glace qui tombent du ciel.', 'vrai', 'Elles se forment dans les gros nuages d’orage.'),
   vf('❄️', 'Quand il fait très froid, il peut neiger au lieu de pleuvoir.', 'vrai', 'La neige, ce sont de petits cristaux de glace.'),
   vf('🌧️', 'L’eau de pluie est salée comme l’eau de la mer.', 'faux', 'Quand l’eau de la mer monte dans le ciel, le sel reste dans la mer.'),
+  vf('☁️', 'Les gros nuages gris annoncent souvent la pluie.', 'vrai', 'Ils sont remplis de gouttes d’eau.'),
+  vf('☁️', 'Les nuages restent toujours au même endroit.', 'faux', 'Le vent pousse les nuages dans le ciel.'),
+  vf('⛅', 'Un nuage peut cacher le soleil.', 'vrai', 'Le soleil est toujours là, derrière le nuage.'),
+  vf('🌱', 'Sans la pluie, les plantes poussent mieux.', 'faux', 'Les plantes ont besoin de l’eau de pluie pour pousser.'),
+  vf('💧', 'Après la pluie, il y a souvent des flaques par terre.', 'vrai', 'L’eau de pluie s’arrête dans les creux du sol.'),
+  vf('❄️', 'La neige tombe quand il fait très chaud.', 'faux', 'Il neige quand il fait très froid.'),
 ];
 
 function rain(rng) {
@@ -1050,6 +1064,8 @@ export const STORM_PAIRS = [
   { emoji: '⚡', text: 'Pendant l’orage, que voit-on en premier ?', answer: 'l’éclair', says: 'L’éclair d’abord, puis on entend le tonnerre : la lumière va plus vite que le bruit.' },
   { emoji: '🔊', text: 'Pendant l’orage, qu’est-ce qui fait un grand bruit ?', answer: 'le tonnerre', says: 'Oui, le tonnerre gronde.' },
   { emoji: '⚡', text: 'Pendant l’orage, qu’est-ce qui fait une grande lumière dans le ciel ?', answer: 'l’éclair', says: 'Oui, l’éclair illumine le ciel.' },
+  { emoji: '🔊', text: 'Juste après l’éclair, qu’est-ce qu’on entend ?', answer: 'le tonnerre', says: 'Oui : après l’éclair, on entend le tonnerre.' },
+  { emoji: '⚡', text: 'Qu’est-ce qui dessine un zigzag de lumière dans le ciel ?', answer: 'l’éclair', says: 'Oui, l’éclair fait un zigzag de lumière.' },
 ];
 export const STORM_SHELTERS = {
   good: { emoji: '🏠', name: 'dans la maison' },
@@ -1061,6 +1077,11 @@ export const STORM_FACTS = [
   vf('⚡', 'On voit l’éclair avant d’entendre le tonnerre.', 'vrai', 'La lumière va beaucoup plus vite que le bruit.'),
   vf('🔊', 'Le tonnerre, c’est le bruit de l’éclair.', 'vrai', 'L’éclair chauffe l’air d’un coup : ça fait un grand bruit.'),
   vf('⚡', 'La foudre, c’est un éclair qui touche le sol.', 'vrai', 'C’est pour ça qu’on s’abrite dans une maison.'),
+  vf('🚗', 'Dans une voiture bien fermée, on est à l’abri de la foudre.', 'vrai', 'On y reste, vitres fermées, jusqu’à la fin de l’orage.'),
+  vf('⛰️', 'Pendant l’orage, on monte en haut de la colline.', 'faux', 'C’est dangereux : on descend et on s’abrite dans une maison.'),
+  vf('🌧️', 'Pendant un orage, il pleut souvent très fort.', 'vrai', 'Les gros nuages d’orage sont pleins d’eau.'),
+  vf('⚡', 'L’éclair est une énorme étincelle d’électricité.', 'vrai', 'C’est pour ça que la foudre est très dangereuse.'),
+  vf('🚲', 'Pendant l’orage, on continue sa promenade à vélo.', 'faux', 'On s’abrite vite dans une maison ou dans une voiture.'),
 ];
 
 function storm(rng) {
@@ -1103,6 +1124,13 @@ export const RAINBOW_FACTS = [
   vf('🌈', 'La lumière du soleil contient toutes les couleurs.', 'vrai', 'Les gouttes de pluie les séparent : on voit l’arc-en-ciel.'),
   vf('🚿', 'Avec un tuyau d’arrosage, au soleil, on peut faire un arc-en-ciel.', 'vrai', 'Les gouttes d’eau font comme la pluie.'),
   vf('🌈', 'On compte sept couleurs dans l’arc-en-ciel.', 'vrai', 'Rouge, orange, jaune, vert, bleu, indigo et violet.'),
+  vf('🌈', 'Le rouge est en haut de l’arc-en-ciel, le violet en bas.', 'vrai', 'Les couleurs sont toujours dans le même ordre.'),
+  vf('🌈', 'Les couleurs de l’arc-en-ciel changent de place à chaque fois.', 'faux', 'Elles sont toujours dans le même ordre, du rouge au violet.'),
+  vf('🌙', 'On voit souvent des arcs-en-ciel en pleine nuit.', 'faux', 'Il faut la lumière du soleil pour voir un arc-en-ciel.'),
+  vf('🌈', 'Il peut y avoir deux arcs-en-ciel en même temps.', 'vrai', 'Le deuxième est plus pâle, et ses couleurs sont dans l’autre sens.'),
+  vf('🌈', 'Le noir est une des couleurs de l’arc-en-ciel.', 'faux', 'Il n’y a pas de noir dans l’arc-en-ciel : c’est de la lumière.'),
+  vf('🌈', 'L’arc-en-ciel a la forme d’un grand arc, comme un pont.', 'vrai', 'C’est pour ça qu’on l’appelle un arc-en-ciel.'),
+  vf('🏞️', 'Au soleil, on peut voir un arc-en-ciel près d’une cascade.', 'vrai', 'Les gouttes d’eau de la cascade font comme la pluie.'),
 ];
 
 function rainbow(rng) {

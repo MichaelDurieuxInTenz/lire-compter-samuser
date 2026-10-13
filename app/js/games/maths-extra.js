@@ -10,7 +10,7 @@ const SHAPES_BY_LEVEL = {
   2: ['rond', 'carré', 'triangle', 'rectangle'],
   3: ['rond', 'carré', 'triangle', 'rectangle', 'étoile', 'cœur'],
 };
-const SHAPE_ARTICLE = { rond: 'le rond', carré: 'le carré', triangle: 'le triangle', rectangle: 'le rectangle', étoile: "l'étoile", cœur: 'le cœur' };
+const SHAPE_ARTICLE = { rond: 'le rond', carré: 'le carré', triangle: 'le triangle', rectangle: 'le rectangle', étoile: 'l’étoile', cœur: 'le cœur' };
 const COLORS = ['#ff5c5c', '#3d7dff', '#2fbf5b', '#ffb020', '#9b5cff', '#ff6fa8'];
 
 // Nombre de côtés (le rond n'en a pas : il est tout arrondi).
@@ -25,6 +25,13 @@ export const SHAPE_RIDDLES = [
   { text: 'la forme qui a 5 pointes', answer: 'étoile', others: ['rond', 'triangle', 'carré', 'rectangle'] },
   { text: 'la forme qui a 3 pointes', answer: 'triangle', others: ['rond', 'carré', 'rectangle', 'étoile', 'cœur'] },
   { text: 'la forme qui a une seule pointe', answer: 'cœur', others: ['rond', 'triangle', 'carré', 'rectangle', 'étoile'] },
+  // le carré et le rectangle ont tous les deux 4 côtés et 4 pointes : jamais proposés ensemble ici
+  { text: 'la forme qui a 4 côtés', answer: 'carré', others: ['rond', 'triangle', 'étoile', 'cœur'] },
+  { text: 'la forme qui a 4 pointes', answer: 'rectangle', others: ['rond', 'triangle', 'étoile', 'cœur'] },
+  { text: 'la forme toute ronde', answer: 'rond', others: ['triangle', 'carré', 'rectangle', 'étoile'] },
+  { text: 'la forme qui a le plus de pointes', answer: 'étoile', others: ['rond', 'triangle', 'carré', 'rectangle', 'cœur'] },
+  // le rond et le cœur n'ont pas de côté : ils ne sont pas proposés (« le moins de côtés » serait ambigu)
+  { text: 'la forme qui a le moins de côtés', answer: 'triangle', others: ['carré', 'rectangle', 'étoile'] },
 ];
 
 // Formes en émojis, de plusieurs couleurs : c'est la forme qui compte, pas la couleur.
@@ -147,6 +154,10 @@ export const SHAPE_RIDDLES_2 = [
   { text: 'la forme qui a 4 pointes, et des côtés tous pareils', answer: 'carré', near: 'rectangle', others: ['rond', 'triangle', 'étoile', 'cœur'] },
   { text: 'la forme qui a des côtés tout droits, et plus de 4 pointes', answer: 'étoile', near: 'carré', others: ['rond', 'triangle', 'cœur'] },
   { text: 'la forme qui a 4 pointes, et 2 côtés plus longs que les autres', answer: 'rectangle', near: 'carré', others: ['rond', 'triangle', 'étoile', 'cœur'] },
+  { text: 'la forme qui a plus de 2 pointes, mais moins de 4', answer: 'triangle', near: 'carré', others: ['rond', 'rectangle', 'étoile', 'cœur'] },
+  // 4 pointes : le carré, quand le rectangle n'est pas proposé
+  { text: 'la forme qui a plus de 3 pointes, mais moins de 5', answer: 'carré', near: 'étoile', others: ['rond', 'triangle', 'cœur'] },
+  { text: 'la forme qui a des pointes, mais moins de 3', answer: 'cœur', near: 'triangle', others: ['rond', 'carré', 'étoile'] },
 ];
 
 /** Niveau 8 : trouver la forme qui respecte deux indices. */
@@ -493,7 +504,7 @@ export const relier = {
 
 // ---------------------------------------------------------------- Ranger
 
-const SIZE_EMOJI = ['🐘', '🌳', '🎈', '🐻', '🏠', '🍎', '⭐', '🐟'];
+const SIZE_EMOJI = ['🐘', '🌳', '🎈', '🐻', '🏠', '🍎', '⭐', '🐟', '🚗', '🐶', '🐱', '🌸', '⚽', '🐥', '🦋', '🐢'];
 const SIZE_SCALE = [0.55, 0.8, 1.1, 1.45];
 
 /** Un petit calcul écrit serré (« 9+6 », « 15−7 ») pour tenir dans une étiquette. */

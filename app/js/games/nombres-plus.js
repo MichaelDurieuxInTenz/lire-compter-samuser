@@ -247,6 +247,11 @@ export const FRACTIONS = {
   '2/3': { n: 2, d: 3, words: 'deux tiers', the: 'les deux tiers', plural: true },
   '2/4': { n: 2, d: 4, words: 'deux quarts', the: 'les deux quarts', plural: true },
   '3/4': { n: 3, d: 4, words: 'trois quarts', the: 'les trois quarts', plural: true },
+  // fractions unitaires du CE1, pour comparer des parts (niveau 9)
+  '1/5': { n: 1, d: 5, words: 'un cinquième', the: 'le cinquième' },
+  '1/6': { n: 1, d: 6, words: 'un sixième', the: 'le sixième' },
+  '1/8': { n: 1, d: 8, words: 'un huitième', the: 'le huitième' },
+  '1/10': { n: 1, d: 10, words: 'un dixième', the: 'le dixième' },
 };
 
 // Couleurs : la part coloriée porte toujours des rayures (le motif dit « coloriée », pas la couleur seule).
@@ -419,8 +424,10 @@ function unitQuestion(level, rng, index, f) {
   const noun = NOUN[shape];
   const info = FRACTIONS[f];
   if (index % 2 === 0) {
-    // colorier : 1 part sur 2, ou 2 parts sur 4, 3 sur 6… (des parts égales)
-    const times = info.d === 2 ? pick(rng, [1, 2, 3]) : info.d === 4 && info.n === 1 ? pick(rng, [1, 2]) : info.d === 3 && info.n === 1 ? pick(rng, [1, 2]) : 1;
+    // colorier : 1 part sur 2, ou 2 parts sur 4, 3 sur 6… (des parts égales) ; le quart : 2 parts sur 8,
+    // 3 sur 12 (la pizza seulement : 12 carrés de tablette seraient trop étroits) ; le tiers : 2 sur 6, 3 sur 9
+    const quarterTimes = shape === 'disc' ? [1, 2, 3] : [1, 2];
+    const times = info.n > 1 ? 1 : info.d === 4 ? pick(rng, quarterTimes) : pick(rng, [1, 2, 3]);
     const d = info.d * times;
     const k = info.n * times;
     const st = { ...equalShape(rng, shape, d), shaded: [] };
@@ -443,7 +450,8 @@ function unitQuestion(level, rng, index, f) {
   const text = `Touche la ${noun} dont ${info.the} est colorié${info.fem ? 'e' : ''}.`;
   const hint = { '1/2': 'La moitié, c’est 1 part sur 2 parts égales.', '1/3': 'Le tiers, c’est 1 part sur 3 parts égales.', '1/4': 'Le quart, c’est 1 part sur 4 parts égales.' }[f];
   return {
-    key: `fractions:${level}:touche:${choices.map((c) => c.value).join('|')}`,
+    // les dessins proposés, pas leur ordre à l'écran
+    key: `fractions:${level}:touche:${choices.map((c) => c.value).sort().join('|')}`,
     text,
     instruction: `${text} ${hint}`,
     short: { key: `fractions:touche:${f}`, text },
@@ -508,9 +516,14 @@ function quantityQuestion(level, rng, name) {
   };
 }
 
+// les paires à comparer, la plus grande part d'abord (fractions unitaires du CE1 : 1/3 est plus grand que 1/6)
+export const COMPARE_PAIRS = [
+  ['1/2', '1/4'], ['1/2', '1/3'], ['1/3', '1/4'], ['1/3', '1/6'], ['1/4', '1/8'], ['1/5', '1/10'], ['1/2', '1/8'], ['1/4', '1/6'],
+];
+
 /** Niveau 9 : de deux parts de la même pizza, laquelle est la plus grande (ou la plus petite) ? */
 function compareQuestion(rng, index) {
-  const pair = pick(rng, [['1/2', '1/4'], ['1/2', '1/3'], ['1/3', '1/4']]);
+  const pair = pick(rng, COMPARE_PAIRS);
   const biggest = rng() < 0.6;
   // 1/2 > 1/3 > 1/4 : le plus grand dénominateur fait la plus petite part
   const answer = biggest ? pair[0] : pair[1];
@@ -520,7 +533,7 @@ function compareQuestion(rng, index) {
     const [w1, w2] = shuffle(rng, pair).map((f) => FRACTIONS[f].words);
     const text = `Quelle part est la plus ${adj} : ${w1} ou ${w2} ?`;
     return {
-      key: `fractions:9:mots:${pair.join('-')}:${adj}:${w1}`,
+      key: `fractions:9:mots:${pair.join('-')}:${adj}`,
       text,
       instruction: `${text} C’est la même pizza, coupée en parts égales.`,
       stage: { type: 'none' },
@@ -537,7 +550,7 @@ function compareQuestion(rng, index) {
   });
   const text = `Touche la pizza où la part coloriée est la plus ${adj}.`;
   return {
-    key: `fractions:9:dessins:${choices.map((c) => c.value).join('-')}:${adj}`,
+    key: `fractions:9:dessins:${pair.join('-')}:${adj}`,
     text,
     instruction: `${text} Les deux pizzas ont la même taille.`,
     short: { key: `fractions:comparer:${adj}`, text },

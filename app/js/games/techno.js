@@ -129,26 +129,30 @@ const SCREW_R = [202, 128];
 /**
  * Le circuit : une pile, deux fils noirs, une ampoule sur son support.
  * `state` : 'ok' (branché), 'open' (un fil débranché de l'ampoule), 'openPile' (débranché de la pile),
- * 'same' (les deux fils sur la borne + de la pile), 'cut' (un fil coupé).
+ * 'openBoth' (les deux fils débranchés de la pile), 'same' (les deux fils sur la borne + de la pile),
+ * 'sameBulb' (les deux fils sur la même borne de l'ampoule), 'cut' (un fil coupé).
  * `sw` : null, 'open' ou 'closed' (interrupteur sur le fil du bas) ; `gap` : un objet posé entre
  * deux fils (pour savoir s'il laisse passer le courant) ; `lit` : l'ampoule allumée.
  */
 function circuitSvg({ state = 'ok', sw = null, gap = null, lit = false }) {
   const out = [svgOpen(240, 166), batterySvg(18, 64), bulbSvg(180, 120, lit)];
   // fil du haut : de la borne + à la borne gauche de l'ampoule, par-dessus
-  out.push(state === 'openPile'
+  out.push(state === 'openPile' || state === 'openBoth'
     ? wire(`M44 30 C44 6, 132 4, 140 50 S 150 128 ${SCREW_L.join(' ')}`) + wireEnd(44, 30)
     : wire(`M${PLUS.join(' ')} C32 4, 132 4, 140 50 S 150 128 ${SCREW_L.join(' ')}`));
   // fil du bas, en trois morceaux : de la borne − (ou de la borne + pour « same ») jusqu'en x = 112 ;
   // de x = 112 à x = 150 (interrupteur, objet, fil coupé) ; puis jusqu'à la borne droite de l'ampoule
-  out.push(wire(state === 'same' ? `M${PLUS.join(' ')} C10 50, 6 150, 40 150 L112 150` : `M${MINUS.join(' ')} C110 38, 96 150, 112 150`));
+  // (la borne gauche pour « sameBulb »)
+  if (state === 'same') out.push(wire(`M${PLUS.join(' ')} C10 50, 6 150, 40 150 L112 150`));
+  else if (state === 'openBoth') out.push(wire('M98 44 C114 50, 96 150, 112 150') + wireEnd(98, 44));
+  else out.push(wire(`M${MINUS.join(' ')} C110 38, 96 150, 112 150`));
   if (sw) out.push(wire('M112 150 L116 149'), wire('M146 149 L150 150'), switchSvg(116, 150, sw === 'closed'));
   else if (gap) out.push(wireEnd(112, 150), wireEnd(150, 150), emojiAt(131, 147, gap, 30));
   else if (state === 'cut') out.push(wireEnd(112, 150), wireEnd(150, 150));
   else out.push(wire('M112 150 L150 150'));
-  out.push(state === 'open'
-    ? wire('M150 150 L222 150 C236 150, 238 136, 232 124') + wireEnd(232, 124)
-    : wire(`M150 150 L216 150 C230 150, 226 ${SCREW_R[1]} ${SCREW_R.join(' ')}`));
+  if (state === 'open') out.push(wire('M150 150 L222 150 C236 150, 238 136, 232 124') + wireEnd(232, 124));
+  else if (state === 'sameBulb') out.push(wire(`M150 150 C160 150, ${SCREW_L[0]} 144, ${SCREW_L.join(' ')}`));
+  else out.push(wire(`M150 150 L216 150 C230 150, 226 ${SCREW_R[1]} ${SCREW_R.join(' ')}`));
   out.push('</svg>');
   return out.join('');
 }
@@ -313,6 +317,13 @@ export const POWER = [
   { emoji: '🍞', text: 'Le grille-pain marche avec…', answer: 'prise' },
   { emoji: '🧺', text: 'La machine à laver marche avec…', answer: 'prise' },
   { emoji: '🖨️', text: 'L’imprimante marche avec…', answer: 'prise' },
+  { emoji: '🤖', text: 'Le petit robot jouet marche avec…', answer: 'pile' },
+  { emoji: '🦖', text: 'Le dinosaure jouet qui rugit marche avec…', answer: 'pile' },
+  { emoji: '🌡️', text: 'Le thermomètre électronique marche avec…', answer: 'pile' },
+  { emoji: '☕', text: 'La machine à café marche avec…', answer: 'prise' },
+  { emoji: '🖥️', text: 'L’ordinateur de bureau marche avec…', answer: 'prise' },
+  { emoji: '🧊', text: 'Le congélateur marche avec…', answer: 'prise' },
+  { emoji: '👕', text: 'Le fer à repasser marche avec…', answer: 'prise' },
 ];
 const POWER_LABELS = { pile: '🔋 une pile', prise: '🔌 la prise' };
 
@@ -345,6 +356,12 @@ export const DANGERS = [
   { emoji: '🪁', text: 'On peut jouer au cerf-volant près des fils électriques.', answer: 'faux', why: 'On joue loin des lignes électriques.' },
   { emoji: '🔋', text: 'Pour les expériences en classe, on utilise une pile.', answer: 'vrai', why: 'Pour les expériences, une pile suffit : la prise est dangereuse.' },
   { emoji: '🔋', text: 'On peut mettre une petite pile dans sa bouche.', answer: 'faux', why: 'Une pile avalée, c’est très dangereux.' },
+  { emoji: '⚡', text: 'Un panneau avec un éclair veut dire : attention, danger électrique.', answer: 'vrai', why: 'On ne s’approche pas : on reste loin.' },
+  { emoji: '🍞', text: 'Pour décoincer une tartine du grille-pain, on prend un couteau.', answer: 'faux', why: 'Jamais d’objet en métal dans un appareil branché : on le débranche et on appelle un adulte.' },
+  { emoji: '⚠️', text: 'On peut grimper sur un poteau électrique.', answer: 'faux', why: 'Les fils tout en haut sont très dangereux.' },
+  { emoji: '🥤', text: 'On pose les boissons loin des appareils électriques.', answer: 'vrai', why: 'L’eau et l’électricité ensemble, c’est très dangereux.' },
+  { emoji: '👶', text: 'Les cache-prises protègent les bébés.', answer: 'vrai', why: 'Ils empêchent de mettre les doigts dans la prise.' },
+  { emoji: '⚠️', text: 'Si un appareil fait de la fumée, on prévient vite un adulte.', answer: 'vrai', why: 'On ne le touche pas : c’est un adulte qui s’en occupe.' },
 ];
 
 function trueOrFalse(rng, list, topic) {
@@ -371,6 +388,13 @@ export const SAVING = [
   { emoji: '💡', text: 'Tu allumes toutes les lampes en plein jour.', saves: false },
   { emoji: '🧊', text: 'Tu laisses la porte du réfrigérateur ouverte.', saves: false },
   { emoji: '🔌', text: 'Tu laisses le chargeur branché, sans rien au bout.', saves: false },
+  { emoji: '🎮', text: 'Tu éteins la console quand la partie est finie.', saves: true },
+  { emoji: '🧊', text: 'Tu refermes vite la porte du réfrigérateur.', saves: true },
+  { emoji: '🔌', text: 'Tu débranches le chargeur quand la tablette est chargée.', saves: true },
+  { emoji: '📺', text: 'Tu éteins la télévision quand le dessin animé est fini.', saves: true },
+  { emoji: '🔦', text: 'Tu laisses la lampe de poche allumée au fond de ton sac.', saves: false },
+  { emoji: '💻', text: 'Tu laisses l’ordinateur allumé toute la nuit.', saves: false },
+  { emoji: '📻', text: 'Tu laisses la radio allumée en partant à l’école.', saves: false },
 ];
 
 function saving(rng) {
@@ -389,20 +413,46 @@ function saving(rng) {
 
 // ---------------------------------------------------------------- 5. Le circuit électrique
 
+// `more` : d'autres façons de demander la même pièce (à quoi elle sert, à quoi on la reconnaît).
 export const PARTS = [
-  { part: 'pile', name: 'la pile', ask: 'Qu’est-ce qui donne l’électricité dans le circuit ?', says: 'Oui, la pile donne l’électricité.' },
-  { part: 'ampoule', name: 'l’ampoule', ask: 'Qu’est-ce qui s’allume quand le courant passe ?', says: 'Oui, l’ampoule s’allume.' },
-  { part: 'fil', name: 'le fil', ask: 'Qu’est-ce qui relie la pile à l’ampoule ?', says: 'Oui, les fils relient la pile à l’ampoule.' },
-  { part: 'interrupteur', name: 'l’interrupteur', ask: 'Qu’est-ce qui sert à allumer et à éteindre ?', says: 'Oui, l’interrupteur allume et éteint.' },
+  {
+    part: 'pile', name: 'la pile', ask: 'Qu’est-ce qui donne l’électricité dans le circuit ?', says: 'Oui, la pile donne l’électricité.',
+    more: [
+      { ask: 'Qu’est-ce qui a une borne plus et une borne moins ?', says: 'Oui, la pile a une borne plus et une borne moins.' },
+      { ask: 'Dans une lampe de poche, qu’est-ce qui donne l’électricité ?', says: 'Oui, c’est la pile.' },
+    ],
+  },
+  {
+    part: 'ampoule', name: 'l’ampoule', ask: 'Qu’est-ce qui s’allume quand le courant passe ?', says: 'Oui, l’ampoule s’allume.',
+    more: [
+      { ask: 'Qu’est-ce qui a un petit filament dans son verre ?', says: 'Oui, l’ampoule a un filament : il brille quand le courant passe.' },
+      { ask: 'Qu’est-ce qui reste éteint quand le circuit est ouvert ?', says: 'Oui, l’ampoule reste éteinte.' },
+    ],
+  },
+  {
+    part: 'fil', name: 'le fil', ask: 'Qu’est-ce qui relie la pile à l’ampoule ?', says: 'Oui, les fils relient la pile à l’ampoule.',
+    more: [
+      { ask: 'Dans quoi le courant circule-t-il, de la pile jusqu’à l’ampoule ?', says: 'Oui, le courant circule dans les fils.' },
+      { ask: 'Qu’est-ce qui part de chaque borne de la pile ?', says: 'Oui, un fil part de chaque borne de la pile.' },
+    ],
+  },
+  {
+    part: 'interrupteur', name: 'l’interrupteur', ask: 'Qu’est-ce qui sert à allumer et à éteindre ?', says: 'Oui, l’interrupteur allume et éteint.',
+    more: [
+      { ask: 'Qu’est-ce qui ouvre et ferme le circuit ?', says: 'Oui, l’interrupteur ouvre et ferme le circuit.' },
+      { ask: 'Sur le mur de ta chambre, qu’est-ce qui allume la lumière ?', says: 'Oui, c’est un interrupteur.' },
+    ],
+  },
 ];
 const partChoice = (p) => ({ value: p.part, drawing: { kind: 'piece-circuit', part: p.part }, name: p.name });
 const CIRCUIT_LIT = drawing({ kind: 'circuit', state: 'ok', sw: 'closed', lit: true }, 'Un circuit : une pile, deux fils, un interrupteur fermé et une ampoule allumée');
 
 function circuitParts(rng) {
   const part = pick(rng, PARTS);
-  // une fois sur deux, le nom (« Touche la pile. ») ; sinon, à quoi sert la pièce
-  const byName = rng() < 0.5;
-  const text = byName ? `Touche ${part.name}.` : part.ask;
+  // une fois sur trois, le nom (« Touche la pile. ») ; sinon, à quoi sert la pièce
+  const byName = rng() < 1 / 3;
+  const asked = byName ? null : pick(rng, [{ ask: part.ask, says: part.says }, ...part.more]);
+  const text = byName ? `Touche ${part.name}.` : asked.ask;
   const options = shuffle(rng, [part, ...sample(rng, PARTS.filter((p) => p !== part), 2)]);
   return {
     key: `electricite:pieces:${text}`,
@@ -412,86 +462,170 @@ function circuitParts(rng) {
     choices: options.map(partChoice),
     choiceStyle: 'drawings',
     answer: part.part,
-    success: { speak: byName ? `Oui, c’est ${part.name}.` : part.says },
+    success: { speak: byName ? `Oui, c’est ${part.name}.` : asked.says },
   };
 }
 
-// ---------------------------------------------------------------- 6 et 7. L'ampoule s'allume-t-elle ?
+// ---------------------------------------------------------------- 6, 7 et 8. Les montages du circuit
 
 // Chaque montage, ce qu'on en dit, et son nom pour les lecteurs d'écran.
 export const CIRCUITS = {
   ok: { lights: true, says: 'Oui : le circuit est fermé, le courant passe.', name: 'Les deux fils sont bien branchés' },
   open: { lights: false, says: 'Non : un fil est débranché, le circuit est ouvert.', name: 'Un fil est débranché de l’ampoule' },
   openPile: { lights: false, says: 'Non : un fil est débranché, le circuit est ouvert.', name: 'Un fil est débranché de la pile' },
+  openBoth: { lights: false, says: 'Non : les deux fils sont débranchés de la pile.', name: 'Les deux fils sont débranchés de la pile' },
   cut: { lights: false, says: 'Non : le fil est coupé, le circuit est ouvert.', name: 'Un fil est coupé' },
-  same: { lights: false, says: 'Non : les deux fils sont sur la même borne de la pile.', name: 'Les deux fils sont sur la même borne' },
+  same: { lights: false, says: 'Non : les deux fils sont sur la même borne de la pile.', name: 'Les deux fils sont sur la même borne de la pile' },
+  sameBulb: { lights: false, says: 'Non : les deux fils sont sur la même borne de l’ampoule.', name: 'Les deux fils sont sur la même borne de l’ampoule' },
+};
+const SWITCH_SAYS = {
+  closed: 'Oui : l’interrupteur est fermé, le courant passe.',
+  open: 'Non : l’interrupteur est ouvert, le courant ne passe pas.',
 };
 const circuitStage = (state, sw = null) => drawing({ kind: 'circuit', state, sw }, `Un circuit. ${CIRCUITS[state].name}${sw ? `, l’interrupteur est ${sw === 'open' ? 'ouvert' : 'fermé'}` : ''}.`);
 const WILL_LIGHT = 'L’ampoule va-t-elle s’allumer ?';
 
+// Les montages qui allument l'ampoule (avec ou sans interrupteur fermé), et ceux qui ne l'allument pas.
+// Un fil débranché, coupé ou mal branché : l'ampoule reste éteinte, même interrupteur fermé.
+const GOOD = [{ state: 'ok', sw: null }, { state: 'ok', sw: 'closed' }];
+const FAULTS = ['open', 'openPile', 'openBoth', 'cut', 'same', 'sameBulb'];
+const BAD = [
+  ...FAULTS.map((state) => ({ state, sw: null })),
+  { state: 'ok', sw: 'open' },
+  ...FAULTS.filter((f) => f !== 'cut').map((state) => ({ state, sw: 'closed' })),
+];
+const circuitId = (c) => `${c.state}${c.sw ? `-${c.sw}` : ''}`;
+const lightsWith = (c) => CIRCUITS[c.state].lights && c.sw !== 'open';
+/** Pourquoi l'ampoule s'allume (ou pas) : la panne d'abord, l'interrupteur ensuite. */
+const circuitSays = (c) => (c.state === 'ok' && c.sw ? SWITCH_SAYS[c.sw] : CIRCUITS[c.state].says);
+const switchName = (sw) => `l’interrupteur est ${sw === 'open' ? 'ouvert' : 'fermé'}`;
+const circuitName = (c) => {
+  if (!c.sw) return CIRCUITS[c.state].name;
+  return c.state === 'ok' ? capitalize(switchName(c.sw)) : `${CIRCUITS[c.state].name}, ${switchName(c.sw)}`;
+};
+
+// ---------------------------------------------------------------- 6. L'ampoule s'allume-t-elle ?
+
 function lightsUp(rng) {
-  const state = rng() < 0.4 ? 'ok' : pick(rng, ['open', 'openPile', 'cut', 'same']);
-  const c = CIRCUITS[state];
+  const c = rng() < 0.35 ? pick(rng, GOOD) : pick(rng, BAD);
   return twoWay({
-    key: `electricite:allume:${state}`,
+    key: `electricite:allume:${circuitId(c)}`,
     text: WILL_LIGHT,
-    stage: circuitStage(state),
+    stage: circuitStage(c.state, c.sw),
     options: YES_NO,
-    answer: c.lights ? 'oui' : 'non',
-    success: c.says,
+    answer: lightsWith(c) ? 'oui' : 'non',
+    success: circuitSays(c),
   });
 }
 
-// Le bon circuit parmi trois : un qui marche (avec ou sans interrupteur fermé), deux qui ne marchent pas.
-const GOOD = [{ state: 'ok', sw: null }, { state: 'ok', sw: 'closed' }];
-const BAD = [
-  { state: 'open', sw: null }, { state: 'openPile', sw: null }, { state: 'cut', sw: null }, { state: 'same', sw: null },
-  { state: 'ok', sw: 'open' },
-];
-const circuitId = (c) => `${c.state}${c.sw ? `-${c.sw}` : ''}`;
-const circuitName = (c) => (c.sw ? `L’interrupteur est ${c.sw === 'open' ? 'ouvert' : 'fermé'}` : CIRCUITS[c.state].name);
+// ---------------------------------------------------------------- 7. Le bon circuit
+
+const circuitChoice = (c) => ({ value: circuitId(c), drawing: { kind: 'circuit', state: c.state, sw: c.sw }, name: circuitName(c) });
 
 function goodCircuit(rng) {
-  const good = pick(rng, GOOD);
-  const options = shuffle(rng, [good, ...sample(rng, BAD, 2)]);
-  const text = 'Touche le circuit où l’ampoule va s’allumer.';
+  if (rng() < 0.6) {
+    // un qui marche, deux qui ne marchent pas
+    const good = pick(rng, GOOD);
+    const options = shuffle(rng, [good, ...sample(rng, BAD, 2)]);
+    const text = 'Touche le circuit où l’ampoule va s’allumer.';
+    return {
+      key: `electricite:bon-circuit:${options.map(circuitId).join(',')}`,
+      text,
+      instruction: text,
+      stage: { type: 'none' },
+      choices: options.map(circuitChoice),
+      choiceStyle: 'circuits',
+      answer: circuitId(good),
+      success: { speak: 'Oui : tout est bien branché, le circuit est fermé.' },
+    };
+  }
+  // l'inverse : un qui ne marche pas, à côté des deux qui marchent
+  const bad = pick(rng, BAD);
+  const options = shuffle(rng, [bad, ...GOOD]);
+  const text = 'Touche le circuit où l’ampoule ne va pas s’allumer.';
   return {
-    key: `electricite:bon-circuit:${options.map(circuitId).join(',')}`,
+    key: `electricite:mauvais-circuit:${circuitId(bad)}`,
     text,
     instruction: text,
     stage: { type: 'none' },
-    choices: options.map((c) => ({ value: circuitId(c), drawing: { kind: 'circuit', state: c.state, sw: c.sw }, name: circuitName(c) })),
+    choices: options.map(circuitChoice),
     choiceStyle: 'circuits',
-    answer: circuitId(good),
-    success: { speak: 'Oui : tout est bien branché, le circuit est fermé.' },
+    answer: circuitId(bad),
+    success: { speak: circuitSays(bad).replace(/^Non :/, 'Oui :') },
   };
 }
 
 // ---------------------------------------------------------------- 8. L'interrupteur
 
+export const SWITCH_FACTS = [
+  { text: 'Quand l’interrupteur est ouvert, le courant passe.', answer: 'faux', why: 'Interrupteur ouvert : le circuit est ouvert, le courant ne passe pas.' },
+  { text: 'Un interrupteur fermé laisse passer le courant.', answer: 'vrai', why: 'Interrupteur fermé : le circuit est fermé, l’ampoule s’allume.' },
+];
+
 function switchQuestion(rng) {
+  const roll = rng();
   const closed = rng() < 0.5;
-  if (rng() < 0.5) {
+  const sw = closed ? 'closed' : 'open';
+  if (roll < 0.2) {
     return twoWay({
       key: `electricite:interrupteur:${closed}`,
       text: WILL_LIGHT,
-      stage: circuitStage('ok', closed ? 'closed' : 'open'),
+      stage: circuitStage('ok', sw),
       options: YES_NO,
       answer: closed ? 'oui' : 'non',
-      success: closed ? 'Oui : l’interrupteur est fermé, le courant passe.' : 'Non : l’interrupteur est ouvert, le courant ne passe pas.',
+      success: SWITCH_SAYS[sw],
     });
   }
-  // l'ampoule allumée (interrupteur fermé) ou éteinte (ouvert) : que faut-il faire ?
-  const ask = closed ? 'Pour éteindre l’ampoule, que fais-tu ?' : 'Pour allumer l’ampoule, que fais-tu ?';
+  if (roll < 0.4) {
+    // l'ampoule allumée (interrupteur fermé) ou éteinte (ouvert) : que faut-il faire ?
+    const ask = closed ? 'Pour éteindre l’ampoule, que fais-tu ?' : 'Pour allumer l’ampoule, que fais-tu ?';
+    return twoWay({
+      key: `electricite:interrupteur:${ask}`,
+      text: ask,
+      instruction: [ask, 'Ouvrir ou fermer l’interrupteur ?'],
+      stage: drawing({ kind: 'circuit', state: 'ok', sw, lit: closed },
+        closed ? 'Un circuit : l’interrupteur est fermé, l’ampoule est allumée.' : 'Un circuit : l’interrupteur est ouvert, l’ampoule est éteinte.'),
+      options: ['ouvrir', 'fermer'],
+      answer: closed ? 'ouvrir' : 'fermer',
+      success: closed ? 'Oui : on ouvre l’interrupteur, le courant ne passe plus.' : 'Oui : on ferme l’interrupteur, le courant passe.',
+    });
+  }
+  if (roll < 0.55) {
+    // reconnaître l'interrupteur ouvert (la lame levée) ou fermé (la lame touche les deux bornes)
+    const ask = 'L’interrupteur est-il ouvert ou fermé ?';
+    return twoWay({
+      key: `electricite:interrupteur:etat:${closed}`,
+      text: ask,
+      stage: drawing({ kind: 'circuit', state: 'ok', sw, lit: closed },
+        closed ? 'Un circuit : la lame de l’interrupteur touche les deux bornes, l’ampoule est allumée.' : 'Un circuit : la lame de l’interrupteur est levée, l’ampoule est éteinte.'),
+      options: ['ouvert', 'fermé'],
+      answer: closed ? 'fermé' : 'ouvert',
+      success: closed ? 'Oui : la lame touche les deux bornes, l’interrupteur est fermé.' : 'Oui : la lame est levée, l’interrupteur est ouvert.',
+    });
+  }
+  if (roll < 0.85) {
+    // l'interrupteur est fermé, mais un fil est débranché ou mal branché
+    const state = pick(rng, FAULTS.filter((f) => f !== 'cut'));
+    const first = 'L’interrupteur est fermé.';
+    return twoWay({
+      key: `electricite:interrupteur:panne:${state}`,
+      text: `${first} ${WILL_LIGHT}`,
+      instruction: [first, WILL_LIGHT],
+      stage: circuitStage(state, 'closed'),
+      options: YES_NO,
+      answer: 'non',
+      success: CIRCUITS[state].says,
+    });
+  }
+  const item = pick(rng, SWITCH_FACTS);
   return twoWay({
-    key: `electricite:interrupteur:${ask}`,
-    text: ask,
-    instruction: [ask, 'Ouvrir ou fermer l’interrupteur ?'],
-    stage: drawing({ kind: 'circuit', state: 'ok', sw: closed ? 'closed' : 'open', lit: closed },
-      closed ? 'Un circuit : l’interrupteur est fermé, l’ampoule est allumée.' : 'Un circuit : l’interrupteur est ouvert, l’ampoule est éteinte.'),
-    options: ['ouvrir', 'fermer'],
-    answer: closed ? 'ouvrir' : 'fermer',
-    success: closed ? 'Oui : on ouvre l’interrupteur, le courant ne passe plus.' : 'Oui : on ferme l’interrupteur, le courant passe.',
+    key: `electricite:interrupteur:${item.text}`,
+    text: `${item.text} Vrai ou faux ?`,
+    instruction: [item.text, 'Vrai ou faux ?'],
+    stage: drawing({ kind: 'piece-circuit', part: 'interrupteur' }, 'Un interrupteur ouvert, sa lame levée.'),
+    options: ['vrai', 'faux'],
+    answer: item.answer,
+    success: [item.answer === 'vrai' ? 'C’est vrai !' : 'C’est faux !', item.why],
   });
 }
 
@@ -654,19 +788,38 @@ export const THEN_NOW = [
     text: 'Autrefois, le téléphone avait un fil et un cadran. Aujourd’hui, on utilise…', says: 'Oui, aujourd’hui, on utilise le téléphone portable.',
   },
   {
-    old: { emoji: '🚂', name: 'la locomotive à vapeur' }, now: { emoji: '🚄', name: 'le train à grande vitesse' },
+    group: 'transport', old: { emoji: '🚂', name: 'la locomotive à vapeur' }, now: { emoji: '🚄', name: 'le train à grande vitesse' },
     text: 'Autrefois, le train avançait grâce à la vapeur. Aujourd’hui, on prend…', says: 'Oui, aujourd’hui, on prend le train à grande vitesse.',
   },
   {
     old: { emoji: '🪶', name: 'la plume d’oie' }, now: { emoji: '🖊️', name: 'le stylo' },
     text: 'Autrefois, on écrivait avec une plume et de l’encre. Aujourd’hui, on écrit avec…', says: 'Oui, aujourd’hui, on écrit avec un stylo.',
   },
+  // `notOld` : ce n'est pas un objet d'autrefois (un animal, un objet qu'on utilise encore) ; il n'est
+  // jamais la réponse à « Touche l'objet d'autrefois. »
+  {
+    group: 'transport', notOld: true, old: { emoji: '🐎', name: 'le cheval' }, now: { emoji: '🚗', name: 'la voiture' },
+    text: 'Autrefois, on voyageait à cheval. Aujourd’hui, on prend…', says: 'Oui, aujourd’hui, on voyage en voiture.',
+  },
+  {
+    group: 'transport', notOld: true, old: { emoji: '⛵', name: 'le bateau à voiles' }, now: { emoji: '✈️', name: 'l’avion' },
+    text: 'Autrefois, pour traverser l’océan, on prenait un bateau à voiles. Aujourd’hui, on prend…', says: 'Oui, aujourd’hui, on traverse l’océan en avion.',
+  },
+  {
+    group: 'transport', notOld: true, old: { emoji: '🐂', name: 'les bœufs' }, now: { emoji: '🚜', name: 'le tracteur' },
+    text: 'Autrefois, des bœufs tiraient la charrue dans les champs. Aujourd’hui, on utilise…', says: 'Oui, aujourd’hui, le tracteur tire la charrue.',
+  },
+  {
+    notOld: true, old: { emoji: '🪣', name: 'le seau' }, now: { emoji: '🚰', name: 'le robinet' },
+    text: 'Autrefois, on allait chercher l’eau au puits avec un seau. Aujourd’hui, on ouvre…', says: 'Oui, aujourd’hui, l’eau arrive au robinet.',
+  },
 ];
 
 function thenAndNow(rng) {
   const pair = pick(rng, THEN_NOW);
-  const others = THEN_NOW.filter((p) => p !== pair);
-  if (rng() < 0.5) {
+  // jamais deux réponses justes : « on voyageait à cheval », ni le train ni l'avion à côté de la voiture
+  const others = THEN_NOW.filter((p) => p !== pair && (!pair.group || p.group !== pair.group));
+  if (pair.notOld || rng() < 0.5) {
     return pictureQuestion({
       key: `objets:avant:${pair.now.name}`,
       text: pair.text,
@@ -725,6 +878,41 @@ export const BUILDS = [
     title: 'Envoyer une lettre.',
     steps: [['✍️', 'écrire la lettre'], ['✉️', 'fermer l’enveloppe'], ['📮', 'la poster']],
     says: 'On écrit la lettre, on ferme l’enveloppe, puis on la poste.',
+  },
+  {
+    title: 'Faire une pizza.',
+    steps: [['🍅', 'étaler la tomate'], ['🧀', 'ajouter le fromage'], ['🔥', 'faire cuire'], ['🍕', 'manger la pizza']],
+    says: 'On étale la tomate, on ajoute le fromage, on fait cuire, puis on mange la pizza.',
+  },
+  {
+    title: 'Faire des crêpes.',
+    steps: [['🥚', 'casser les œufs'], ['🥣', 'mélanger la pâte'], ['🍳', 'cuire les crêpes'], ['🥞', 'les manger']],
+    says: 'On casse les œufs, on mélange la pâte, on fait cuire les crêpes, puis on les mange.',
+  },
+  {
+    title: 'Faire un dessin.',
+    steps: [['✏️', 'dessiner au crayon'], ['🖍️', 'colorier'], ['🖼️', 'l’accrocher au mur']],
+    says: 'On dessine au crayon, on colorie, puis on accroche le dessin au mur.',
+  },
+  {
+    title: 'Préparer un jus d’orange.',
+    steps: [['🔪', 'couper les oranges'], ['🍊', 'presser les oranges'], ['🥤', 'boire le jus']],
+    says: 'On coupe les oranges, on les presse, puis on boit le jus.',
+  },
+  {
+    title: 'Faire un bonhomme de neige.',
+    steps: [['❄️', 'rouler une boule'], ['⚪', 'poser la tête'], ['🥕', 'mettre le nez'], ['⛄', 'le bonhomme est fini']],
+    says: 'On roule une grosse boule, on pose la tête, on met le nez, et le bonhomme est fini.',
+  },
+  {
+    title: 'Fabriquer un bateau en papier.',
+    steps: [['📄', 'prendre une feuille'], ['✋', 'plier la feuille'], ['⛵', 'le faire flotter']],
+    says: 'On prend une feuille, on la plie, puis on fait flotter le bateau.',
+  },
+  {
+    title: 'Planter un arbre.',
+    steps: [['⛏️', 'creuser un trou'], ['🌱', 'mettre l’arbre'], ['💧', 'arroser']],
+    says: 'On creuse un trou, on met l’arbre dedans, puis on l’arrose.',
   },
 ];
 
@@ -866,6 +1054,13 @@ export const CHOOSE = [
   { emoji: '🌳', text: 'Pour une cabane dans un arbre, quelle matière choisis-tu ?', answer: 'bois', others: ['verre', 'papier'], why: 'Le bois est solide et facile à clouer.' },
   { emoji: '🔑', text: 'Pour une clé très solide, quelle matière choisis-tu ?', answer: 'métal', others: ['papier', 'laine'], why: 'Le métal est dur et solide.' },
   { emoji: '🍳', text: 'Pour un manche de casserole qui ne brûle pas les doigts, quelle matière choisis-tu ?', answer: 'bois', others: ['métal', 'verre'], why: 'Le bois ne devient pas brûlant.' },
+  { emoji: '✉️', text: 'Pour une enveloppe, quelle matière choisis-tu ?', answer: 'papier', others: ['métal', 'verre'], why: 'Le papier est léger et facile à plier.' },
+  { emoji: '📦', text: 'Pour un grand colis léger, quelle matière choisis-tu ?', answer: 'carton', others: ['verre', 'laine'], why: 'Le carton est léger et assez solide.' },
+  { emoji: '👕', text: 'Pour un tee-shirt, quelle matière choisis-tu ?', answer: 'tissu', others: ['métal', 'verre'], why: 'Le tissu est souple et doux.' },
+  { emoji: '🫙', text: 'Pour un bocal transparent, quelle matière choisis-tu ?', answer: 'verre', others: ['bois', 'laine'], why: 'Le verre est transparent : on voit ce qu’il y a dedans.' },
+  { emoji: '🔨', text: 'Pour la tête d’un marteau, quelle matière choisis-tu ?', answer: 'métal', others: ['carton', 'laine'], why: 'Le métal est dur et lourd.' },
+  { emoji: '🚲', text: 'Pour les pneus d’un vélo, quelle matière choisis-tu ?', answer: 'caoutchouc', others: ['verre', 'papier'], why: 'Le caoutchouc est souple et il accroche la route.' },
+  { emoji: '🧤', text: 'Pour des gants qui ne prennent pas l’eau, quelle matière choisis-tu ?', answer: 'caoutchouc', others: ['laine', 'papier'], why: 'Le caoutchouc ne laisse pas passer l’eau.' },
 ];
 
 function chooseMatter(rng) {
@@ -891,6 +1086,13 @@ export const LIFTING = [
   { emoji: '🪣', text: 'Pour remonter le seau du puits, on utilise…', answer: 'une poulie', others: ['un aimant', 'une loupe'], says: 'La corde passe sur la poulie : on tire, le seau monte.' },
   { emoji: '🚩', text: 'Pour monter le drapeau en haut du mât, on utilise…', answer: 'une poulie', others: ['un aimant', 'une pile'], says: 'La corde passe sur une poulie, en haut du mât.' },
   { emoji: null, text: 'Une poulie, c’est…', answer: 'une roue', others: ['une pile', 'un aimant'], says: 'Une poulie est une roue : une corde passe dessus.' },
+  { emoji: null, text: 'À quoi sert une poulie ?', answer: 'à soulever', others: ['à couper', 'à éclairer'], says: 'La poulie aide à soulever les charges avec une corde.' },
+  { emoji: '⛵', text: 'Sur le voilier, pour hisser la voile, on utilise…', answer: 'une poulie', others: ['un aimant', 'une pile'], says: 'La corde passe dans une poulie : on tire, la voile monte.' },
+  { emoji: '🧺', text: 'Pour monter un panier jusqu’à la fenêtre, on utilise…', answer: 'une poulie', others: ['une loupe', 'un thermomètre'], says: 'La corde passe sur la poulie : on tire, le panier monte.' },
+  { emoji: '🏗️', text: 'Au bout du câble de la grue, il y a…', answer: 'un crochet', others: ['une fourchette', 'un ballon'], says: 'On accroche la charge au crochet de la grue.' },
+  { emoji: '🏗️', text: 'Une grue travaille surtout sur…', answer: 'un chantier', others: ['une plage', 'une piste de ski'], says: 'La grue aide à construire les maisons et les immeubles.' },
+  { emoji: '⚓', text: 'Au port, pour décharger les gros bateaux, on utilise…', answer: 'une grue', others: ['un vélo', 'une brouette'], says: 'La grue du port soulève les conteneurs des bateaux.' },
+  { emoji: '🏗️', text: 'Pour que la grue ne bascule pas, on met de l’autre côté de la charge…', answer: 'un contrepoids', others: ['un drapeau', 'une ampoule'], says: 'Le contrepoids, très lourd, équilibre la charge soulevée.' },
 ];
 
 function pulley(rng) {
