@@ -22,6 +22,26 @@ const STORIES = [
     ['📄', 'Elle prend une feuille.'], ['🖍️', 'Elle dessine.'], ['🖼️', 'Elle accroche son dessin.']] },
   { id: 'coucher', title: 'Au lit !', theme: 'vie', clair: true, steps: [
     ['🛁', 'Il prend son bain.'], ['📖', 'Papa lit une histoire.'], ['😴', 'Il s’endort.']] },
+  { id: 'bus', title: 'Le bus', theme: 'vie', clair: true, steps: [
+    ['🎒', 'Il prend son cartable.'], ['🚌', 'Il monte dans le bus.'], ['🏫', 'Il arrive à l’école.']] },
+  { id: 'foot', title: 'Le match', theme: 'vie', clair: true, steps: [
+    ['👟', 'Il met ses baskets.'], ['⚽', 'Il joue au foot.'], ['🏆', 'Il gagne la coupe.']] },
+  { id: 'docteur', title: 'Chez le docteur', theme: 'vie', clair: true, steps: [
+    ['🤒', 'Elle est malade.'], ['🩺', 'Le docteur la soigne.'], ['😊', 'Elle va mieux.']] },
+  { id: 'demenagement', title: 'Le déménagement', theme: 'vie', clair: true, steps: [
+    ['📦', 'On remplit les cartons.'], ['🚚', 'Le camion part.'], ['🏠', 'On découvre la maison.']] },
+  { id: 'voyage', title: 'Le voyage', theme: 'vie', clair: true, steps: [
+    ['🧳', 'Elle fait sa valise.'], ['✈️', 'Elle prend l’avion.'], ['🏖️', 'Elle arrive à la plage.']] },
+  { id: 'robe', title: 'La robe neuve', theme: 'vie', clair: true, steps: [
+    ['🛍️', 'Elle achète une robe.'], ['👗', 'Elle met sa robe.'], ['💃', 'Elle danse.']] },
+  { id: 'concert', title: 'Le concert', theme: 'vie', clair: true, steps: [
+    ['🎸', 'Il prend sa guitare.'], ['🎵', 'Il joue une chanson.'], ['👏', 'On l’applaudit.']] },
+  { id: 'magicien', title: 'Le magicien', theme: 'vie', clair: true, steps: [
+    ['🎩', 'Il montre son chapeau.'], ['🎩 🐰', 'Un lapin en sort.'], ['👏', 'Tout le monde applaudit.']] },
+  { id: 'maison', title: 'La maison', theme: 'vie', clair: true, steps: [
+    ['🧱', 'On construit la maison.'], ['🏠', 'La maison est finie.'], ['👪', 'La famille s’installe.']] },
+  { id: 'lecture', title: 'Le livre', theme: 'vie', clair: true, steps: [
+    ['📚', 'Elle choisit un livre.'], ['📖', 'Elle lit le livre.'], ['😴', 'Elle s’endort.']] },
 
   // ---- 3 images : une plante, un animal, une recette (niveau 2)
   { id: 'tulipe', title: 'La tulipe', theme: 'nature', clair: true, steps: [
@@ -40,6 +60,20 @@ const STORIES = [
     ['🐄', 'La vache mange de l’herbe.'], ['🥛', 'Elle donne du lait.'], ['🧀', 'On fait du fromage.']] },
   { id: 'miel', title: 'Le miel', theme: 'cuisine', clair: true, steps: [
     ['🐝 🌸', 'L’abeille butine les fleurs.'], ['🍯', 'Elle fabrique du miel.'], ['🍞 🍯', 'On en met sur le pain.']] },
+  { id: 'arbre', title: 'L’arbre', theme: 'nature', clair: true, steps: [
+    ['🌰', 'Une graine tombe.'], ['🌱', 'Une pousse sort.'], ['🌳', 'Un arbre grandit.']] },
+  { id: 'oiseau', title: 'Le petit oiseau', theme: 'nature', clair: true, steps: [
+    ['🥚', 'Il y a un œuf dans le nid.'], ['🐣', 'L’oisillon sort de l’œuf.'], ['🐦', 'Il s’envole.']] },
+  { id: 'arc-en-ciel', title: 'L’arc-en-ciel', theme: 'nature', clair: true, steps: [
+    ['☁️', 'Les nuages arrivent.'], ['🌧️', 'Il pleut.'], ['🌈', 'Un arc-en-ciel brille.']] },
+  { id: 'salade', title: 'La salade', theme: 'nature', clair: true, steps: [
+    ['🌱', 'La salade pousse.'], ['🥬', 'On ramasse la salade.'], ['🥗', 'On mange la salade.']] },
+  { id: 'soupe', title: 'La soupe', theme: 'cuisine', clair: true, steps: [
+    ['🥕', 'On épluche les légumes.'], ['🍲', 'La soupe cuit.'], ['🥣', 'On mange la soupe.']] },
+  { id: 'chocolat', title: 'Le chocolat chaud', theme: 'cuisine', clair: true, steps: [
+    ['🥛', 'On chauffe le lait.'], ['🥛 🍫', 'On ajoute le chocolat.'], ['☕', 'On boit le chocolat.']] },
+  { id: 'confiture', title: 'La confiture', theme: 'cuisine', clair: true, steps: [
+    ['🍓', 'On cueille des fraises.'], ['🍲', 'On les fait cuire.'], ['🫙', 'On remplit les pots.']] },
 
   // ---- 4 images
   { id: 'bonhomme', title: 'Le bonhomme de neige', theme: 'nature', clair: true, steps: [
@@ -52,6 +86,26 @@ const STORIES = [
     ['🚲', 'Il fait du vélo.'], ['💥', 'Il tombe.'], ['🩹', 'Maman met un pansement.'], ['😊', 'Il sourit.']] },
   { id: 'ballon', title: 'Le ballon', theme: 'vie', clair: true, steps: [
     ['🎈', 'Il gonfle le ballon.'], ['🌵 🎈', 'Le ballon touche un cactus.'], ['💥', 'Le ballon éclate.'], ['😢', 'Il pleure.']] },
+  { id: 'grandir', title: 'On grandit', theme: 'vie', clair: true, steps: [
+    ['👶', 'C’est un bébé.'], ['👦', 'Il devient un enfant.'], ['👨', 'Il devient adulte.'], ['👴', 'Il devient papi.']] },
+  { id: 'tarte-pommes', title: 'La tarte aux pommes', theme: 'cuisine', clair: true, steps: [
+    ['🌸', 'Le pommier fleurit.'], ['🍏', 'La pomme pousse.'], ['🍎', 'La pomme rougit.'], ['🥧', 'On fait une tarte.']] },
+  { id: 'camping', title: 'Le camping', theme: 'vie', clair: true, steps: [
+    ['🧳', 'On fait les valises.'], ['🚗', 'On part en voiture.'], ['⛺', 'On monte la tente.'], ['🌙', 'On dort dehors.']] },
+  { id: 'bouquet', title: 'Le bouquet', theme: 'nature', clair: true, steps: [
+    ['🌱', 'La rose pousse.'], ['🌹', 'La rose fleurit.'], ['✂️ 🌹', 'On coupe la rose.'], ['💐', 'On fait un bouquet.']] },
+  { id: 'course', title: 'La course', theme: 'vie', clair: true, steps: [
+    ['👟', 'Elle met ses baskets.'], ['🏃', 'Elle court.'], ['🏁', 'Elle arrive.'], ['🏅', 'Elle a une médaille.']] },
+  { id: 'fraises', title: 'Les fraises', theme: 'nature', clair: true, steps: [
+    ['🌱', 'Le fraisier pousse.'], ['🌼', 'Il fait des fleurs.'], ['🍓', 'Les fraises poussent.'], ['🧺 🍓', 'On les cueille.']] },
+  { id: 'nichoir', title: 'Le nichoir', theme: 'vie', clair: true, steps: [
+    ['🪵', 'Il prend des planches.'], ['🔨', 'Il cloue les planches.'], ['🎨', 'Il peint le nichoir.'], ['🐦', 'Un oiseau arrive.']] },
+  { id: 'fusee', title: 'La fusée en carton', theme: 'vie', clair: true, steps: [
+    ['📦', 'Il prend un carton.'], ['✂️', 'Il découpe le carton.'], ['🎨', 'Il peint sa fusée.'], ['🚀', 'La fusée est prête.']] },
+  { id: 'potager', title: 'Le potager', theme: 'nature', clair: true, steps: [
+    ['🌰', 'On sème les graines.'], ['🌱', 'Les carottes poussent.'], ['🥕', 'On les ramasse.'], ['🍲', 'On fait une soupe.']] },
+  { id: 'crepes-mamie', title: 'Les crêpes de mamie', theme: 'cuisine', clair: true, steps: [
+    ['🥚', 'On casse les œufs.'], ['🥣', 'On fait la pâte.'], ['🍳', 'On cuit les crêpes.'], ['🥞', 'On mange les crêpes.']] },
   { id: 'tomate', title: 'Les tomates', theme: 'nature', clair: false, steps: [
     ['🌱', 'On plante la tomate.'], ['🌼', 'La plante fleurit.'], ['🍅', 'Les tomates poussent.'], ['🥗', 'On fait une salade.']] },
   { id: 'lettre', title: 'La lettre', theme: 'vie', clair: false, steps: [
@@ -86,6 +140,20 @@ const STORIES = [
     ['🌨️', 'Il neige toute la nuit.'], ['🧤', 'Elle met ses gants.'], ['⛄', 'Elle fait un bonhomme.'], ['☀️', 'Le soleil brille.'], ['💧', 'Le bonhomme fond.']] },
   { id: 'pique-nique', title: 'Le pique-nique', theme: 'vie', clair: false, steps: [
     ['🧺', 'On prépare le panier.'], ['🚗', 'On part en voiture.'], ['🌳', 'On s’installe sous un arbre.'], ['🥪', 'On mange des sandwichs.'], ['🗑️', 'On ramasse les papiers.']] },
+  { id: 'rhume', title: 'Le rhume', theme: 'vie', clair: false, steps: [
+    ['🥶', 'Elle a froid.'], ['🤧', 'Elle éternue.'], ['🩺', 'Le docteur l’examine.'], ['💊', 'Elle se soigne.'], ['😊', 'Elle est guérie.']] },
+  { id: 'fete-amis', title: 'La fête', theme: 'vie', clair: false, steps: [
+    ['✉️', 'Il invite ses amis.'], ['🎈', 'Il gonfle des ballons.'], ['🎁', 'Ses amis arrivent.'], ['🎂', 'Il souffle ses bougies.'], ['👋', 'Ses amis repartent.']] },
+  { id: 'avant-ecole', title: 'Avant l’école', theme: 'vie', clair: false, steps: [
+    ['⏰', 'Le réveil sonne.'], ['🥣', 'Il mange ses céréales.'], ['🪥', 'Il se brosse les dents.'], ['🎒', 'Il prend son cartable.'], ['🚌', 'Il monte dans le bus.']] },
+  { id: 'arbre-nid', title: 'L’arbre et le nid', theme: 'nature', clair: false, steps: [
+    ['🌰', 'Une graine tombe.'], ['🌱', 'Une pousse sort.'], ['🌳', 'L’arbre grandit.'], ['🐦', 'Un oiseau fait son nid.'], ['🐣', 'Les oisillons naissent.']] },
+  { id: 'cabane', title: 'La cabane', theme: 'vie', clair: false, steps: [
+    ['🪵', 'Il ramasse du bois.'], ['🔨', 'Il cloue les planches.'], ['🛖', 'La cabane est finie.'], ['🧺', 'Il apporte le goûter.'], ['😴', 'Il fait la sieste.']] },
+  { id: 'pizza', title: 'La pizza', theme: 'cuisine', clair: false, steps: [
+    ['🥣', 'On fait la pâte.'], ['🍅', 'On met la tomate.'], ['🧀', 'On ajoute le fromage.'], ['⏲️', 'La pizza cuit.'], ['🍕', 'On mange la pizza.']] },
+  { id: 'papillon', title: 'Le papillon', theme: 'nature', clair: false, steps: [
+    ['🥚', 'Un œuf est pondu.'], ['🐛', 'La chenille sort.'], ['🍃', 'Elle mange des feuilles.'], ['🦋', 'Le papillon s’envole.'], ['🌸', 'Il butine une fleur.']] },
 ];
 
 const ORDER = 'Remets les images dans l’ordre de l’histoire.';
