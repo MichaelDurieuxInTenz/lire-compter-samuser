@@ -4,13 +4,31 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.19.2',
+  version: '1.21.0',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.21.0',
+    date: '2026-10-13',
+    changes: [
+      'Beaucoup plus de questions dans les niveaux qui en avaient peu, dans toutes les classes : de 2 à 9 questions possibles, ils passent à 12 ou plus. Une partie ne repose plus une question déjà vue.',
+      'Histoires : 75 histoires lues, 34 suites d’images et 87 petits textes de plus ; « Lire à voix haute » : 12 textes par niveau au lieu de 3 ; lecture du CM : 7 nouveaux textes.',
+      'Sciences, monde, anglais et maths : nouvelles situations, devinettes, pays, conversations, comptines, mélanges de couleurs, faits du calendrier et du hasard.',
+      'Jeux à dessins : 10 coloriages magiques, 28 points à relier et 31 dessins cachés de plus ; 12 dessins à colorier en anglais.',
+    ],
+  },
+  {
+    version: '1.20.0',
+    date: '2026-10-12',
+    changes: [
+      'Tous les jeux : plus deux fois la même question dans une partie, même avec les réponses dans un autre ordre, tant que le niveau en propose d’autres.',
+      'Les formes autour de moi : plus de gaufre (ronde sur iPhone et iPad, carrée ailleurs) ; quatre nouveaux objets, le disque, le calendrier, le panneau et la carte bancaire.',
+    ],
+  },
   {
     version: '1.19.2',
     date: '2026-10-12',

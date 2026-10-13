@@ -105,6 +105,7 @@ const line = (a, b) => segment(a, b);
 const polyline = (...pts) => stroke(...pts.slice(1).map((p, i) => segment(pts[i], p)));
 
 // ---------------------------------------------------------------- Graphisme
+// Chaque graphisme : la consigne (`text`), parfois un conseil dit après elle (`help` : l'ordre des traits).
 
 /** Une rangée de vagues (sinusoïde) de gauche à droite. */
 function wave(y, amplitude, x0, x1, periods) {
@@ -138,6 +139,30 @@ function loops(n, x0, x1, yBase, height) {
     dense.push([x, y]);
   }
   return resample(dense);
+}
+
+/** Une spirale qui part du milieu et tourne vers la gauche, en s'éloignant peu à peu du centre. */
+function spiral(cx, cy, r0, r1, turns) {
+  const count = Math.ceil(turns * 120);
+  const dense = Array.from({ length: count + 1 }, (_, i) => {
+    const t = i / count;
+    const a = Math.PI / 2 + t * turns * 2 * Math.PI; // départ vers le haut, angle croissant : vers la gauche
+    const r = r0 + (r1 - r0) * t;
+    return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
+  });
+  return resample(dense);
+}
+
+/** Les six rayons du soleil, autour du rond : chacun se trace du haut vers le bas. */
+function rays(cx, cy, r0, r1) {
+  return [90, 30, -30, -90, -150, 150].map((deg) => {
+    const a = (deg * Math.PI) / 180;
+    const inner = [cx + r0 * Math.cos(a), cy - r0 * Math.sin(a)].map(round1);
+    const outer = [cx + r1 * Math.cos(a), cy - r1 * Math.sin(a)].map(round1);
+    // le point le plus haut d'abord (à hauteur égale : celui de gauche)
+    const [from, to] = inner[1] < outer[1] || (inner[1] === outer[1] && inner[0] < outer[0]) ? [inner, outer] : [outer, inner];
+    return line(from, to);
+  });
 }
 
 export const GRAPHISMES = {
@@ -176,6 +201,37 @@ export const GRAPHISMES = {
   rond: {
     text: 'Trace le rond, en tournant vers la gauche.',
     strokes: [arc(50, 50, 34, 34, 90, 450)],
+  },
+  creneaux: {
+    text: 'Trace les créneaux du château.',
+    strokes: [polyline([10, 68], [10, 32], [23.3, 32], [23.3, 68], [36.7, 68], [36.7, 32], [50, 32], [50, 68], [63.3, 68],
+      [63.3, 32], [76.7, 32], [76.7, 68], [90, 68])],
+  },
+  escalier: {
+    text: 'Trace l’escalier, en montant.',
+    strokes: [polyline([10, 88], [26, 88], [26, 70], [42, 70], [42, 52], [58, 52], [58, 34], [74, 34], [74, 16], [90, 16])],
+  },
+  croix: {
+    text: 'Trace les croix.',
+    help: 'D’abord le trait du haut vers le bas, puis celui de gauche à droite.',
+    strokes: [18, 50, 82].flatMap((x) => [line([x, 38], [x, 62]), line([x - 12, 50], [x + 12, 50])]),
+  },
+  quadrillage: {
+    text: 'Trace le quadrillage.',
+    help: 'D’abord les traits du haut vers le bas, puis ceux de gauche à droite.',
+    strokes: [
+      ...[25, 50, 75].map((x) => line([x, 12], [x, 88])),
+      ...[25, 50, 75].map((y) => line([12, y], [88, y])),
+    ],
+  },
+  soleil: {
+    text: 'Trace le soleil.',
+    help: 'D’abord le rond, puis les rayons.',
+    strokes: [arc(50, 50, 22, 22, 90, 450), ...rays(50, 50, 29, 43)],
+  },
+  spirale: {
+    text: 'Trace la spirale, en partant du milieu.',
+    strokes: [spiral(53, 46, 3, 40, 2.5)],
   },
 };
 

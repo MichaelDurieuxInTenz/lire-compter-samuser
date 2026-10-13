@@ -200,6 +200,7 @@ test('fractions : les dessins ont une part par fraction, les parts d’une pizza
 test('fractions : les mots de chaque fraction', () => {
   assert.deepEqual(Object.fromEntries(Object.entries(FRACTIONS).map(([f, i]) => [f, i.words])), {
     '1/2': 'un demi', '1/3': 'un tiers', '1/4': 'un quart', '2/3': 'deux tiers', '2/4': 'deux quarts', '3/4': 'trois quarts',
+    '1/5': 'un cinquième', '1/6': 'un sixième', '1/8': 'un huitième', '1/10': 'un dixième',
   });
   for (const [f, { n, d }] of Object.entries(FRACTIONS)) assert.equal(f, `${n}/${d}`);
 });

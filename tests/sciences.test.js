@@ -150,6 +150,8 @@ test('le vivant, niveaux 4 et 5 : les cycles de vie', () => {
   const next = {
     'la graine': 'la pousse', 'l’œuf de la poule': 'le poussin', 'le poussin': 'la poule', 'la chenille': 'le papillon',
     'le têtard': 'la grenouille', 'le bébé': 'l’enfant', 'l’enfant': 'l’adulte', 'la fleur du pommier': 'la pomme',
+    'l’œuf du papillon': 'la chenille', 'la chrysalide': 'le papillon', 'la pousse': 'l’arbre', 'l’adulte': 'la personne âgée',
+    'le chaton': 'le chat', 'le veau': 'la vache', 'la fleur du cerisier': 'la cerise',
   };
   assert.deepEqual(Object.fromEntries(GROWTH.map((g) => [g.from, g.to.name])), next);
   for (const q of draw('vivant', 4)) {

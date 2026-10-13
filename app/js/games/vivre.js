@@ -322,6 +322,12 @@ export const STREET = [
   { stage: picture('🤝'), text: 'Quand on est petit, avec qui traverse-t-on ?', answer: 'Avec un adulte', wrong: ['Tout seul', 'Avec son doudou'], says: 'Quand on est petit, on traverse avec un adulte, en lui donnant la main.' },
   { stage: picture('⚽'), text: 'Ton ballon roule sur la route. Que fais-tu ?', answer: 'Je demande à un adulte', wrong: ['Je cours le chercher', 'Je traverse vite'], says: 'On ne court jamais sur la route : un adulte ira chercher le ballon.' },
   { stage: picture('🚗'), text: 'Une voiture arrive. Que fais-tu ?', answer: 'J’attends qu’elle passe', wrong: ['Je traverse en courant', 'Je joue au ballon'], says: 'On attend que la voiture soit passée avant de traverser.' },
+  { stage: picture('🚌'), text: 'Tu descends du bus. Quand traverses-tu ?', answer: 'Quand le bus est parti', wrong: ['Tout de suite, devant lui', 'En courant derrière lui'], says: 'On attend que le bus soit parti : on voit bien les voitures, et elles nous voient.' },
+  { stage: picture('🚙'), text: 'Tu sors de la voiture. De quel côté descends-tu ?', answer: 'Du côté du trottoir', wrong: ['Du côté des voitures', 'N’importe où'], says: 'On descend du côté du trottoir, loin des voitures qui roulent.' },
+  { stage: picture('👫'), text: 'Tu marches dans la rue avec un adulte. Que fais-tu ?', answer: 'Je reste près de lui', wrong: ['Je pars en courant', 'Je joue sur la route'], says: 'Dans la rue, on reste près de l’adulte, sur le trottoir.' },
+  { stage: picture('🌳'), text: 'Où peut-on jouer au ballon ?', answer: 'Au parc', wrong: ['Sur la route', 'Sur le parking'], says: 'On joue au parc ou dans la cour, jamais sur la route.' },
+  { stage: picture('🧒'), text: 'Ton copain t’appelle de l’autre côté de la rue. Que fais-tu ?', answer: 'J’attends un adulte', wrong: ['Je cours le rejoindre', 'Je traverse sans regarder'], says: 'On ne traverse jamais en courant : on attend un adulte, et on regarde bien.' },
+  { stage: picture('🚗'), text: 'Une voiture recule pour sortir d’un garage. Que fais-tu ?', answer: 'Je m’éloigne', wrong: ['Je passe derrière elle', 'Je joue derrière elle'], says: 'Le conducteur ne voit pas bien derrière sa voiture : on s’éloigne et on attend.' },
 ];
 
 // Ce qui peut être dangereux à la maison, et ce qui ne l'est pas.
@@ -353,6 +359,13 @@ export const WHAT_IF = [
   { emoji: '💊', text: 'Tu trouves des médicaments par terre. Que fais-tu ?', answer: 'Je préviens un adulte', wrong: ['Je les goûte', 'Je les mets dans ma poche'], says: 'On ne touche pas aux médicaments : on prévient un adulte.' },
   { emoji: '💨', text: 'Il y a de la fumée dans la maison. Que fais-tu ?', answer: 'Je sors vite de la maison', wrong: ['Je me cache sous le lit', 'Je range mes jouets'], says: 'On sort vite, sans se cacher, et on prévient un adulte.' },
   { emoji: '🐕', text: 'Un chien que tu ne connais pas s’approche. Que fais-tu ?', answer: 'Je ne le touche pas', wrong: ['Je lui tire la queue', 'Je cours en criant'], says: 'On reste calme, et on ne touche pas un chien qu’on ne connaît pas.' },
+  { emoji: '🐝', text: 'Une abeille tourne autour de toi. Que fais-tu ?', answer: 'Je reste calme', wrong: ['Je la tape avec la main', 'Je m’agite en criant'], says: 'On reste calme et on s’éloigne doucement : l’abeille pique surtout quand elle a peur.' },
+  { emoji: '⛈️', text: 'Il y a de l’orage et tu es dehors. Que fais-tu ?', answer: 'Je rentre dans une maison', wrong: ['Je m’abrite sous un arbre', 'Je joue sous la pluie'], says: 'Pendant l’orage, on s’abrite dans une maison ou dans une voiture, jamais sous un arbre.' },
+  { emoji: '☀️', text: 'Il fait très chaud et tu joues dehors. Que fais-tu ?', answer: 'Je bois de l’eau souvent', wrong: ['Je mets un gros manteau', 'Je cours en plein soleil'], says: 'Quand il fait très chaud, on boit souvent, on se met à l’ombre et on protège sa tête.' },
+  { emoji: '🔥', text: 'Tu trouves des allumettes. Que fais-tu ?', answer: 'Je les donne à un adulte', wrong: ['J’en allume une', 'Je joue avec'], says: 'Les allumettes, c’est pour les adultes : on ne joue jamais avec le feu.' },
+  { emoji: '🌊', text: 'À la plage, ton ballon part dans l’eau. Que fais-tu ?', answer: 'J’appelle un adulte', wrong: ['Je nage pour le chercher', 'Je vais loin dans l’eau'], says: 'On ne va jamais seul dans l’eau : un adulte ira chercher le ballon.' },
+  { emoji: '🧴', text: 'Tu trouves une bouteille de produit pour nettoyer. Que fais-tu ?', answer: 'Je n’y touche pas', wrong: ['Je la goûte', 'Je l’ouvre pour la sentir'], says: 'Les produits pour nettoyer sont dangereux : on n’y touche pas, et on prévient un adulte.' },
+  { emoji: '🍄', text: 'Tu trouves des champignons dans la forêt. Que fais-tu ?', answer: 'Je ne les mange pas', wrong: ['Je les goûte', 'Je les mange vite'], says: 'Certains champignons sont très dangereux : on ne les mange jamais sans un adulte qui les connaît.' },
 ];
 
 // Les numéros d'urgence en France.
@@ -363,6 +376,17 @@ export const EMERGENCY = {
   112: { says: 'Le 112 est le numéro d’urgence européen : on peut l’appeler partout en Europe.' },
 };
 const CALL_ONLY_IF = 'On appelle seulement en cas de vraie urgence.';
+// Ce qui arrive, et le numéro à appeler (sans hésitation : pas d'accident, où le 15 et le 18 vont ensemble).
+const EMERGENCY_CASES = [
+  { n: 15, key: 'malade', emoji: '🤒', text: 'Quelqu’un est très malade. Quel numéro faut-il appeler ?' },
+  { n: 17, key: 'voleur', emoji: '🏠', text: 'Un voleur entre dans une maison. Quel numéro faut-il appeler ?' },
+];
+// Bien appeler les secours.
+export const CALLING = [
+  { key: 'dire', emoji: '📞', text: 'Tu appelles les secours. Que dois-tu dire ?', answer: 'Où je suis, ce qui arrive', wrong: ['Une blague', 'Ma couleur préférée'], says: 'On dit son nom, où l’on est, et ce qui se passe.' },
+  { key: 'raccrocher', emoji: '☎️', text: 'Tu parles aux secours au téléphone. Quand raccroches-tu ?', answer: 'Quand on me le dit', wrong: ['Tout de suite', 'Avant de dire où je suis'], says: 'On ne raccroche pas avant que la personne des secours nous le dise.' },
+  { key: 'jeu', emoji: '🚑', text: 'Peut-on appeler les secours pour jouer ?', answer: 'Non, jamais', wrong: ['Oui, si on s’ennuie', 'Oui, pour faire une blague'], says: 'Les secours sont là pour les vraies urgences : on ne les appelle jamais pour jouer.' },
+];
 
 // Les règles de la classe et du jeu.
 export const RULES = [
@@ -375,6 +399,13 @@ export const RULES = [
   { emoji: '🚂', text: 'Tu veux le jouet d’un copain. Que fais-tu ?', answer: 'Je lui demande gentiment', wrong: ['Je le prends', 'Je le pousse'], says: 'On demande gentiment, et on attend sa réponse.' },
   { emoji: '🤧', text: 'Tu tousses ou tu éternues. Que fais-tu ?', answer: 'Je tousse dans mon coude', wrong: ['Je tousse sur les autres', 'Je crie très fort'], says: 'On tousse dans son coude, pour ne pas donner ses microbes.' },
   { emoji: '🍽️', text: 'C’est l’heure de manger. Que fais-tu avant ?', answer: 'Je me lave les mains', wrong: ['Je cours partout', 'Je saute sur la table'], says: 'Avant de manger, on se lave les mains avec du savon.' },
+  { emoji: '🤫', text: 'La maîtresse explique la leçon. Que fais-tu ?', answer: 'J’écoute en silence', wrong: ['Je bavarde avec mon voisin', 'Je joue avec ma trousse'], says: 'On écoute en silence pour bien comprendre, et pour que les autres entendent aussi.' },
+  { emoji: '🔔', text: 'La cloche sonne la fin de la récréation. Que fais-tu ?', answer: 'Je me range avec ma classe', wrong: ['Je continue à jouer', 'Je me cache dans la cour'], says: 'Quand ça sonne, on se range vite pour rentrer en classe.' },
+  { emoji: '🧥', text: 'Tu arrives en classe le matin. Que fais-tu de ton manteau ?', answer: 'Je l’accroche à sa place', wrong: ['Je le jette par terre', 'Je le lance à un copain'], says: 'Chaque chose à sa place : la classe reste bien rangée.' },
+  { emoji: '🗑️', text: 'Tu as fini ton goûter. Que fais-tu de l’emballage ?', answer: 'Je le jette à la poubelle', wrong: ['Je le laisse par terre', 'Je le cache sous ma table'], says: 'On jette ses déchets à la poubelle : la classe et la cour restent propres.' },
+  { emoji: '📕', text: 'Un copain te prête son livre. Que fais-tu ?', answer: 'J’en prends soin', wrong: ['Je dessine dedans', 'Je le garde pour moi'], says: 'On prend soin des affaires des autres, et on les rend.' },
+  { emoji: '🚪', text: 'Pendant la classe, tu dois aller aux toilettes. Que fais-tu ?', answer: 'Je demande la permission', wrong: ['Je sors sans rien dire', 'Je cours dans le couloir'], says: 'On demande avant de sortir : ainsi, la maîtresse sait toujours où sont les enfants.' },
+  { emoji: '✋', text: 'Dans la cour, un enfant te tape. Que fais-tu ?', answer: 'Je préviens un adulte', wrong: ['Je le tape plus fort', 'Je lui jette du sable'], says: 'On ne répond pas en tapant : on prévient un adulte, qui va aider.' },
 ];
 
 // Les émotions des autres : des enfants aux prénoms variés (sans prénom de l'enfant qui joue), une
@@ -532,10 +563,30 @@ function vivreLevel(level, rng) {
   };
 }
 
-/** Niveau 6 : les numéros d'urgence (15, 17, 18 et 112). */
+/** Niveau 6 : les numéros d'urgence (15, 17, 18 et 112), et bien appeler les secours. */
 function emergency(rng) {
   const roll = rng();
   if (roll < 0.15) {
+    const item = pick(rng, CALLING);
+    return textQuestion({
+      key: `vivre:urgence:${item.key}`, text: item.text, stage: picture(item.emoji), answer: item.answer, wrong: item.wrong,
+      style: 'answers', success: ['Oui, c’est ça.', item.says], rng,
+    });
+  }
+  if (roll < 0.25) {
+    const item = pick(rng, EMERGENCY_CASES);
+    return {
+      key: `vivre:urgence:${item.key}`,
+      text: item.text,
+      instruction: [item.text, 'Le 15, le 17 ou le 18 ?'],
+      stage: picture(item.emoji),
+      choices: [15, 17, 18].map((m) => ({ value: m, label: String(m) })),
+      choiceStyle: 'numbers',
+      answer: item.n,
+      success: { speak: [EMERGENCY[item.n].says, CALL_ONLY_IF] },
+    };
+  }
+  if (roll < 0.36) {
     const text = 'Quel numéro d’urgence peut-on appeler partout en Europe ?';
     const options = shuffle(rng, [112, ...sample(rng, [15, 17, 18], 2)]);
     return {
@@ -552,7 +603,7 @@ function emergency(rng) {
   // pas de 112 dans les choix : il serait juste aussi
   const n = pick(rng, [15, 17, 18]);
   const info = EMERGENCY[n];
-  if (roll < 0.45) {
+  if (roll < 0.62) {
     // « Le 18, c'est… »
     const text = `Qui répond quand on appelle le ${n} ?`;
     const options = shuffle(rng, [15, 17, 18]).map((m) => EMERGENCY[m].who);

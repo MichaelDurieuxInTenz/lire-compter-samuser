@@ -28,8 +28,9 @@ import {
 
 const HERE = new URL('.', import.meta.url).pathname;
 // 400 000 depuis le cours moyen (1.16.0) : un quart de jeux en plus, et les phrases des jeux à
-// phrases entières (ENTIERES) en prennent environ 135 000
-const BUDGET = Number(process.argv[2]) || 400000;
+// phrases entières (ENTIERES) en prennent environ 135 000 ; 520 000 depuis la 1.21.0 (75 histoires,
+// 87 petits textes et 7 textes du CM de plus : sans cela, 4 % des phrases seraient dites mot à mot)
+const BUDGET = Number(process.argv[2]) || 520000;
 const SEEDS = 300;
 const SEASONS = ['hiver', 'printemps', 'ete', 'automne', 'noel', 'halloween'];
 const PLACEHOLDER = 'Zélie'; // prénom de l'enfant pendant les tirages (découpé ensuite)
@@ -122,10 +123,10 @@ const TOUJOURS = ['Bravo ! Tu as trouvé la bonne réponse.', 'Essaie encore !',
   ...SPOKEN_SENTENCES.flatMap(({ text, marks }) => [...marks].map((m) => (m === '.' ? `${text}.` : `${text} ${m}`)))];
 
 // Les jeux de questions écrites à la main (histoire, géographie, vivre en République, sciences et
-// anglais du CM) : des centaines de phrases, chacune rarement entendue (le poids d'un jeu se partage
+// anglais du CM, et depuis la 1.21.0 les histoires lues, les petits textes et la lecture du CM) : des centaines de phrases, chacune rarement entendue (le poids d'un jeu se partage
 // entre toutes), mais toutes le sont ; dites mot à mot, elles seraient hachées (l'anglais surtout,
 // qu'il faut entendre naturellement). Chacune est donc enregistrée entière, comme celles de TOUJOURS.
-const ENTIERES = new Set(['histoire', 'geographie', 'republique', 'sciences-cm', 'anglais-cm', 'vocabulaire-cm']);
+const ENTIERES = new Set(['histoire', 'geographie', 'republique', 'sciences-cm', 'anglais-cm', 'vocabulaire-cm', 'histoires', 'petits-textes', 'lecture-cm']);
 
 export function allUtterances() {
   const list = gameUtterances();

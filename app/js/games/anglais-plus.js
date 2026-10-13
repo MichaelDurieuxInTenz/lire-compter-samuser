@@ -245,11 +245,40 @@ export const EN_COLORS = {
   orange: { fr: 'orange', hex: '#ff8a3d', square: '🟧' }, purple: { fr: 'violet', hex: '#9b5cff', square: '🟪' },
   brown: { fr: 'marron', hex: '#8b5a2b', square: '🟫' }, black: { fr: 'noir', hex: '#222222', square: '⬛' },
   white: { fr: 'blanc', hex: '#ffffff', square: '⬜' }, pink: { fr: 'rose', hex: '#ff8fc7' }, grey: { fr: 'gris', hex: '#9e9e9e' },
+  // les couleurs claires (avec du blanc) et foncées (avec du noir) : seulement pour « mélange les
+  // couleurs », pas dans le nuancier du coloriage ; `family` : la couleur dont elles sont une nuance
+  'light blue': { fr: 'bleu clair', hex: '#a3c4ff', family: 'blue', shade: true },
+  'light green': { fr: 'vert clair', hex: '#a6e8b8', family: 'green', shade: true },
+  'light purple': { fr: 'violet clair', hex: '#d3bcff', family: 'purple', shade: true },
+  'light brown': { fr: 'marron clair', hex: '#c89f72', family: 'brown', shade: true },
+  'dark blue': { fr: 'bleu foncé', hex: '#1c3c94', family: 'blue', shade: true },
+  'dark green': { fr: 'vert foncé', hex: '#1b6631', family: 'green', shade: true },
 };
+const family = (colour) => EN_COLORS[colour].family || colour;
+// les mélanges du coloriage (niveaux 6 et 7) : des couleurs bien différentes
 const MIXES = [
   ['red', 'yellow', 'orange'], ['blue', 'yellow', 'green'], ['red', 'blue', 'purple'],
   ['red', 'white', 'pink'], ['black', 'white', 'grey'], ['red', 'green', 'brown'],
 ];
+// « Mélange les couleurs » : d'autres mélanges justes, ceux qu'on fait en peinture. Deux couleurs
+// complémentaires font du marron ; du blanc éclaircit une couleur, du noir la fonce.
+export const ALL_MIXES = [
+  ...MIXES,
+  ['blue', 'orange', 'brown'], ['yellow', 'purple', 'brown'],
+  ['blue', 'white', 'light blue'], ['green', 'white', 'light green'], ['purple', 'white', 'light purple'],
+  ['brown', 'white', 'light brown'], ['blue', 'black', 'dark blue'], ['green', 'black', 'dark green'],
+];
+// Pas de piège qui ressemble trop au résultat (on pourrait croire l'obtenir aussi) : le marron de deux
+// complémentaires tire vers le gris ou le noir, le violet clair vers le rose, le marron clair vers le gris.
+const NEAR = [['brown', 'grey'], ['brown', 'black'], ['pink', 'light purple'], ['light brown', 'grey']];
+const near = (x, y) => NEAR.some(([p, q]) => (p === x && q === y) || (p === y && q === x));
+
+/** Deux mauvaises couleurs : ni celles qu'on mélange, ni une nuance de l'une d'elles ou du résultat. */
+function wrongColours(rng, [a, b, result]) {
+  const families = [a, b, result].map(family);
+  const ok = (c) => !families.includes(family(c)) && !near(c, result);
+  return sample(rng, Object.keys(EN_COLORS).filter(ok), 2);
+}
 
 // Ce qu'on voit (les carrés, les mots, ou rien : on écoute) et comment on répond (pastille ou mot).
 const MIX_LEVELS = [
@@ -273,10 +302,10 @@ export const couleursAnglais = {
   generate(level, rng) {
     const { show, answer, reverse } = MIX_LEVELS[level - 1];
     if (reverse) return mixReverse(level, rng);
-    const [a, b, result] = pick(rng, MIXES);
+    const mix = pick(rng, ALL_MIXES);
+    const [a, b, result] = mix;
     const sentence = `${a} and ${b} make ${result}`;
-    const others = sample(rng, Object.keys(EN_COLORS).filter((c) => c !== result && c !== a && c !== b), 2);
-    const options = shuffle(rng, [result, ...others]);
+    const options = shuffle(rng, [result, ...wrongColours(rng, mix)]);
     const pair = rng() < 0.5 ? [a, b] : [b, a];
     const stage = show === 'listen' ? { type: 'listen' }
       : show === 'words'
@@ -294,7 +323,7 @@ export const couleursAnglais = {
         : ['Écoute les deux couleurs en anglais. Si on les mélange, quelle couleur obtient-on ?', ask];
     }
     return {
-      key: `couleurs-anglais:${level}:${result}`,
+      key: `couleurs-anglais:${level}:${a}+${b}`, // le mélange (blue + orange, red + green : du marron tous les deux)
       text: listen ? 'Écoute, et trouve la couleur.' : word ? 'Quelle couleur ? Réponds en anglais.' : 'Quelle couleur obtient-on ?',
       instruction,
       short: { key: `couleurs-anglais:${level}`, text: word ? 'Le nom en anglais ?' : 'Quelle couleur ?', speak: [ask] },
@@ -313,9 +342,13 @@ export const couleursAnglais = {
 
 /** Niveau 7 : on lit la couleur à obtenir (« ? + ? = pink ») ; quelles deux couleurs faut-il mélanger ? */
 function mixReverse(level, rng) {
-  const mix = pick(rng, MIXES);
+  const mix = pick(rng, ALL_MIXES);
   const [a, b, result] = mix;
-  const options = shuffle(rng, [mix, ...sample(rng, MIXES.filter((m) => m !== mix), 2)]);
+  // les autres mélanges font une autre couleur, ni une nuance de celle-ci, ni une couleur trop proche
+  const apart = (m, others) => others.every((o) => family(m[2]) !== family(o[2]) && !near(m[2], o[2]));
+  const first = pick(rng, ALL_MIXES.filter((m) => apart(m, [mix])));
+  const second = pick(rng, ALL_MIXES.filter((m) => apart(m, [mix, first])));
+  const options = shuffle(rng, [mix, first, second]);
   const ask = say(`What colours make ${result}?`);
   return {
     key: `couleurs-anglais:${level}:${result}`,
@@ -334,7 +367,11 @@ function mixReverse(level, rng) {
 // ---------------------------------------------------------------- Colorie en anglais
 
 // Les dessins du coloriage magique, avec des nombres ; la légende dit les couleurs en anglais.
-const EN_DRAWINGS = [
+// Chaque zone : un chemin SVG dans un carré de 120, la position de son nombre (visible, sur la zone)
+// et le numéro de sa couleur (0 à 4 ; avec 3 couleurs, 3 et 4 redeviennent 0 et 1) : dans les dessins
+// ajoutés, deux zones voisines ont deux couleurs différentes, avec 3 comme avec 5 couleurs.
+const circle = (x, y, r) => `M${x - r} ${y} a${r} ${r} 0 1 0 ${2 * r} 0 a${r} ${r} 0 1 0 ${-2 * r} 0 Z`;
+export const EN_DRAWINGS = [
   {
     name: 'a house',
     zones: [
@@ -366,6 +403,135 @@ const EN_DRAWINGS = [
       { d: 'M0 106 H120 V120 H0 Z', at: [60, 114], c: 1 },
     ],
   },
+  {
+    name: 'a fish',
+    zones: [
+      { d: 'M0 0 H120 V120 H0 Z', at: [14, 14], c: 1 },
+      { d: 'M8 120 Q2 98 16 82 Q24 100 28 120 Z', at: [17, 108], c: 2 },
+      { d: circle(100, 18, 9), at: [100, 18], c: 3 },
+      { d: 'M82 60 L110 36 L110 84 Z', at: [100, 60], c: 2 },
+      { d: 'M12 60 Q48 20 86 60 Q48 100 12 60 Z', at: [56, 62], c: 0 },
+      { d: circle(34, 55, 8), at: [34, 55], c: 4 },
+    ],
+  },
+  {
+    name: 'a flower',
+    zones: [
+      { d: 'M0 104 H120 V120 H0 Z', at: [100, 112], c: 3 },
+      { d: 'M55 70 H65 V104 H55 Z', at: [60, 96], c: 2 },
+      { d: circle(60, 29, 13), at: [60, 26], c: 0 },
+      { d: circle(85, 49, 13), at: [88, 49], c: 0 },
+      { d: circle(35, 49, 13), at: [32, 49], c: 0 },
+      { d: circle(60, 71, 13), at: [60, 74], c: 0 },
+      { d: circle(60, 48, 11), at: [60, 48], c: 4 },
+      { d: 'M64 90 Q86 72 100 84 Q84 100 64 94 Z', at: [84, 88], c: 1 },
+    ],
+  },
+  {
+    name: 'a tree',
+    zones: [
+      { d: 'M0 100 H120 V120 H0 Z', at: [100, 111], c: 3 },
+      { d: 'M52 60 H68 V106 H52 Z', at: [60, 92], c: 4 },
+      { d: circle(60, 42, 34), at: [60, 24], c: 2 },
+      { d: circle(40, 50, 9), at: [40, 50], c: 0 },
+      { d: circle(80, 44, 9), at: [80, 44], c: 0 },
+      { d: circle(60, 62, 9), at: [60, 62], c: 0 },
+    ],
+  },
+  {
+    name: 'a car',
+    zones: [
+      { d: 'M0 100 H120 V120 H0 Z', at: [60, 111], c: 2 },
+      { d: 'M6 76 Q6 62 20 62 H30 L44 42 H80 L96 62 H102 Q114 62 114 76 V90 H6 Z', at: [60, 76], c: 0 },
+      { d: 'M46 48 H59 V62 H36 Z', at: [51, 56], c: 1 },
+      { d: 'M65 48 H78 L88 62 H65 Z', at: [74, 56], c: 1 },
+      { d: circle(32, 90, 11), at: [32, 90], c: 4 },
+      { d: circle(88, 90, 11), at: [88, 90], c: 4 },
+    ],
+  },
+  {
+    name: 'a rocket',
+    zones: [
+      { d: 'M44 54 L14 100 L46 88 Z', at: [31, 87], c: 0 },
+      { d: 'M76 54 L106 100 L74 88 Z', at: [89, 87], c: 0 },
+      { d: 'M48 84 H72 L60 116 Z', at: [60, 94], c: 4 },
+      { d: 'M60 4 C80 22 82 56 76 86 H44 C38 56 40 22 60 4 Z', at: [60, 68], c: 2 },
+      { d: circle(60, 40, 11), at: [60, 40], c: 1 },
+    ],
+  },
+  {
+    name: 'a kite',
+    zones: [
+      { d: 'M60 4 L26 36 L60 36 Z', at: [50, 27], c: 0 },
+      { d: 'M60 4 L94 36 L60 36 Z', at: [70, 27], c: 1 },
+      { d: 'M26 36 L60 92 L60 36 Z', at: [50, 52], c: 4 },
+      { d: 'M94 36 L60 92 L60 36 Z', at: [70, 52], c: 3 },
+      { d: 'M68 92 L78 102 L68 112 L58 102 Z', at: [68, 102], c: 2 },
+      { d: 'M94 98 L104 108 L94 118 L84 108 Z', at: [94, 108], c: 2 },
+    ],
+  },
+  {
+    name: 'an umbrella',
+    zones: [
+      { d: 'M0 108 H120 V120 H0 Z', at: [100, 114], c: 2 },
+      { d: 'M14 58 A46 46 0 0 1 37 18.2 L60 58 Z', at: [37, 46], c: 0 },
+      { d: 'M37 18.2 A46 46 0 0 1 83 18.2 L60 58 Z', at: [60, 28], c: 1 },
+      { d: 'M83 18.2 A46 46 0 0 1 106 58 L60 58 Z', at: [83, 46], c: 3 },
+      { d: 'M55 58 H65 V100 Q65 114 51 114 Q37 114 37 102 H45 Q45 106 51 106 Q55 106 55 100 Z', at: [60, 82], c: 4 },
+    ],
+  },
+  {
+    name: 'an ice cream',
+    zones: [
+      { d: 'M36 62 H84 L60 116 Z', at: [60, 92], c: 4 },
+      { d: circle(60, 58, 23), at: [60, 66], c: 0 },
+      { d: circle(60, 30, 18), at: [60, 32], c: 2 },
+      { d: circle(60, 10, 8), at: [60, 10], c: 1 },
+    ],
+  },
+  {
+    name: 'a mushroom',
+    zones: [
+      { d: 'M0 100 H120 V120 H0 Z', at: [100, 111], c: 2 },
+      { d: 'M48 60 Q46 84 42 106 H78 Q74 84 72 60 Z', at: [60, 88], c: 4 },
+      { d: 'M10 66 Q10 14 60 14 Q110 14 110 66 Z', at: [60, 30], c: 0 },
+      { d: circle(34, 50, 9), at: [34, 50], c: 1 },
+      { d: circle(86, 50, 9), at: [86, 50], c: 1 },
+    ],
+  },
+  {
+    name: 'a castle',
+    zones: [
+      { d: 'M0 104 H120 V120 H0 Z', at: [100, 113], c: 2 },
+      { d: 'M8 30 H14 V24 H20 V30 H26 V24 H32 V104 H8 Z', at: [20, 70], c: 4 },
+      { d: 'M88 30 H94 V24 H100 V30 H106 V24 H112 V104 H88 Z', at: [100, 70], c: 4 },
+      { d: 'M32 52 H40 V46 H48 V52 H56 V46 H64 V52 H72 V46 H80 V52 H88 V104 H32 Z', at: [42, 66], c: 3 },
+      { d: 'M50 104 V86 Q60 72 70 86 V104 Z', at: [60, 94], c: 1 },
+      { d: 'M18 24 V2 H22 L42 10 L22 18 V24 Z', at: [29, 10], c: 0 },
+    ],
+  },
+  {
+    name: 'a hot-air balloon',
+    zones: [
+      { d: 'M48 10.1 A36 36 0 0 0 48 77.9 Z', at: [37, 44], c: 0 },
+      { d: 'M48 10.1 A36 36 0 0 1 72 10.1 V77.9 A36 36 0 0 1 48 77.9 Z', at: [60, 44], c: 1 },
+      { d: 'M72 10.1 A36 36 0 0 1 72 77.9 Z', at: [83, 44], c: 3 },
+      { d: 'M46 77 H74 L67 94 H53 Z', at: [60, 85], c: 2 },
+      { d: 'M50 94 H70 V114 H50 Z', at: [60, 104], c: 4 },
+    ],
+  },
+  {
+    name: 'a train',
+    zones: [
+      { d: 'M0 108 H120 V120 H0 Z', at: [60, 114], c: 2 },
+      { d: 'M24 34 H38 V58 H24 Z', at: [31, 46], c: 4 },
+      { d: 'M12 58 H72 V94 H12 Z', at: [54, 72], c: 0 },
+      { d: 'M72 34 H108 V94 H72 Z', at: [90, 76], c: 1 },
+      { d: 'M80 42 H100 V60 H80 Z', at: [90, 51], c: 3 },
+      { d: circle(32, 96, 10), at: [32, 96], c: 2 },
+      { d: circle(88, 96, 10), at: [88, 96], c: 2 },
+    ],
+  },
 ];
 const PAINT_SETS = [
   ['red', 'blue', 'green'],
@@ -386,7 +552,7 @@ function paintLegend(level, rng) {
     // espaces insécables : « red + yellow » reste d'un bloc dans la légende
     return mixes.map(([a, b, result], i) => ({ hex: EN_COLORS[result].hex, name: EN_COLORS[result].fr, n: i + 1, word: `${a}\u00a0+\u00a0${b}` }));
   }
-  const set = level === 4 ? sample(rng, Object.keys(EN_COLORS).filter((c) => c !== 'white'), 5)
+  const set = level === 4 ? sample(rng, Object.keys(EN_COLORS).filter((c) => c !== 'white' && !EN_COLORS[c].shade), 5)
     : level === 5 ? shuffle(rng, LOOK_ALIKE_COLOURS) : PAINT_SETS[level - 1];
   return set.map((name, i) => ({ hex: EN_COLORS[name].hex, name: EN_COLORS[name].fr, n: i + 1, word: name }));
 }
@@ -756,8 +922,34 @@ const SENTENCES = [
   { words: ['I', 'can', 'see', 'a', 'bird'], emoji: '🐦', fr: 'Je vois un oiseau.' },
   { words: ['The', 'cat', 'is', 'very', 'small'], emoji: '🐈', fr: 'Le chat est tout petit.' },
   { words: ['I', 'like', 'to', 'eat', 'cake'], emoji: '🎂', fr: 'J’aime manger du gâteau.' },
+  // d'autres phrases de 3, 4 et 5 mots (sans mot répété : chaque étiquette a sa place)
+  { words: ['I', 'am', 'sad'], emoji: '😢', fr: 'Je suis triste.' },
+  { words: ['I', 'am', 'tired'], emoji: '😴', fr: 'Je suis fatigué.' },
+  { words: ['It', 'is', 'raining'], emoji: '🌧️', fr: 'Il pleut.' },
+  { words: ['It', 'is', 'windy'], emoji: '💨', fr: 'Il y a du vent.' },
+  { words: ['It', 'is', 'hot'], emoji: '🥵', fr: 'Il fait chaud.' },
+  { words: ['It', 'is', 'cold'], emoji: '⛄', fr: 'Il fait froid.' },
+  { words: ['I', 'like', 'bananas'], emoji: '🍌', fr: 'J’aime les bananes.' },
+  { words: ['I', 'like', 'milk'], emoji: '🥛', fr: 'J’aime le lait.' },
+  { words: ['I', 'love', 'pizza'], emoji: '🍕', fr: 'J’adore la pizza.' },
+  { words: ['I', 'can', 'run'], emoji: '🏃', fr: 'Je sais courir.' },
+  { words: ['I', 'can', 'swim'], emoji: '🏊', fr: 'Je sais nager.' },
+  { words: ['The', 'duck', 'can', 'swim'], emoji: '🦆', fr: 'Le canard sait nager.' },
+  { words: ['The', 'snow', 'is', 'white'], emoji: '❄️', fr: 'La neige est blanche.' },
+  { words: ['The', 'pig', 'is', 'pink'], emoji: '🐷', fr: 'Le cochon est rose.' },
+  { words: ['The', 'lion', 'is', 'strong'], emoji: '🦁', fr: 'Le lion est fort.' },
+  { words: ['The', 'banana', 'is', 'yellow'], emoji: '🍌', fr: 'La banane est jaune.' },
+  { words: ['The', 'tree', 'is', 'tall'], emoji: '🌳', fr: 'L’arbre est grand.' },
+  { words: ['I', 'can', 'read', 'books'], emoji: '📚', fr: 'Je sais lire des livres.' },
+  { words: ['The', 'dog', 'has', 'a', 'bone'], emoji: '🦴', fr: 'Le chien a un os.' },
+  { words: ['My', 'sister', 'has', 'a', 'cat'], emoji: '👧', fr: 'Ma sœur a un chat.' },
+  { words: ['My', 'dad', 'has', 'a', 'car'], emoji: '🚗', fr: 'Mon papa a une voiture.' },
+  { words: ['I', 'drink', 'milk', 'every', 'day'], emoji: '🥛', fr: 'Je bois du lait tous les jours.' },
+  { words: ['We', 'go', 'to', 'the', 'beach'], emoji: '🏖️', fr: 'Nous allons à la plage.' },
+  { words: ['The', 'horse', 'can', 'run', 'fast'], emoji: '🐴', fr: 'Le cheval peut courir vite.' },
+  { words: ['It', 'is', 'a', 'sunny', 'day'], emoji: '☀️', fr: 'C’est une journée ensoleillée.' },
 ];
-// Niveaux 5 et 7 : d'autres phrases de 4 et 5 mots (pas plus : les mots doivent tenir sur une ligne).
+// D'autres phrases de 4 et 5 mots (pas plus : les mots doivent tenir sur une ligne), aux niveaux 2, 3, 5 et 7.
 const MORE_SENTENCES = [
   { words: ['I', 'have', 'a', 'red', 'hat'], emoji: '👒', fr: 'J’ai un chapeau rouge.' },
   { words: ['The', 'sun', 'is', 'hot'], emoji: '☀️', fr: 'Le soleil est chaud.' },
@@ -795,6 +987,13 @@ function answers(name) {
     { q: 'Can you swim?', emoji: '🏊', words: ['Yes,', 'I', 'can', 'swim'], fr: 'Oui, je sais nager.' },
     { q: 'Is it sunny?', emoji: '🌧️', words: ['No,', 'it', 'is', 'raining'], fr: 'Non, il pleut.' },
     { q: 'Do you have a pet?', emoji: '🐰', words: ['I', 'have', 'a', 'rabbit'], fr: 'J’ai un lapin.' },
+    { q: 'Where is the cat?', emoji: '🛏️', words: ['It', 'is', 'on', 'the', 'bed'], fr: 'Il est sur le lit.' },
+    { q: 'What time is it?', emoji: '🕗', words: ['It', 'is', 'eight', 'o’clock'], fr: 'Il est huit heures.' },
+    { q: 'What is the weather like?', emoji: '❄️', words: ['It', 'is', 'snowing'], fr: 'Il neige.' },
+    { q: 'Who is she?', emoji: '👵', words: ['She', 'is', 'my', 'grandma'], fr: 'C’est ma mamie.' },
+    { q: 'Is it a dog?', emoji: '🐱', words: ['No,', 'it', 'is', 'a', 'cat'], fr: 'Non, c’est un chat.' },
+    { q: 'Where do you live?', emoji: '🏠', words: ['I', 'live', 'in', 'a', 'house'], fr: 'J’habite dans une maison.' },
+    { q: 'What are you eating?', emoji: '🍕', words: ['I', 'am', 'eating', 'pizza'], fr: 'Je mange de la pizza.' },
   ];
 }
 // Les phrases de 4 et 5 mots, pour écouter sans image (niveau 5) et écrire d'après le français (niveau 7).
@@ -869,7 +1068,8 @@ export const phraseAnglais = {
     'Réponds à la question', 'D’après le français'],
   generate(level, rng, index = 0, context = {}) {
     if (level >= 4) return morePhrases(level, rng, context.name || 'Lou');
-    const sentence = pick(rng, SENTENCES.filter((st) => st.words.length === level + 2));
+    // les phrases de 4 et 5 mots des niveaux 5 et 7 servent aussi ici
+    const sentence = pick(rng, [...SENTENCES, ...MORE_SENTENCES].filter((st) => st.words.length === level + 2));
     const text = `${sentence.words.join(' ')}.`;
     const sound = say(text, 0.75);
     let order = shuffle(rng, sentence.words.map((_, i) => i));
@@ -892,6 +1092,9 @@ export const phraseAnglais = {
     };
   },
 };
+
+// Les phrases d'« Une phrase en anglais » (pour les tests).
+export const PHRASE_DATA = { SENTENCES, MORE_SENTENCES, QUESTIONS, answers };
 
 export const ANGLAIS_PLUS_GAMES = [
   nombresAnglais, calculAnglais, couleursAnglais, colorieAnglais, memoryAnglais, intrusAnglais, contrairesAnglais, phraseAnglais,

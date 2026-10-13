@@ -110,14 +110,14 @@ export const ecrire = {
   generate(level, rng, index = 0, context = {}) {
     if (level === 1) {
       const id = pick(rng, Object.keys(GRAPHISMES));
-      const { text, strokes } = GRAPHISMES[id];
+      const { text, help, strokes } = GRAPHISMES[id];
       return traceQuestion({
         key: `ecrire:1:${id}`,
         set: 'graphisme',
         glyph: id,
         strokes,
         text,
-        instruction: `${text} ${FOLLOW}`,
+        instruction: help ? `${text} ${help} ${FOLLOW}` : `${text} ${FOLLOW}`,
         short: { key: 'ecrire:1', text },
         success: { speak: 'C’est bien tracé !' },
       });

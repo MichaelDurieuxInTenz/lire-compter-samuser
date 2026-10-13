@@ -86,6 +86,15 @@ export const BODY = [
   { text: 'Je souris, je ris et j’ai envie de sauter partout. Quelle émotion est-ce ?', answer: 'joie', wrong: ['tristesse', 'peur'] },
   { text: 'J’ouvre grand les yeux et la bouche : je ne m’y attendais pas ! Quelle émotion est-ce ?', answer: 'surprise', wrong: ['tristesse', 'colere'] },
   { text: 'Je plisse le nez et j’ai envie de dire : beurk ! Quelle émotion est-ce ?', answer: 'degout', wrong: ['joie', 'peur'] },
+  { text: 'Je fronce les sourcils et je serre les dents. Quelle émotion est-ce ?', answer: 'colere', wrong: ['joie', 'surprise'] },
+  { text: 'Je tremble de partout et je veux me cacher. Quelle émotion est-ce ?', answer: 'peur', wrong: ['joie', 'colere'] },
+  { text: 'Je baisse la tête et j’ai envie de pleurer. Quelle émotion est-ce ?', answer: 'tristesse', wrong: ['joie', 'colere'] },
+  { text: 'Je reste dans mon coin et je n’ai plus envie de jouer. Quelle émotion est-ce ?', answer: 'tristesse', wrong: ['joie', 'surprise'] },
+  { text: 'Je tape dans mes mains et je chante très fort. Quelle émotion est-ce ?', answer: 'joie', wrong: ['tristesse', 'peur'] },
+  { text: 'J’ai un grand sourire et les yeux qui brillent. Quelle émotion est-ce ?', answer: 'joie', wrong: ['colere', 'peur'] },
+  { text: 'Mes sourcils montent tout en haut et je dis : oh ! Quelle émotion est-ce ?', answer: 'surprise', wrong: ['tristesse', 'colere'] },
+  { text: 'Je me bouche le nez et je détourne la tête. Quelle émotion est-ce ?', answer: 'degout', wrong: ['joie', 'tristesse'] },
+  { text: 'Je fais la grimace et je repousse mon assiette. Quelle émotion est-ce ?', answer: 'degout', wrong: ['joie', 'peur'] },
 ];
 
 // Un peu, beaucoup : trois mots de la plus petite à la plus grande émotion.
@@ -121,6 +130,13 @@ export const CALM = [
   { emoji: '📖', text: 'Tu as peur de te tromper en lisant devant la classe. Que peux-tu faire ?', answer: 'Respirer et essayer quand même', wrong: ['Te moquer des autres', 'Sortir de la classe'], says: 'On a le droit de se tromper : c’est comme ça qu’on apprend.' },
   { emoji: '🤸', text: 'Tu es si excité que tu n’arrives plus à rester assis. Que peux-tu faire ?', answer: 'Respirer doucement', wrong: ['Courir partout dans la classe', 'Crier très fort'], says: 'Respirer doucement aide le corps à se poser.' },
   { emoji: '🎲', text: 'Tu as perdu au jeu et tu es déçu. Que peux-tu faire ?', answer: 'Dire bravo au gagnant', wrong: ['Jeter le jeu par terre', 'Dire que c’est de la triche'], says: 'Perdre, ça arrive : on rejouera une autre fois.' },
+  { emoji: '😤', text: 'Tu sens que tu vas te mettre en colère. Que peux-tu faire ?', answer: 'Compter lentement jusqu’à dix', wrong: ['Crier sur tout le monde', 'Claquer la porte'], says: 'Compter lentement jusqu’à dix laisse le temps à la colère de redescendre.' },
+  { emoji: '✋', text: 'Un copain se moque de toi et la colère monte. Que peux-tu faire ?', answer: 'Lui dire stop calmement', wrong: ['Le frapper', 'Te moquer de lui encore plus'], says: 'On dit stop avec des mots, et on peut aussi prévenir un adulte.' },
+  { emoji: '🧱', text: 'Ta tour s’écroule et tu t’énerves. Que peux-tu faire ?', answer: 'Souffler et recommencer', wrong: ['Taper sur la table', 'Jeter les cubes partout'], says: 'Souffler un grand coup aide à se calmer, puis on peut réessayer.' },
+  { emoji: '📝', text: 'Tu n’arrives pas à faire ton exercice et tu t’énerves. Que peux-tu faire ?', answer: 'Demander de l’aide', wrong: ['Déchirer ta feuille', 'Jeter ton crayon'], says: 'Demander de l’aide, c’est une bonne idée : on apprend ensemble.' },
+  { emoji: '🔊', text: 'Il y a trop de bruit et tu te sens énervé. Que peux-tu faire ?', answer: 'Aller dans un coin calme', wrong: ['Crier encore plus fort', 'Pousser les autres'], says: 'Un coin calme aide à se reposer et à se calmer.' },
+  { emoji: '🛏️', text: 'Tu te réveilles après un cauchemar. Que peux-tu faire ?', answer: 'Appeler un adulte', wrong: ['Te cacher dans le placard', 'Sortir dans la rue'], says: 'Un adulte peut te rassurer : ce n’était qu’un rêve.' },
+  { emoji: '🩺', text: 'Tu as peur de la piqûre chez le médecin. Que peux-tu faire ?', answer: 'Tenir la main d’un adulte', wrong: ['Mordre le médecin', 'Partir en courant'], says: 'Tenir la main d’un adulte et respirer doucement, ça rassure.' },
 ];
 
 // Aider les autres : remarquer ce que ressent un copain, et faire ce qui l'aide.
@@ -132,6 +148,13 @@ export const HELP = [
   { emoji: '👀', text: 'Comment savoir ce que ressent un copain ?', answer: 'Regarder son visage et lui demander', wrong: ['Deviner sans le regarder', 'Ne pas s’en occuper'], says: 'Son visage nous aide, et on peut toujours lui demander.' },
   { emoji: '🎨', text: 'Ta copine a gagné un concours de dessin. Que lui dis-tu ?', answer: 'Bravo, c’est super', wrong: ['C’est nul', 'Je m’en fiche'], says: 'Dire bravo, ça fait plaisir.' },
   { emoji: '💬', text: 'Tu as fait de la peine à un copain sans le vouloir. Que fais-tu ?', answer: 'Je lui demande pardon', wrong: ['Je fais comme si de rien n’était', 'Je recommence'], says: 'Demander pardon, ça répare.' },
+  { emoji: '😢', text: 'Ta copine a l’air triste ce matin. Que fais-tu ?', answer: 'Je lui demande ce qui ne va pas', wrong: ['Je me moque d’elle', 'Je lui dis de partir'], says: 'Lui demander ce qui ne va pas, c’est montrer qu’on pense à elle.' },
+  { emoji: '🎒', text: 'Un nouvel élève arrive dans la classe. Que fais-tu ?', answer: 'Je l’accueille avec un sourire', wrong: ['Je me moque de lui', 'Je fais comme s’il n’était pas là'], says: 'Un sourire et un bonjour aident à se sentir bien dans une nouvelle classe.' },
+  { emoji: '🗣️', text: 'Des enfants se moquent d’un camarade. Que fais-tu ?', answer: 'Je le défends et j’appelle un adulte', wrong: ['Je me moque avec eux', 'Je regarde sans rien dire'], says: 'On ne laisse pas un camarade seul : on le défend, et on prévient un adulte.' },
+  { emoji: '🍪', text: 'Ton copain a oublié son goûter. Que fais-tu ?', answer: 'Je partage le mien', wrong: ['Je mange devant lui en riant', 'Je cache mon goûter'], says: 'Partager, c’est faire plaisir à un copain.' },
+  { emoji: '📚', text: 'Une copine a fait tomber tous ses livres. Que fais-tu ?', answer: 'Je l’aide à les ramasser', wrong: ['Je marche dessus', 'Je ris d’elle'], says: 'À deux, on ramasse plus vite.' },
+  { emoji: '✏️', text: 'Ton voisin de classe n’a pas de crayon. Que fais-tu ?', answer: 'Je lui prête le mien', wrong: ['Je cache ma trousse', 'Je me moque de lui'], says: 'Prêter, c’est rendre service.' },
+  { emoji: '🧓', text: 'Une dame âgée cherche une place assise dans le bus. Que fais-tu ?', answer: 'Je lui laisse ma place', wrong: ['Je pose mon sac sur le siège', 'Je fais semblant de dormir'], says: 'Laisser sa place à une personne âgée, c’est poli et gentil.' },
 ];
 
 function emotionsLevel(level, rng) {

@@ -46,7 +46,7 @@ const LISTEN_ONLY = {
   'contraires-anglais': { 3: 40, 5: 40, 7: 40 },
   'ou-est': { 1: 40, 2: 40, 4: 40, 6: 40, 7: 40, 8: 40 },
   'phrase-anglais': { 5: 40 },
-  'parle-anglais': { 2: 19, 4: 40 }, // la question sans image ; la consigne entendue
+  'parle-anglais': { 2: 11, 4: 40 }, // la question sans image (4 sur 15) ; la consigne entendue
   // l'anglais du CM : la lettre, le mot épelé, la date, l'heure, la phrase entendus (les autres
   // questions du niveau sont écrites)
   'anglais-cm': { 1: 20, 2: 12, 3: 10, 4: 8, 5: 16, 6: 8, 7: 7, 8: 8, 9: 8, 10: 13 },

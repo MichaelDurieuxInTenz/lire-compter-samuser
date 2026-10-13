@@ -660,6 +660,13 @@ const CERCLE = [
   { ask: 'Un point est à 2 centimètres du centre, sur un cercle de 5 centimètres de rayon. Où est ce point ?', answer: 'à l’intérieur du cercle', others: ['sur le cercle', 'à l’extérieur du cercle'], says: '2 centimètres, c’est moins que 5 : le point est dans le disque.' },
   { ask: 'Un point est à 7 centimètres du centre, sur un cercle de 5 centimètres de rayon. Où est ce point ?', answer: 'à l’extérieur du cercle', others: ['sur le cercle', 'à l’intérieur du cercle'], says: '7 centimètres, c’est plus que 5 : le point est en dehors du cercle.' },
   { ask: 'Quelle figure n’a aucun sommet ?', answer: 'le cercle', others: ['le carré', 'le triangle'], says: 'Le cercle n’a ni côté ni sommet.' },
+  { ask: 'Un point est à 5 centimètres du centre, sur un cercle de 5 centimètres de rayon. Où est ce point ?', answer: 'sur le cercle', others: ['à l’intérieur du cercle', 'à l’extérieur du cercle'], says: 'Juste 5 centimètres, comme le rayon : le point est sur le cercle.' },
+  { ask: 'Comment s’appelle un segment qui relie le centre à un point du cercle ?', answer: 'un rayon', others: ['un diamètre', 'un côté'], says: 'Du centre jusqu’au cercle, c’est un rayon.' },
+  { ask: 'Comment s’appelle un segment qui relie deux points du cercle en passant par le centre ?', answer: 'un diamètre', others: ['un rayon', 'un côté'], says: 'D’un bord à l’autre, en passant par le centre, c’est un diamètre.' },
+  { ask: 'Le rayon d’un cercle mesure 3 centimètres. Combien mesure son diamètre ?', answer: '6 centimètres', others: ['3 centimètres', '9 centimètres'], says: 'Le diamètre, c’est deux rayons : 3 plus 3, cela fait 6 centimètres.' },
+  { ask: 'Le diamètre d’un cercle mesure 10 centimètres. Combien mesure son rayon ?', answer: '5 centimètres', others: ['10 centimètres', '20 centimètres'], says: 'Le rayon, c’est la moitié du diamètre : 5 centimètres.' },
+  { ask: 'On veut tracer un cercle de centre O. Où pique-t-on la pointe du compas ?', answer: 'sur le point O', others: ['sur le cercle', 'n’importe où'], says: 'La pointe du compas se pique sur le centre, le point O.' },
+  { ask: 'Tous les rayons d’un même cercle ont-ils la même longueur ?', answer: 'oui, toujours', others: ['non, jamais', 'seulement certains'], says: 'Oui : tous les points du cercle sont à la même distance du centre.' },
 ];
 
 // Les solides : leur nom, leurs faces, leurs sommets, leurs arêtes.
@@ -914,6 +921,13 @@ const HASARD = [
   { ask: 'On lance une pièce. Tomber sur pile, c’est…', answer: 'possible', others: ['certain', 'impossible'], says: 'Pile peut sortir, face aussi : c’est possible.' },
   { ask: 'On tire une carte dans un jeu qui n’a que des cœurs. Tirer un cœur, c’est…', answer: 'certain', others: ['possible', 'impossible'], says: 'Il n’y a que des cœurs : c’est certain.' },
   { ask: 'On fait tourner une roue avec les nombres de 1 à 8. Obtenir 0, c’est…', answer: 'impossible', others: ['possible', 'certain'], says: 'Le 0 n’est pas sur la roue : c’est impossible.' },
+  { ask: 'On fait tourner une roue avec les nombres de 1 à 8. Obtenir 5, c’est…', answer: 'possible', others: ['certain', 'impossible'], says: 'Le 5 est sur la roue, mais elle peut s’arrêter ailleurs : c’est possible.' },
+  { ask: 'On fait tourner une roue avec les nombres de 1 à 8. Obtenir un nombre plus petit que 9, c’est…', answer: 'certain', others: ['possible', 'impossible'], says: 'Tous les nombres de la roue sont plus petits que 9 : c’est certain.' },
+  { ask: 'On lance un dé à six faces. Obtenir un nombre impair, c’est…', answer: 'possible', others: ['certain', 'impossible'], says: 'Le 1, le 3 ou le 5 peuvent sortir, mais pas à coup sûr : c’est possible.' },
+  { ask: 'Dans un sac, il y a des billes rouges et des billes bleues. Tirer une bille bleue, c’est…', answer: 'possible', others: ['certain', 'impossible'], says: 'On peut tirer une bleue, ou une rouge : c’est possible.' },
+  { ask: 'Dans un sac, il y a 3 billes vertes et 2 billes jaunes. Tirer une bille rouge, c’est…', answer: 'impossible', others: ['possible', 'certain'], says: 'Il n’y a pas de bille rouge dans le sac : c’est impossible.' },
+  { ask: 'On tire une carte dans un jeu qui n’a que des cœurs. Tirer un pique, c’est…', answer: 'impossible', others: ['possible', 'certain'], says: 'Il n’y a pas de pique dans ce jeu : c’est impossible.' },
+  { ask: 'On lance une pièce. Tomber sur pile ou sur face, c’est…', answer: 'certain', others: ['possible', 'impossible'], says: 'La pièce tombe toujours sur pile ou sur face : c’est certain.' },
 ];
 const PROBABLE = [
   { ask: 'Un sac contient 9 billes rouges et 1 bille bleue. Tirer une bille rouge, c’est…', answer: 'probable', others: ['peu probable', 'impossible'], says: 'Presque toutes les billes sont rouges : c’est probable.' },
@@ -925,6 +939,12 @@ const PROBABLE = [
   { ask: 'On lance un dé à six faces. Obtenir plus que 1, c’est…', answer: 'probable', others: ['peu probable', 'impossible'], says: 'Cinq faces sur six : c’est probable.' },
   { ask: 'Une roue a 3 cases jaunes et 1 case grise, de même taille. Tomber sur une case jaune, c’est…', answer: 'probable', others: ['peu probable', 'une chance sur deux'], says: 'Trois cases sur quatre : c’est probable.' },
   { ask: 'Deux issues possibles, est-ce toujours une chance sur deux ? Une roue a 1 case gagnante et 9 cases perdantes.', answer: 'non, perdre est plus probable', others: ['oui, une chance sur deux', 'non, gagner est plus probable'], says: 'Deux issues ne veulent pas dire une chance sur deux : il faut compter les cases.' },
+  { ask: 'Un sac contient 8 billes vertes et 2 billes jaunes. Tirer une bille jaune, c’est…', answer: 'peu probable', others: ['probable', 'certain'], says: 'Deux billes jaunes sur dix : c’est peu probable.' },
+  { ask: 'Une roue a 4 cases rouges et 4 cases bleues, de même taille. Tomber sur une case bleue, c’est…', answer: 'une chance sur deux', others: ['probable', 'impossible'], says: 'Autant de cases bleues que de rouges : une chance sur deux.' },
+  { ask: 'Une roue a 1 case gagnante et 7 cases perdantes, de même taille. Gagner, c’est…', answer: 'peu probable', others: ['probable', 'une chance sur deux'], says: 'Une seule case gagnante sur huit : c’est peu probable.' },
+  { ask: 'On lance un dé à six faces. Obtenir un nombre plus petit que 6, c’est…', answer: 'probable', others: ['peu probable', 'certain'], says: 'Cinq faces sur six, mais le 6 peut sortir : c’est probable, pas certain.' },
+  { ask: 'Parmi 10 cartes retournées, 8 sont gagnantes. Tirer une carte gagnante, c’est…', answer: 'probable', others: ['peu probable', 'impossible'], says: 'Huit cartes gagnantes sur dix : c’est probable.' },
+  { ask: 'Parmi 6 cartes retournées, 3 sont rouges et 3 sont noires. Tirer une carte noire, c’est…', answer: 'une chance sur deux', others: ['peu probable', 'certain'], says: 'Trois cartes noires sur six : une chance sur deux.' },
 ];
 
 /** CM2 : « a chances sur b » (dé, cartes, sac de billes : toutes les issues ont la même chance). */
@@ -995,6 +1015,14 @@ function deuxEtapes(rng) {
     { ask: 'On lance deux dés et on ajoute les nombres. Quelle somme est impossible ?', answer: '1', others: ['2', '12'], says: 'Le plus petit total est 1 plus 1, soit 2 : la somme 1 est impossible.' },
     { ask: 'On lance deux dés et on ajoute les nombres. Combien de façons y a-t-il d’obtenir 12 ?', answer: '1', others: ['2', '6'], says: 'Seulement 6 et 6 : une seule façon.' },
     { ask: 'On lance une pièce puis un dé à six faces. Combien y a-t-il d’issues possibles ?', answer: '12', others: ['8', '6'], says: '2 côtés de la pièce fois 6 faces du dé : 12 issues.' },
+    { ask: 'On lance une pièce puis un dé à six faces. Combien de chances y a-t-il d’obtenir pile et 6 ?', answer: '1 chance sur 12', others: ['1 chance sur 6', '1 chance sur 2'], says: 'Une seule issue sur douze : pile et 6.' },
+    { ask: 'On lance deux pièces. Combien de chances y a-t-il d’obtenir au moins un face ?', answer: '3 chances sur 4', others: ['1 chance sur 4', '2 chances sur 4'], says: 'Pile-face, face-pile et face-face : 3 issues sur 4.' },
+    { ask: 'On lance un dé rouge et un dé bleu. Combien y a-t-il d’issues possibles ?', answer: '36', others: ['12', '6'], says: '6 faces du dé rouge fois 6 faces du dé bleu : 36 issues.' },
+    { ask: 'On lance un dé rouge et un dé bleu, et on ajoute les nombres. Combien de façons y a-t-il d’obtenir 3 ?', answer: '2', others: ['1', '3'], says: '1 sur le dé rouge et 2 sur le bleu, ou 2 sur le rouge et 1 sur le bleu : 2 façons.' },
+    { ask: 'On lance deux dés et on ajoute les nombres. Quelle somme a le plus de chances de sortir ?', answer: '7', others: ['12', '2'], says: 'La somme 7 s’obtient de 6 façons, plus que toutes les autres sommes.' },
+    { ask: 'Au menu : 4 plats et 3 desserts. Combien de repas différents, avec un plat et un dessert, peut-on composer ?', answer: '12', others: ['7', '4'], says: 'Pour chaque plat, 3 desserts : 4 fois 3, cela fait 12 repas.' },
+    { ask: 'Tu as 2 casquettes et 4 écharpes. Combien de façons as-tu de mettre une casquette et une écharpe ?', answer: '8', others: ['6', '4'], says: '2 casquettes fois 4 écharpes : 8 façons.' },
+    { ask: 'Il y a 3 chemins de la maison au parc, et 2 chemins du parc à l’école. Combien de trajets vont de la maison à l’école ?', answer: '6', others: ['5', '3'], says: 'Pour chacun des 3 premiers chemins, 2 suites possibles : 3 fois 2, cela fait 6 trajets.' },
   ]), rng);
 }
 

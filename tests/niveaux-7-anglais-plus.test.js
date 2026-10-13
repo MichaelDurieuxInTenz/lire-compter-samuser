@@ -20,6 +20,9 @@ const BEFORE = {
 const MIX = {
   'red+yellow': 'orange', 'blue+yellow': 'green', 'red+blue': 'purple',
   'red+white': 'pink', 'black+white': 'grey', 'red+green': 'brown',
+  // « mélange les couleurs » seulement : complémentaires, couleurs claires et foncées
+  'blue+orange': 'brown', 'yellow+purple': 'brown', 'blue+white': 'light blue', 'green+white': 'light green',
+  'purple+white': 'light purple', 'brown+white': 'light brown', 'blue+black': 'dark blue', 'green+black': 'dark green',
 };
 const mix = (a, b) => MIX[`${a}+${b}`] || MIX[`${b}+${a}`];
 

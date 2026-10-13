@@ -627,7 +627,11 @@ async function testTrace(page, q) {
     number: document.querySelector('.trace-start-num').textContent,
   }));
   if (state.finished || state.number !== '1') fail('écris au doigt : un trait tracé à l’envers a été accepté');
-  const far = await tracePoints(page, [[-6, 106], [-4, 104], [-6, 102], [-3, 105]]);
+  // hors du chemin : dans le coin du dessin le plus loin du premier trait (l'escalier part d'en bas à gauche)
+  const corner = [[-5, 104], [105, 104], [-5, -4], [105, -4]]
+    .map((c) => ({ c, d: Math.min(...first.map(([x, y]) => Math.hypot(x - c[0], y - c[1]))) }))
+    .sort((a, b) => b.d - a.d)[0].c;
+  const far = await tracePoints(page, [[-1, 2], [1, 0], [-1, -2], [2, 1]].map(([dx, dy]) => [corner[0] + dx, corner[1] + dy]));
   await page.mouse.move(...far[0]);
   await page.mouse.down();
   for (const p of far.slice(1)) {

@@ -242,14 +242,15 @@ export const DIGESTION = ['bouche', 'oesophage', 'estomac', 'intestins'];
 const DIGESTION_NAMES = { bouche: 'la bouche', oesophage: 'l’œsophage', estomac: 'l’estomac', intestins: 'les intestins' };
 const ZONE_SETS = { squelette: BONES, articulations: JOINTS, organes: ORGANS };
 
-/** « Touche le crâne. » sur le dessin. */
-function touchPart(view, id) {
+/** « Touche le crâne. » sur le dessin (ou une devinette : « Touche l'os de la cuisse. »). */
+function touchPart(view, id, riddle = null) {
   const parts = ZONE_SETS[view];
+  const text = riddle || `Touche ${parts[id].name}.`;
   return {
-    key: `corps:toucher:${view}:${id}`,
+    key: `corps:toucher:${view}:${id}${riddle ? `:${riddle}` : ''}`,
     interaction: 'body',
-    text: `Touche ${parts[id].name}.`,
-    instruction: `Touche ${parts[id].name}.`,
+    text,
+    instruction: text,
     stage: { type: 'body', view, label: VIEWS[view].label },
     choices: Object.entries(parts).map(([value, p]) => ({ value, label: p.name, name: p.name })),
     answer: id,
@@ -275,7 +276,22 @@ function digestionPath() {
 
 // ---------------------------------------------------------------- 1. Le squelette
 
+// L'os à trouver d'après ce qu'il fait ou d'après sa place.
+export const BONE_RIDDLES = [
+  { id: 'crane', text: 'Touche l’os qui protège le cerveau.' },
+  { id: 'crane', text: 'Touche les os de la tête.' },
+  { id: 'cotes', text: 'Touche les os qui protègent le cœur et les poumons.' },
+  { id: 'colonne', text: 'Touche les petits os empilés tout le long du dos.' },
+  { id: 'bassin', text: 'Touche l’os où les jambes sont attachées.' },
+  { id: 'femur', text: 'Touche l’os de la cuisse.' },
+  { id: 'femur', text: 'Touche l’os le plus long du corps.' },
+];
+
 function skeleton(rng) {
+  if (rng() < 0.55) {
+    const riddle = pick(rng, BONE_RIDDLES);
+    return touchPart('squelette', riddle.id, riddle.text);
+  }
   return touchPart('squelette', pick(rng, Object.keys(BONES)));
 }
 
@@ -325,6 +341,14 @@ export const NEED_CASES = [
   { emoji: '🍽️', text: 'C’est midi et ton ventre crie famine.', need: 'manger' },
   { emoji: '📺', text: 'Tu regardes un écran depuis très longtemps, sans bouger.', need: 'bouger' },
   { emoji: '🛋️', text: 'Ton corps ne bouge pas depuis des heures.', need: 'bouger' },
+  { emoji: '⚽', text: 'Après le match, tu as la gorge toute sèche.', need: 'eau' },
+  { emoji: '🚲', text: 'Tu as fait du vélo au soleil et tu as soif.', need: 'eau' },
+  { emoji: '🛏️', text: 'Tu as joué toute la journée et tu tombes de sommeil.', need: 'dormir' },
+  { emoji: '🌃', text: 'Le soir, tes yeux piquent et ta tête devient lourde.', need: 'dormir' },
+  { emoji: '🥣', text: 'Ce matin, tu n’as pas pris de petit-déjeuner et tu as faim.', need: 'manger' },
+  { emoji: '🍎', text: 'C’est l’heure du goûter et tu as faim.', need: 'manger' },
+  { emoji: '🪑', text: 'Depuis ce matin, tu n’as pas quitté ta chaise.', need: 'bouger' },
+  { emoji: '🌧️', text: 'Il pleut, et tout l’après-midi, tu restes sur le canapé.', need: 'bouger' },
 ];
 const NEED_ASK = 'De quoi ton corps a-t-il besoin ?';
 
@@ -352,8 +376,11 @@ export const AGES = [
 ];
 const AGES_SAID = 'Le bébé, l’enfant, l’adolescent, l’adulte, puis la personne âgée.';
 
+const ageChoice = (a) => ({ value: a.name, label: a.name, emoji: a.emoji, caption: a.name, scale: a.scale, name: a.name });
+
 function growingUp(rng) {
-  if (rng() < 0.6) {
+  const roll = rng();
+  if (roll < 0.5) {
     let order = shuffle(rng, AGES.map((_, i) => i));
     if (order.every((v, i) => v === i)) order = [...order.slice(1), order[0]]; // jamais déjà rangé
     const text = 'Range du plus jeune au plus âgé.';
@@ -370,6 +397,23 @@ function growingUp(rng) {
       success: { speak: AGES_SAID },
     };
   }
+  if (roll < 0.75) {
+    // le plus jeune ou le plus âgé de trois
+    const young = rng() < 0.5;
+    const three = sample(rng, AGES.map((_, i) => i), 3);
+    const answer = AGES[young ? Math.min(...three) : Math.max(...three)];
+    const text = young ? 'Qui est le plus jeune ?' : 'Qui est le plus âgé ?';
+    return {
+      key: `corps:age:${text}:${answer.name}`,
+      text,
+      instruction: text,
+      stage: { type: 'none' },
+      choices: three.map((i) => ageChoice(AGES[i])),
+      choiceStyle: 'steps',
+      answer: answer.name,
+      success: { speak: AGES_SAID },
+    };
+  }
   // juste avant ou juste après : une seule bonne réponse
   const after = rng() < 0.5;
   const i = after ? 1 + Math.floor(rng() * (AGES.length - 1)) : Math.floor(rng() * (AGES.length - 1));
@@ -382,7 +426,7 @@ function growingUp(rng) {
     text,
     instruction: text,
     stage: { type: 'none' },
-    choices: options.map((a) => ({ value: a.name, label: a.name, emoji: a.emoji, caption: a.name, scale: a.scale, name: a.name })),
+    choices: options.map(ageChoice),
     choiceStyle: 'steps',
     answer: answer.name,
     success: { speak: AGES_SAID },
@@ -401,6 +445,13 @@ export const BREATHING = [
   { emoji: '🎈', text: 'Quand tu inspires, ta poitrine…', options: ['se gonfle', 'se dégonfle'], answer: 'se gonfle', says: 'Quand on inspire, l’air entre et la poitrine se gonfle.' },
   { emoji: '🎂', text: 'Quand tu souffles, l’air…', options: ['entre', 'sort'], answer: 'sort', says: 'Quand on souffle, l’air sort des poumons.' },
   { emoji: '🏊', text: 'Sous l’eau, peux-tu respirer comme un poisson ?', options: ['oui', 'non'], answer: 'non', says: 'Non : nos poumons ont besoin d’air. Sous l’eau, on retient sa respiration.' },
+  { emoji: '🎈', text: 'Quand tu expires, ta poitrine…', options: ['se gonfle', 'se dégonfle'], answer: 'se dégonfle', says: 'Quand on expire, l’air sort et la poitrine se dégonfle.' },
+  { emoji: '🌹', text: 'Quand tu sens une fleur, l’air…', options: ['entre', 'sort'], answer: 'entre', says: 'Pour sentir une odeur, on inspire : l’air entre par le nez.' },
+  { emoji: '🎈', text: 'Quand tu gonfles un ballon, l’air vient…', options: ['de tes poumons', 'de ton estomac'], answer: 'de tes poumons', says: 'L’air que tu souffles dans le ballon sort de tes poumons.' },
+  { emoji: '🧒', text: 'Combien as-tu de poumons ?', options: ['un', 'deux'], answer: 'deux', says: 'On a deux poumons, à droite et à gauche du cœur.' },
+  { emoji: '🤧', text: 'Quand ton nez est bouché, tu respires…', answer: 'par la bouche', wrong: ['par les oreilles', 'par les yeux'], says: 'Quand le nez est bouché, l’air passe par la bouche.' },
+  { emoji: '🚭', text: 'La fumée de cigarette est mauvaise pour les poumons.', options: ['vrai', 'faux'], answer: 'vrai', says: 'C’est vrai : la fumée abîme les poumons, même celle qu’on respire à côté d’un fumeur.' },
+  { emoji: '🧒', text: 'Où se trouvent tes poumons ?', answer: 'dans la poitrine', wrong: ['dans la tête', 'dans les jambes'], says: 'Les poumons sont dans la poitrine, protégés par les côtes.' },
 ];
 
 /** Une question de la liste : deux réponses fixes, ou trois réponses mélangées. */
@@ -546,6 +597,13 @@ export const FOOD_PATH = [
   { text: 'Après l’œsophage, les aliments arrivent dans…', answer: 'estomac', says: 'L’estomac écrase et mélange les aliments.' },
   { text: 'Après l’estomac, les aliments passent dans…', answer: 'intestins', says: 'Dans les intestins, ce qui est bon dans les aliments passe dans le sang.' },
   { text: 'Le tuyau qui va de la bouche à l’estomac s’appelle…', answer: 'oesophage', says: 'L’œsophage est le tuyau qui descend jusqu’à l’estomac.' },
+  { text: 'La digestion commence dans…', answer: 'bouche', says: 'La digestion commence dans la bouche : les dents mâchent, la salive mouille les aliments.' },
+  { text: 'La salive mouille les aliments dans…', answer: 'bouche', says: 'Dans la bouche, la salive mouille les aliments pour les avaler plus facilement.' },
+  { text: 'Avant d’arriver dans l’estomac, les aliments passent dans…', answer: 'oesophage', says: 'L’œsophage est le tuyau qui descend jusqu’à l’estomac.' },
+  { text: 'La poche qui brasse les aliments s’appelle…', answer: 'estomac', says: 'L’estomac est une poche qui brasse et écrase les aliments.' },
+  { text: 'Un liquide très acide transforme les aliments dans…', answer: 'estomac', says: 'L’estomac fabrique un suc très acide qui transforme les aliments.' },
+  { text: 'Les longs tuyaux repliés dans le ventre s’appellent…', answer: 'intestins', says: 'Les intestins sont des tuyaux très longs, repliés dans le ventre.' },
+  { text: 'Ce qui est bon dans les aliments passe dans le sang depuis…', answer: 'intestins', says: 'Dans les intestins, ce qui est bon dans les aliments passe dans le sang.' },
 ];
 
 function foodPath(rng) {
@@ -735,6 +793,46 @@ export const CLUES = [
     emoji: '🍯', text: 'Dans le tronc d’un vieil arbre, il y a du miel.', ask: 'Qui l’a fabriqué ?', answer: { emoji: '🐝', name: 'des abeilles' },
     others: [{ emoji: '🐜', name: 'des fourmis' }, { emoji: '🐞', name: 'des coccinelles' }, { emoji: '🦋', name: 'des papillons' }],
     says: 'Les abeilles fabriquent le miel avec le nectar des fleurs.',
+  },
+  {
+    emoji: '🥕', text: 'Dans le potager, les carottes ont été grignotées.', ask: 'Qui les a mangées ?', answer: { emoji: '🐰', name: 'un lapin' },
+    others: [{ emoji: '🐟', name: 'un poisson' }, { emoji: '🐍', name: 'un serpent' }, { emoji: '🕷️', name: 'une araignée' }],
+    says: 'Le lapin grignote les carottes et les légumes.',
+  },
+  {
+    emoji: '🧀', text: 'Dans le placard, le fromage a été grignoté.', ask: 'Qui l’a mangé ?', answer: { emoji: '🐭', name: 'une souris' },
+    others: [{ emoji: '🐟', name: 'un poisson' }, { emoji: '🦋', name: 'un papillon' }, { emoji: '🐍', name: 'un serpent' }],
+    says: 'La souris ronge la nourriture avec ses petites dents.',
+  },
+  {
+    emoji: '🥬', text: 'Les feuilles du chou sont pleines de petits trous.', ask: 'Qui les a mangées ?', answer: { emoji: '🐛', name: 'une chenille' },
+    others: [{ emoji: '🐟', name: 'un poisson' }, { emoji: '🐱', name: 'un chat' }, { emoji: '🐍', name: 'un serpent' }],
+    says: 'La chenille mange les feuilles : elle y fait des trous.',
+  },
+  {
+    emoji: '🌿', text: 'Dans l’herbe, il y a une vieille peau vide, toute fine.', ask: 'Qui l’a laissée ?', answer: { emoji: '🐍', name: 'un serpent' },
+    others: [{ emoji: '🐱', name: 'un chat' }, { emoji: '🐦', name: 'un oiseau' }, { emoji: '🐶', name: 'un chien' }],
+    says: 'Le serpent grandit et change de peau : il laisse l’ancienne dans l’herbe.',
+  },
+  {
+    emoji: '🌳', text: 'L’écorce de l’arbre est grattée, assez haut sur le tronc.', ask: 'Quel animal a frotté ses bois contre l’arbre ?', answer: { emoji: '🦌', name: 'un cerf' },
+    others: [{ emoji: '🐌', name: 'un escargot' }, { emoji: '🐟', name: 'un poisson' }, { emoji: '🐞', name: 'une coccinelle' }],
+    says: 'Le cerf frotte ses bois contre les arbres.',
+  },
+  {
+    emoji: '🌲', text: 'Au pied du sapin, une pomme de pin est toute rongée.', ask: 'Qui l’a mangée ?', answer: { emoji: '🐿️', name: 'un écureuil' },
+    others: [{ emoji: '🐟', name: 'un poisson' }, { emoji: '🐌', name: 'un escargot' }, { emoji: '🦋', name: 'un papillon' }],
+    says: 'L’écureuil ronge les pommes de pin pour manger les graines.',
+  },
+  {
+    emoji: '🪵', text: 'Un trou bien rond est creusé dans le tronc d’un arbre.', ask: 'Qui l’a creusé avec son bec ?', answer: { emoji: '🐦', name: 'un pic' },
+    others: [{ emoji: '🐟', name: 'un poisson' }, { emoji: '🐌', name: 'un escargot' }, { emoji: '🐱', name: 'un chat' }],
+    says: 'Le pic est un oiseau : il creuse le bois avec son bec.',
+  },
+  {
+    emoji: '🦴', text: 'Sous un vieil arbre, il y a une petite boule de poils et de petits os.', ask: 'Qui l’a recrachée ?', answer: { emoji: '🦉', name: 'une chouette' },
+    others: [{ emoji: '🐟', name: 'un poisson' }, { emoji: '🐌', name: 'un escargot' }, { emoji: '🦋', name: 'un papillon' }],
+    says: 'La chouette avale les souris entières, puis elle recrache les poils et les os en petite boule.',
   },
 ];
 
