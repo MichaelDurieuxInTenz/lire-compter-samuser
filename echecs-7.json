@@ -1,0 +1,22 @@
+[
+ {
+  "key": "fr|1|et l'eau,",
+  "text": "et l'eau,",
+  "erreur": "meilleur essai : {'hauteur': 239, 'duree': 0.88, 'essai': \"et l'eau,\", 'entendu': 'hello', 'ressemblance': 0.31, 'phonemes_attendus': 'elo', 'phonemes_entendus': 'enu', 'fautes': [], 'ecart_phonemes': 0.67}"
+ },
+ {
+  "key": "fr|1|plus mille ?",
+  "text": "plus mille ?",
+  "erreur": "meilleur essai : {'hauteur': 287, 'duree': 0.96, 'essai': 'plus mille ?', 'entendu': 'humille', 'ressemblance': 0.71, 'phonemes_attendus': 'plymil', 'phonemes_entendus': 'pyniʁ', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|bâilles",
+  "text": "bâilles",
+  "erreur": "meilleur essai : {'hauteur': 264, 'duree': 0.88, 'essai': '« bâilles »', 'entendu': 'bye', 'ressemblance': 0.4, 'phonemes_attendus': 'baj', 'phonemes_entendus': 'ba', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|prenait",
+  "text": "prenait",
+  "erreur": "meilleur essai : {'hauteur': 232, 'duree': 0.88, 'essai': 'prenait.', 'entendu': 'prenez', 'ressemblance': 0.62, 'phonemes_attendus': 'pʁənɛ', 'phonemes_entendus': 'pʁone', 'fautes': [], 'ecart_phonemes': 0.2}"
+ }
+]

@@ -1,0 +1,12 @@
+[
+ {
+  "key": "fr|1|Au lit !",
+  "text": "Au lit !",
+  "erreur": "meilleur essai : {'hauteur': 235, 'duree': 0.53, 'essai': 'Écoute bien. Au lit.', 'entendu': 'oli', 'ressemblance': 0.44, 'phonemes_attendus': 'oli', 'phonemes_entendus': 'boli', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|qu'ont",
+  "text": "qu'ont",
+  "erreur": "meilleur essai : {'hauteur': 203, 'duree': 0.47, 'essai': \"Écoute bien. Qu'ont.\", 'entendu': 'con', 'ressemblance': 0.44, 'phonemes_attendus': 'kɔ̃', 'phonemes_entendus': 'kong5', 'fautes': [], 'ecart_phonemes': 0.0}"
+ }
+]
