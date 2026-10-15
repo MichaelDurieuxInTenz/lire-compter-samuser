@@ -190,6 +190,17 @@ async function piloteSafari(sim) {
   }
   const id = session.sessionId;
   await wd('POST', `/session/${id}/timeouts`, { script: 30000, pageLoad: 60000 }).catch(() => {});
+  // premier chargement de l'app : Safari, sur un simulateur tout juste démarré, dépasse parfois le
+  // délai (iPhone 17, iOS 26.2, exécution 10 ; les écrans suivants passaient) ; un second essai
+  for (let essai = 1; ; essai++) {
+    try {
+      await wd('POST', `/session/${id}/url`, { url: BASE });
+      break;
+    } catch (e) {
+      if (essai >= 2 || !/timeout/i.test(e.message)) throw e;
+      console.log(`premier chargement, essai ${essai} : ${e.message} ; second essai`);
+    }
+  }
   const evaluer = (fn, ...args) => wd('POST', `/session/${id}/execute/sync`, { script: `return (${fn}).apply(null, arguments);`, args });
   return {
     ouvrir: (url) => wd('POST', `/session/${id}/url`, { url }),
