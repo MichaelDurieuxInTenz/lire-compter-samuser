@@ -4,7 +4,7 @@ name: Simulateur iOS
 # dépôt public) et parcourt les écrans de scripts/ios.mjs, piloté par safaridriver (le WebDriver
 # d'Apple) : premier lancement, accueil, un jeu de chaque rubrique, jeux du CM, explication d'une
 # erreur, réglages des parents, fiche d'un enfant, puis « Vérifier l'affichage » de l'app (chaque niveau
-# de chaque jeu, toutes les classes) ; l'iPad aussi en paysage. iOS 18.5, 26.2 et 27. Les captures et le rapport (index.html,
+# de chaque jeu, toutes les classes) ; l'iPad aussi en paysage. Les captures et le rapport (index.html,
 # rapport.md) sont dans les artefacts « ios-… » ; le résumé s'affiche sur la page de l'exécution.
 # Se lance à la main (onglet Actions → Simulateur iOS → Run workflow) et quand ce test change.
 on:
@@ -44,21 +44,11 @@ jobs:
             xcode: '26.2'
             paysage: '1'
             dossier: ipad-mini
-          # iOS 27 (sorti en septembre 2026) : l'image « xcode-27 » de GitHub (macOS 27, Xcode 27.0) ;
-          # les simulateurs proposés changent avec Xcode : le premier présent, dans cet ordre
-          - nom: iPhone, iOS 27
-            mac: xcode-27
-            appareil: iPhone 17|iPhone 18|iPhone 18 Pro
-            version: '27'
-            xcode: '27.0'
-            dossier: iphone-ios27
-          - nom: iPad mini, iOS 27
-            mac: xcode-27
-            appareil: iPad mini (A17 Pro)|iPad mini*
-            version: '27'
-            xcode: '27.0'
-            paysage: '1'
-            dossier: ipad-mini-ios27
+          # iOS 27 : pas encore. Sur l'image « xcode-27 » de GitHub (macOS 27, Xcode 27.0, octobre 2026),
+          # les simulateurs iOS 27 démarrent (Device Hub ouvert), mais safaridriver (Safari 27.0.1) refuse
+          # toute session : « Could not find any session hosts that match the requested capabilities »
+          # (PR #39). À réessayer avec mac: xcode-27, version: '27', xcode: '27.0', et par exemple
+          # appareil: iPhone 17|iPhone 18 ou iPad mini (A17 Pro)|iPad mini*.
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0

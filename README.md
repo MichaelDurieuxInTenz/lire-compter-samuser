@@ -413,7 +413,8 @@ un simulateur iOS, parcourt une vingtaine d'écrans et enregistre des captures a
 (`ios-sortie/index.html`) : `IOS_APPAREIL="iPad mini (A17 Pro)" IOS_VERSION=26.2 IOS_PAYSAGE=1`
 pour choisir l'appareil. Sans Mac : le workflow « Simulateur iOS » (onglet Actions, « Run
 workflow ») le fait sur les Mac de GitHub, sur iPhone SE (iOS 18.5), iPhone 17 et iPad mini
-(iOS 26.2 et iOS 27) ; les captures sont dans les artefacts de l'exécution.
+(iOS 26.2) ; les captures sont dans les artefacts de l'exécution. iOS 27 n'y est pas encore :
+sur la machine Xcode 27 de GitHub, Safari ne se laisse pas piloter dans le simulateur (octobre 2026).
 
 | Fichier | Rôle |
 |---|---|
