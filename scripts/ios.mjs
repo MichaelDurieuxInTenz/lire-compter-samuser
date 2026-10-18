@@ -17,8 +17,9 @@
 // Safari, les barres du navigateur prennent de la place que l'app installée sur l'écran d'accueil n'a
 // pas à partager (c'est ce que mesure, en plein écran, npm run test:e2e).
 
-import { execFileSync, spawn } from 'node:child_process';
-import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { startServer } from './serve.mjs';
 import { addChild, defaultStore, storeSnapshot, STORAGE_KEY } from '../app/js/storage.js';
 import { findGame } from '../app/js/games/index.js';
@@ -115,24 +116,46 @@ function demarrer(sim) {
     }
   }
   simctl('bootstatus', sim.udid, '-b'); // attend que le système soit prêt
-  // l'application Simulator (fenêtre) : utile pour tourner l'appareil. Par son chemin dans le Xcode
-  // choisi : sur l'image xcode-27 de GitHub, « open -a Simulator » ne la trouvait pas (et safaridriver
-  // ne voyait pas le simulateur). Sans fenêtre, le test se fait quand même (en portrait).
+  ouvrirSimulator(sim);
+}
+
+/**
+ * L'application Simulator (fenêtre) : utile pour tourner l'appareil. Dans le Xcode choisi, sinon par
+ * son identifiant, son nom, ou cherchée sur le disque : sur l'image xcode-27 de GitHub, elle n'est ni
+ * dans Xcode_27.0.app/Contents/Developer/Applications, ni connue sous le nom « Simulator ». Sans
+ * fenêtre, le test se fait quand même (en portrait).
+ */
+function ouvrirSimulator(sim) {
   let xcode = '';
   try {
     xcode = execFileSync('xcode-select', ['-p'], { encoding: 'utf8' }).trim();
   } catch {
-    // pas de Xcode choisi : le nom seul
+    // pas de Xcode choisi
   }
-  for (const app of [xcode && `${xcode}/Applications/Simulator.app`, 'Simulator'].filter(Boolean)) {
+  const ouvrir = (cle, app) => {
     try {
-      execFileSync('open', ['-a', app, '--args', '-CurrentDeviceUDID', sim.udid], { stdio: 'pipe' });
+      execFileSync('open', [cle, app, '--args', '-CurrentDeviceUDID', sim.udid], { stdio: 'pipe', timeout: 30000 });
       console.log(`application Simulator ouverte : ${app}`);
-      return;
+      return true;
     } catch (e) {
-      console.log(`application Simulator (${app}) : ${String(e.stderr || e.message).trim()}`);
+      console.log(`application Simulator (${app}) : ${String(e.stderr || e.message).trim().split('\n')[0]}`);
+      return false;
     }
+  };
+  if (xcode && ouvrir('-a', `${xcode}/Applications/Simulator.app`)) return;
+  if (ouvrir('-b', 'com.apple.iphonesimulator') || ouvrir('-a', 'Simulator')) return;
+  const cherche = spawnSync('find', ['/Applications', '/Library/Developer', '-maxdepth', '7', '-name', 'Simulator.app', '-type', 'd', '-prune'], { encoding: 'utf8', timeout: 120000 });
+  // celle du Xcode choisi d'abord
+  let racine = '';
+  try {
+    racine = realpathSync(xcode).replace(/\/Contents\/Developer$/, '');
+  } catch {
+    // pas de Xcode choisi
   }
+  const trouvees = String(cherche.stdout || '').split('\n').filter(Boolean)
+    .sort((a, b) => Number(Boolean(racine) && b.startsWith(racine)) - Number(Boolean(racine) && a.startsWith(racine)));
+  console.log(`Simulator.app sur le disque : ${trouvees.join(', ') || 'aucune'}`);
+  for (const app of trouvees) if (ouvrir('-a', app)) return;
 }
 
 /**
@@ -188,7 +211,11 @@ async function piloteSafari(sim) {
   } catch (e) {
     console.log(`Safari ne s'ouvre pas d'avance : ${String(e.stderr || e.message).trim()}`);
   }
-  const driver = spawn('safaridriver', ['--port', new URL(WD).port], { stdio: 'inherit' });
+  // --diagnose : safaridriver écrit ce qu'il fait dans ~/Library/Logs/com.apple.WebDriver (lu si rien ne
+  // répond), quand il connaît l'option
+  const aide = spawnSync('safaridriver', ['--help'], { encoding: 'utf8', timeout: 15000 });
+  const diagnostic = /--diagnose/.test(`${aide.stdout}${aide.stderr}`) ? ['--diagnose'] : [];
+  const driver = spawn('safaridriver', ['--port', new URL(WD).port, ...diagnostic], { stdio: 'inherit' });
   for (let i = 0; i < 40; i++) {
     if (await fetch(`${WD}/status`).then((r) => r.ok, () => false)) break;
     await pause(250);
@@ -357,6 +384,12 @@ async function main() {
       } catch (err) {
         console.log(`${nom} : ${String(err.stderr || err.message).trim()}`);
       }
+    }
+    // le journal de safaridriver (--diagnose) : la fin du plus récent
+    const journaux = `${homedir()}/Library/Logs/com.apple.WebDriver`;
+    if (existsSync(journaux)) {
+      const dernier = readdirSync(journaux).map((f) => `${journaux}/${f}`).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
+      if (dernier) console.log(`journal de safaridriver (${dernier}) :\n${readFileSync(dernier, 'utf8').split('\n').slice(-80).join('\n')}`);
     }
     try {
       simctl('io', sim.udid, 'screenshot', '--type=png', `${SORTIE}/appareil-sans-session.png`);
