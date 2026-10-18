@@ -115,11 +115,23 @@ function demarrer(sim) {
     }
   }
   simctl('bootstatus', sim.udid, '-b'); // attend que le système soit prêt
-  // l'application Simulator (fenêtre) : utile pour tourner l'appareil
+  // l'application Simulator (fenêtre) : utile pour tourner l'appareil. Par son chemin dans le Xcode
+  // choisi : sur l'image xcode-27 de GitHub, « open -a Simulator » ne la trouvait pas (et safaridriver
+  // ne voyait pas le simulateur). Sans fenêtre, le test se fait quand même (en portrait).
+  let xcode = '';
   try {
-    execFileSync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', sim.udid]);
+    xcode = execFileSync('xcode-select', ['-p'], { encoding: 'utf8' }).trim();
   } catch {
-    // sans fenêtre, le test se fait quand même (en portrait)
+    // pas de Xcode choisi : le nom seul
+  }
+  for (const app of [xcode && `${xcode}/Applications/Simulator.app`, 'Simulator'].filter(Boolean)) {
+    try {
+      execFileSync('open', ['-a', app, '--args', '-CurrentDeviceUDID', sim.udid], { stdio: 'pipe' });
+      console.log(`application Simulator ouverte : ${app}`);
+      return;
+    } catch (e) {
+      console.log(`application Simulator (${app}) : ${String(e.stderr || e.message).trim()}`);
+    }
   }
 }
 
@@ -182,7 +194,8 @@ async function piloteSafari(sim) {
     await pause(250);
   }
   // le simulateur désigné par son identifiant, sinon par son nom ; Safari met parfois du temps à
-  // accepter la première session après le démarrage du simulateur
+  // accepter la première session après le démarrage du simulateur (plusieurs minutes au premier
+  // démarrage d'iOS 27) : 3 minutes au plus, Safari rouvert tous les 3 essais
   const variantes = [
     { browserName: 'safari', platformName: 'iOS', 'safari:useSimulator': true, 'safari:deviceUDID': sim.udid },
     { browserName: 'safari', platformName: 'ios', 'safari:useSimulator': true, 'safari:deviceName': sim.nom },
@@ -193,7 +206,14 @@ async function piloteSafari(sim) {
       session = await wd('POST', '/session', { capabilities: { alwaysMatch: variantes[essai % variantes.length] } });
     } catch (e) {
       console.log(`session Safari, essai ${essai + 1} : ${e.message}`);
-      if (essai >= 5) throw e;
+      if (essai >= 17) throw e;
+      if (essai % 3 === 2) {
+        try {
+          simctl('launch', sim.udid, 'com.apple.mobilesafari');
+        } catch {
+          // Safari est peut-être déjà au premier plan
+        }
+      }
       await pause(10000);
     }
   }
@@ -330,6 +350,14 @@ async function main() {
     pilote = PILOTE === 'safari' ? await piloteSafari(sim) : await pilotePlaywright();
   } catch (e) {
     console.log(`✘ Safari ne répond pas : ${e.message}`);
+    // de quoi comprendre, dans le journal : les simulateurs démarrés, la version de safaridriver
+    for (const [nom, commande, args] of [['simulateurs démarrés', 'xcrun', ['simctl', 'list', 'devices', 'booted']], ['safaridriver', 'safaridriver', ['--version']]]) {
+      try {
+        console.log(`${nom} : ${execFileSync(commande, args, { encoding: 'utf8', stdio: 'pipe', timeout: 15000 }).trim()}`);
+      } catch (err) {
+        console.log(`${nom} : ${String(err.stderr || err.message).trim()}`);
+      }
+    }
     try {
       simctl('io', sim.udid, 'screenshot', '--type=png', `${SORTIE}/appareil-sans-session.png`);
     } catch {
