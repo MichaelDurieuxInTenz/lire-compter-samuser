@@ -7,6 +7,8 @@
 // Usage, sur un Mac avec Xcode (une fois : sudo safaridriver --enable) :
 //   IOS_APPAREIL="iPhone SE (3rd generation)" npm run test:ios
 //   IOS_APPAREIL="iPad mini (A17 Pro)" IOS_VERSION=26.2 IOS_PAYSAGE=1 npm run test:ios
+//   IOS_APPAREIL="iPhone 17|iPhone 18" IOS_VERSION=27 npm run test:ios   (le premier présent ; « iPad mini* » :
+//   tout appareil dont le nom commence ainsi)
 // Dans la CI : workflow « Simulateur iOS » (.github/workflows/ios.yml), captures dans les artefacts.
 // Pour mettre au point le parcours sans Mac : PILOTE=playwright npm run test:ios (Chromium à la
 // taille de l'appareil : ce n'est pas Safari, seulement le même parcours).
@@ -15,14 +17,18 @@
 // Safari, les barres du navigateur prennent de la place que l'app installée sur l'écran d'accueil n'a
 // pas à partager (c'est ce que mesure, en plein écran, npm run test:e2e).
 
-import { execFileSync, spawn } from 'node:child_process';
-import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { startServer } from './serve.mjs';
 import { addChild, defaultStore, storeSnapshot, STORAGE_KEY } from '../app/js/storage.js';
 import { findGame } from '../app/js/games/index.js';
 import { PROGRAMS } from '../app/js/programs.js';
 
-const APPAREIL = process.env.IOS_APPAREIL || 'iPhone SE (3rd generation)';
+// un nom, ou plusieurs séparés par « | » dans l'ordre de préférence : les appareils proposés changent d'une
+// version de Xcode à l'autre
+const APPAREILS = (process.env.IOS_APPAREIL || 'iPhone SE (3rd generation)').split('|').map((n) => n.trim()).filter(Boolean);
+const APPAREIL = APPAREILS[0];
 const VERSION = process.env.IOS_VERSION || ''; // « 18 », « 26.2 »… ; sinon la plus récente
 const PAYSAGE = Boolean(process.env.IOS_PAYSAGE);
 const PILOTE = process.env.PILOTE || 'safari';
@@ -87,12 +93,16 @@ function trouverSimulateur() {
     if (!m) continue;
     const version = `${m[1]}.${m[2]}`;
     if (VERSION && version !== VERSION && !version.startsWith(`${VERSION}.`)) continue;
-    for (const d of liste) if (d.name === APPAREIL) trouves.push({ udid: d.udid, nom: d.name, version, etat: d.state });
+    for (const d of liste) {
+      const rang = APPAREILS.findIndex((n) => (n.endsWith('*') ? d.name.startsWith(n.slice(0, -1)) : d.name === n));
+      if (rang >= 0) trouves.push({ udid: d.udid, nom: d.name, version, etat: d.state, rang });
+    }
   }
-  trouves.sort((a, b) => compare(b.version, a.version));
+  // l'appareil préféré, puis le système le plus récent
+  trouves.sort((a, b) => a.rang - b.rang || compare(b.version, a.version));
   if (!trouves.length) {
     const noms = Object.values(devices).flat().map((d) => d.name);
-    throw new Error(`simulateur « ${APPAREIL} »${VERSION ? ` (iOS ${VERSION})` : ''} introuvable ; disponibles : ${[...new Set(noms)].join(', ')}`);
+    throw new Error(`simulateur « ${APPAREILS.join(' » ou « ')} »${VERSION ? ` (iOS ${VERSION})` : ''} introuvable ; disponibles : ${[...new Set(noms)].join(', ')}`);
   }
   return trouves[0];
 }
@@ -106,21 +116,58 @@ function demarrer(sim) {
     }
   }
   simctl('bootstatus', sim.udid, '-b'); // attend que le système soit prêt
-  // l'application Simulator (fenêtre) : utile pour tourner l'appareil
+  ouvrirSimulator(sim);
+}
+
+// l'application qui affiche les simulateurs : Simulator jusqu'à Xcode 26, Device Hub depuis Xcode 27
+let appli = { nom: 'Simulator', id: 'com.apple.iphonesimulator' };
+
+/**
+ * L'application Simulator (fenêtre) : utile pour tourner l'appareil. Xcode 27 l'a remplacée par
+ * Device Hub (Xcode.app/Contents/Applications/DeviceHub.app) : sur l'image xcode-27 de GitHub, il n'y a
+ * plus de Simulator.app, et safaridriver ne voyait pas le simulateur. Dans le Xcode choisi, sinon par
+ * l'identifiant ou le nom. Sans fenêtre, le test se fait quand même (en portrait).
+ */
+function ouvrirSimulator(sim) {
+  let xcode = '';
   try {
-    execFileSync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', sim.udid]);
+    xcode = execFileSync('xcode-select', ['-p'], { encoding: 'utf8' }).trim();
   } catch {
-    // sans fenêtre, le test se fait quand même (en portrait)
+    // pas de Xcode choisi
+  }
+  const xcodeApp = xcode.replace(/\/Contents\/Developer$/, '');
+  const simulator = { nom: 'Simulator', id: 'com.apple.iphonesimulator' };
+  const deviceHub = { nom: 'Device Hub', id: 'com.apple.dt.Devices' };
+  const essais = [
+    xcode && ['-a', `${xcode}/Applications/Simulator.app`, simulator],
+    xcode && ['-a', `${xcodeApp}/Contents/Applications/DeviceHub.app`, deviceHub],
+    ['-b', simulator.id, simulator],
+    ['-b', deviceHub.id, deviceHub],
+    ['-a', 'Simulator', simulator],
+  ].filter(Boolean);
+  for (const [cle, app, quelle] of essais) {
+    try {
+      execFileSync('open', [cle, app, '--args', '-CurrentDeviceUDID', sim.udid], { stdio: 'pipe', timeout: 30000 });
+      console.log(`application ${quelle.nom} ouverte : ${app}`);
+      appli = quelle;
+      return;
+    } catch (e) {
+      console.log(`application ${quelle.nom} (${app}) : ${String(e.stderr || e.message).trim().split('\n')[0]}`);
+    }
   }
 }
 
 /**
- * Tourne l'appareil : menu « Device → Rotate Right » de Simulator (« Hardware » sur les anciens
+ * Tourne l'appareil : menu « Device → Rotate Right » de Simulator ou Device Hub (« Hardware » sur les anciens
  * Xcode), sinon Cmd + flèche droite. Après chaque essai, on attend que Safari soit en paysage.
  * Renvoie vrai si l'appareil a tourné.
  */
 async function tourner(pilote) {
-  const menu = (barre) => `tell application "System Events" to tell process "Simulator" to click menu item "Rotate Right" of menu 1 of menu bar item "${barre}" of menu bar 1`;
+  // Simulator comme avant ; Device Hub par son identifiant (le nom de son processus n'est pas sûr)
+  const simulator = appli.nom === 'Simulator';
+  const processus = simulator ? 'process "Simulator"' : `(first process whose bundle identifier is "${appli.id}")`;
+  const activer = simulator ? 'tell application "Simulator" to activate' : `tell application id "${appli.id}" to activate`;
+  const menu = (barre) => `tell application "System Events" to tell ${processus} to click menu item "Rotate Right" of menu 1 of menu bar item "${barre}" of menu bar 1`;
   const essais = [
     ['menu Device', menu('Device')],
     ['menu Hardware', menu('Hardware')],
@@ -128,7 +175,7 @@ async function tourner(pilote) {
   ];
   for (const [nom, script] of essais) {
     try {
-      execFileSync('osascript', ['-e', 'tell application "Simulator" to activate', '-e', 'delay 1', '-e', script], { stdio: 'pipe' });
+      execFileSync('osascript', ['-e', activer, '-e', 'delay 1', '-e', script], { stdio: 'pipe' });
     } catch (e) {
       console.log(`rotation (${nom}) : ${String(e.stderr || e.message).trim()}`);
       continue;
@@ -167,13 +214,18 @@ async function piloteSafari(sim) {
   } catch (e) {
     console.log(`Safari ne s'ouvre pas d'avance : ${String(e.stderr || e.message).trim()}`);
   }
-  const driver = spawn('safaridriver', ['--port', new URL(WD).port], { stdio: 'inherit' });
+  // --diagnose : safaridriver écrit ce qu'il fait dans ~/Library/Logs/com.apple.WebDriver (lu si rien ne
+  // répond), quand il connaît l'option
+  const aide = spawnSync('safaridriver', ['--help'], { encoding: 'utf8', timeout: 15000 });
+  const diagnostic = /--diagnose/.test(`${aide.stdout}${aide.stderr}`) ? ['--diagnose'] : [];
+  const driver = spawn('safaridriver', ['--port', new URL(WD).port, ...diagnostic], { stdio: 'inherit' });
   for (let i = 0; i < 40; i++) {
     if (await fetch(`${WD}/status`).then((r) => r.ok, () => false)) break;
     await pause(250);
   }
   // le simulateur désigné par son identifiant, sinon par son nom ; Safari met parfois du temps à
-  // accepter la première session après le démarrage du simulateur
+  // accepter la première session après le démarrage du simulateur (plusieurs minutes au premier
+  // démarrage d'iOS 27) : 3 minutes au plus, Safari rouvert tous les 3 essais
   const variantes = [
     { browserName: 'safari', platformName: 'iOS', 'safari:useSimulator': true, 'safari:deviceUDID': sim.udid },
     { browserName: 'safari', platformName: 'ios', 'safari:useSimulator': true, 'safari:deviceName': sim.nom },
@@ -184,7 +236,14 @@ async function piloteSafari(sim) {
       session = await wd('POST', '/session', { capabilities: { alwaysMatch: variantes[essai % variantes.length] } });
     } catch (e) {
       console.log(`session Safari, essai ${essai + 1} : ${e.message}`);
-      if (essai >= 5) throw e;
+      if (essai >= 17) throw e;
+      if (essai % 3 === 2) {
+        try {
+          simctl('launch', sim.udid, 'com.apple.mobilesafari');
+        } catch {
+          // Safari est peut-être déjà au premier plan
+        }
+      }
       await pause(10000);
     }
   }
@@ -321,6 +380,20 @@ async function main() {
     pilote = PILOTE === 'safari' ? await piloteSafari(sim) : await pilotePlaywright();
   } catch (e) {
     console.log(`✘ Safari ne répond pas : ${e.message}`);
+    // de quoi comprendre, dans le journal : les simulateurs démarrés, la version de safaridriver
+    for (const [nom, commande, args] of [['simulateurs démarrés', 'xcrun', ['simctl', 'list', 'devices', 'booted']], ['safaridriver', 'safaridriver', ['--version']]]) {
+      try {
+        console.log(`${nom} : ${execFileSync(commande, args, { encoding: 'utf8', stdio: 'pipe', timeout: 15000 }).trim()}`);
+      } catch (err) {
+        console.log(`${nom} : ${String(err.stderr || err.message).trim()}`);
+      }
+    }
+    // le journal de safaridriver (--diagnose) : la fin du plus récent
+    const journaux = `${homedir()}/Library/Logs/com.apple.WebDriver`;
+    if (existsSync(journaux)) {
+      const dernier = readdirSync(journaux).map((f) => `${journaux}/${f}`).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
+      if (dernier) console.log(`journal de safaridriver (${dernier}) :\n${readFileSync(dernier, 'utf8').split('\n').slice(-80).join('\n')}`);
+    }
     try {
       simctl('io', sim.udid, 'screenshot', '--type=png', `${SORTIE}/appareil-sans-session.png`);
     } catch {
