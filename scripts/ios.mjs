@@ -7,6 +7,8 @@
 // Usage, sur un Mac avec Xcode (une fois : sudo safaridriver --enable) :
 //   IOS_APPAREIL="iPhone SE (3rd generation)" npm run test:ios
 //   IOS_APPAREIL="iPad mini (A17 Pro)" IOS_VERSION=26.2 IOS_PAYSAGE=1 npm run test:ios
+//   IOS_APPAREIL="iPhone 17|iPhone 18" IOS_VERSION=27 npm run test:ios   (le premier présent ; « iPad mini* » :
+//   tout appareil dont le nom commence ainsi)
 // Dans la CI : workflow « Simulateur iOS » (.github/workflows/ios.yml), captures dans les artefacts.
 // Pour mettre au point le parcours sans Mac : PILOTE=playwright npm run test:ios (Chromium à la
 // taille de l'appareil : ce n'est pas Safari, seulement le même parcours).
@@ -22,7 +24,10 @@ import { addChild, defaultStore, storeSnapshot, STORAGE_KEY } from '../app/js/st
 import { findGame } from '../app/js/games/index.js';
 import { PROGRAMS } from '../app/js/programs.js';
 
-const APPAREIL = process.env.IOS_APPAREIL || 'iPhone SE (3rd generation)';
+// un nom, ou plusieurs séparés par « | » dans l'ordre de préférence : les appareils proposés changent d'une
+// version de Xcode à l'autre
+const APPAREILS = (process.env.IOS_APPAREIL || 'iPhone SE (3rd generation)').split('|').map((n) => n.trim()).filter(Boolean);
+const APPAREIL = APPAREILS[0];
 const VERSION = process.env.IOS_VERSION || ''; // « 18 », « 26.2 »… ; sinon la plus récente
 const PAYSAGE = Boolean(process.env.IOS_PAYSAGE);
 const PILOTE = process.env.PILOTE || 'safari';
@@ -87,12 +92,16 @@ function trouverSimulateur() {
     if (!m) continue;
     const version = `${m[1]}.${m[2]}`;
     if (VERSION && version !== VERSION && !version.startsWith(`${VERSION}.`)) continue;
-    for (const d of liste) if (d.name === APPAREIL) trouves.push({ udid: d.udid, nom: d.name, version, etat: d.state });
+    for (const d of liste) {
+      const rang = APPAREILS.findIndex((n) => (n.endsWith('*') ? d.name.startsWith(n.slice(0, -1)) : d.name === n));
+      if (rang >= 0) trouves.push({ udid: d.udid, nom: d.name, version, etat: d.state, rang });
+    }
   }
-  trouves.sort((a, b) => compare(b.version, a.version));
+  // l'appareil préféré, puis le système le plus récent
+  trouves.sort((a, b) => a.rang - b.rang || compare(b.version, a.version));
   if (!trouves.length) {
     const noms = Object.values(devices).flat().map((d) => d.name);
-    throw new Error(`simulateur « ${APPAREIL} »${VERSION ? ` (iOS ${VERSION})` : ''} introuvable ; disponibles : ${[...new Set(noms)].join(', ')}`);
+    throw new Error(`simulateur « ${APPAREILS.join(' » ou « ')} »${VERSION ? ` (iOS ${VERSION})` : ''} introuvable ; disponibles : ${[...new Set(noms)].join(', ')}`);
   }
   return trouves[0];
 }
