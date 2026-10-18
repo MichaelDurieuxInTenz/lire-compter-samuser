@@ -18,7 +18,7 @@
 // pas à partager (c'est ce que mesure, en plein écran, npm run test:e2e).
 
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { startServer } from './serve.mjs';
 import { addChild, defaultStore, storeSnapshot, STORAGE_KEY } from '../app/js/storage.js';
@@ -119,11 +119,14 @@ function demarrer(sim) {
   ouvrirSimulator(sim);
 }
 
+// l'application qui affiche les simulateurs : Simulator jusqu'à Xcode 26, Device Hub depuis Xcode 27
+let appli = { nom: 'Simulator', id: 'com.apple.iphonesimulator' };
+
 /**
- * L'application Simulator (fenêtre) : utile pour tourner l'appareil. Dans le Xcode choisi, sinon par
- * son identifiant, son nom, ou cherchée sur le disque : sur l'image xcode-27 de GitHub, elle n'est ni
- * dans Xcode_27.0.app/Contents/Developer/Applications, ni connue sous le nom « Simulator ». Sans
- * fenêtre, le test se fait quand même (en portrait).
+ * L'application Simulator (fenêtre) : utile pour tourner l'appareil. Xcode 27 l'a remplacée par
+ * Device Hub (Xcode.app/Contents/Applications/DeviceHub.app) : sur l'image xcode-27 de GitHub, il n'y a
+ * plus de Simulator.app, et safaridriver ne voyait pas le simulateur. Dans le Xcode choisi, sinon par
+ * l'identifiant ou le nom. Sans fenêtre, le test se fait quand même (en portrait).
  */
 function ouvrirSimulator(sim) {
   let xcode = '';
@@ -132,39 +135,39 @@ function ouvrirSimulator(sim) {
   } catch {
     // pas de Xcode choisi
   }
-  const ouvrir = (cle, app) => {
+  const xcodeApp = xcode.replace(/\/Contents\/Developer$/, '');
+  const simulator = { nom: 'Simulator', id: 'com.apple.iphonesimulator' };
+  const deviceHub = { nom: 'Device Hub', id: 'com.apple.dt.Devices' };
+  const essais = [
+    xcode && ['-a', `${xcode}/Applications/Simulator.app`, simulator],
+    xcode && ['-a', `${xcodeApp}/Contents/Applications/DeviceHub.app`, deviceHub],
+    ['-b', simulator.id, simulator],
+    ['-b', deviceHub.id, deviceHub],
+    ['-a', 'Simulator', simulator],
+  ].filter(Boolean);
+  for (const [cle, app, quelle] of essais) {
     try {
       execFileSync('open', [cle, app, '--args', '-CurrentDeviceUDID', sim.udid], { stdio: 'pipe', timeout: 30000 });
-      console.log(`application Simulator ouverte : ${app}`);
-      return true;
+      console.log(`application ${quelle.nom} ouverte : ${app}`);
+      appli = quelle;
+      return;
     } catch (e) {
-      console.log(`application Simulator (${app}) : ${String(e.stderr || e.message).trim().split('\n')[0]}`);
-      return false;
+      console.log(`application ${quelle.nom} (${app}) : ${String(e.stderr || e.message).trim().split('\n')[0]}`);
     }
-  };
-  if (xcode && ouvrir('-a', `${xcode}/Applications/Simulator.app`)) return;
-  if (ouvrir('-b', 'com.apple.iphonesimulator') || ouvrir('-a', 'Simulator')) return;
-  const cherche = spawnSync('find', ['/Applications', '/Library/Developer', '-maxdepth', '7', '-name', 'Simulator.app', '-type', 'd', '-prune'], { encoding: 'utf8', timeout: 120000 });
-  // celle du Xcode choisi d'abord
-  let racine = '';
-  try {
-    racine = realpathSync(xcode).replace(/\/Contents\/Developer$/, '');
-  } catch {
-    // pas de Xcode choisi
   }
-  const trouvees = String(cherche.stdout || '').split('\n').filter(Boolean)
-    .sort((a, b) => Number(Boolean(racine) && b.startsWith(racine)) - Number(Boolean(racine) && a.startsWith(racine)));
-  console.log(`Simulator.app sur le disque : ${trouvees.join(', ') || 'aucune'}`);
-  for (const app of trouvees) if (ouvrir('-a', app)) return;
 }
 
 /**
- * Tourne l'appareil : menu « Device → Rotate Right » de Simulator (« Hardware » sur les anciens
+ * Tourne l'appareil : menu « Device → Rotate Right » de Simulator ou Device Hub (« Hardware » sur les anciens
  * Xcode), sinon Cmd + flèche droite. Après chaque essai, on attend que Safari soit en paysage.
  * Renvoie vrai si l'appareil a tourné.
  */
 async function tourner(pilote) {
-  const menu = (barre) => `tell application "System Events" to tell process "Simulator" to click menu item "Rotate Right" of menu 1 of menu bar item "${barre}" of menu bar 1`;
+  // Simulator comme avant ; Device Hub par son identifiant (le nom de son processus n'est pas sûr)
+  const simulator = appli.nom === 'Simulator';
+  const processus = simulator ? 'process "Simulator"' : `(first process whose bundle identifier is "${appli.id}")`;
+  const activer = simulator ? 'tell application "Simulator" to activate' : `tell application id "${appli.id}" to activate`;
+  const menu = (barre) => `tell application "System Events" to tell ${processus} to click menu item "Rotate Right" of menu 1 of menu bar item "${barre}" of menu bar 1`;
   const essais = [
     ['menu Device', menu('Device')],
     ['menu Hardware', menu('Hardware')],
@@ -172,7 +175,7 @@ async function tourner(pilote) {
   ];
   for (const [nom, script] of essais) {
     try {
-      execFileSync('osascript', ['-e', 'tell application "Simulator" to activate', '-e', 'delay 1', '-e', script], { stdio: 'pipe' });
+      execFileSync('osascript', ['-e', activer, '-e', 'delay 1', '-e', script], { stdio: 'pipe' });
     } catch (e) {
       console.log(`rotation (${nom}) : ${String(e.stderr || e.message).trim()}`);
       continue;
