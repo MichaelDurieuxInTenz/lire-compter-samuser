@@ -1,0 +1,12 @@
+[
+ {
+  "key": "fr|1|Au lit !",
+  "text": "Au lit !",
+  "erreur": "meilleur essai : {'hauteur': 291, 'duree': 0.56, 'essai': 'Écoute bien. Au lit.', 'entendu': 'poly', 'ressemblance': 0.2, 'phonemes_attendus': 'oli', 'phonemes_entendus': 'boli', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|bâilles",
+  "text": "bâilles",
+  "erreur": "meilleur essai : {'hauteur': 247, 'duree': 0.88, 'essai': 'bâilles', 'entendu': 'bye', 'ressemblance': 0.4, 'phonemes_attendus': 'baj', 'phonemes_entendus': 'ba', 'fautes': [], 'ecart_phonemes': 0.33}"
+ }
+]
