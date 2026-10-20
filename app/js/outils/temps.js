@@ -413,7 +413,9 @@ export const monnaie = {
       const t = etat().total;
       total.hidden = voir.getAttribute('aria-pressed') !== 'true';
       total.textContent = montantEcrit(t);
-      plein.textContent = poses.length >= MAX_POSES ? 'Le porte-monnaie est plein.' : '';
+      const estPlein = poses.length >= MAX_POSES;
+      plein.textContent = estPlein ? 'Le porte-monnaie est plein.' : '';
+      for (const b of banque.querySelectorAll('button')) b.setAttribute('aria-disabled', String(estPlein));
     }
     function ajouter(v) {
       if (poses.length >= MAX_POSES) return dessiner();

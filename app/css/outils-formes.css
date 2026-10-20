@@ -17,7 +17,7 @@
   .outil-geoplan, .outil-blocs-formes { container-type: size; flex-direction: row; justify-content: center; }
   .geo-commandes, .bf-commandes { flex-direction: column; flex-wrap: nowrap; align-items: stretch; align-self: center; }
   .geo-zone { max-width: 100cqh; }
-  .bf-zone { max-width: calc(100cqh * 8 / 5); }
+  .bf-zone { max-width: calc(100cqh * 8 / 4); }
 }
 
 /* ---------- le géoplan : des clous (boutons) sur une planche en bois, les élastiques dessous ---------- */
@@ -54,13 +54,13 @@
 .bf-choix:active { transform: translateY(2px); }
 .bf-choix[aria-pressed='true'] { background: var(--accent); color: #fff; box-shadow: 0 3px 0 var(--accent-dark); }
 .bf-dessin {
-  display: flex; align-items: center; justify-content: center; height: calc(var(--pu) * 1.75); font-size: 1.4rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center; height: calc(var(--pu) * 1.75); font-size: calc(var(--pu) * 1.5); line-height: 1;
 }
 .bf-dessin svg { width: calc(var(--pu) * var(--w)); height: calc(var(--pu) * var(--h)); display: block; overflow: visible; }
 .bf-nom { font-size: min(0.8rem, 3.3vw); font-weight: 700; line-height: 1.1; max-width: 100%; }
 @media (max-width: 440px) {
   .bf-palette { --pu: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
-  .bf-choix { flex-direction: row; min-height: 48px; gap: 6px; }
+  .bf-choix { flex-direction: row; min-height: 44px; gap: 5px; }
   .bf-nom { font-size: min(0.85rem, 3.9vw); }
 }
 

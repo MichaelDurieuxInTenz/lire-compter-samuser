@@ -384,10 +384,10 @@ const BLOCS = {
     points: [[0, 0], [1, 0], [1, 1], [0, 1]] },
 };
 const SORTES = Object.keys(BLOCS);
-// La planche a 8 côtés de bloc de large, et au moins 5 de haut : elle prend toute la hauteur de sa
-// zone (plus haute en portrait) ; sa hauteur se mesure donc à chaque toucher.
+// La planche a 8 côtés de bloc de large, et au moins 4 de haut (les blocs restent assez grands sur un
+// petit écran) : elle prend toute la hauteur de sa zone ; sa hauteur se mesure donc à chaque toucher.
 const LARGEUR = 8;
-const MIN_HAUTEUR = 5;
+const MIN_HAUTEUR = 4;
 
 const taille = (sorte) => [Math.max(...BLOCS[sorte].points.map((p) => p[0])), Math.max(...BLOCS[sorte].points.map((p) => p[1]))];
 const majuscule = (texte) => texte[0].toUpperCase() + texte.slice(1);

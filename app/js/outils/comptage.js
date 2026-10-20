@@ -327,7 +327,7 @@ const INDICES_CENT = {
   avant: 'Pas encore. Le nombre qui vient juste avant, c’est 1 de moins.',
   plus: 'Pas encore. 10 de plus, c’est 1 dizaine de plus.',
   moins: 'Pas encore. 10 de moins, c’est 1 dizaine de moins.',
-  dizaines: 'Pas encore. Le chiffre des dizaines s’écrit à gauche, celui des unités à droite.',
+  dizaines: 'Pas encore. Les dizaines sont à gauche, les unités à droite.',
   compte: 'Pas encore. Compte à partir du nombre de la consigne.',
   trop: 'Pas encore. Certains nombres coloriés ne vont pas.',
   manque: 'Pas encore. Il manque des nombres.',

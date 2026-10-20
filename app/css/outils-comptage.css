@@ -79,6 +79,11 @@
 .cent-jaune::after { inset: 10%; border: 2px dotted #7a5c00; border-radius: 50%; }
 .cent-bleu::after { inset: 1px; border: 3px solid #0b4a8f; border-radius: 3px; }
 .cent-pastille { position: relative; display: inline-block; width: 1.5em; height: 1.5em; border-radius: 4px; flex: none; }
+/* petits téléphones en portrait (défi, texte agrandi) : quelques pixels de plus pour les cases */
+@media (orientation: portrait) and (max-height: 760px) {
+  .outil-tableau-cent .cent-corps { gap: 4px; }
+  .cent-commandes .outil-btn { min-height: 44px; }
+}
 
 /* ---------- les dés et la roue ---------- */
 .outil-des { container: des / size; }

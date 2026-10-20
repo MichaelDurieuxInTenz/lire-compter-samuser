@@ -387,6 +387,8 @@ export const baseDix = {
 
 // ================================================================ La droite numérique
 
+// la marge de la droite numérique à chaque bout (px), pour les nombres et la grenouille du bord
+const MARGE_DROITE = 14;
 const QUARTS = ['zéro', 'un quart', 'deux quarts', 'trois quarts', 'quatre quarts', 'cinq quarts', 'six quarts', 'sept quarts', 'huit quarts'];
 /** 7 → « 0,7 » ; 10 → « 1 » ; 13 → « 1,3 » (dixièmes). */
 const dixiemes = (i) => (i % 10 ? `${Math.floor(i / 10)},${i % 10}` : String(i / 10));
@@ -514,12 +516,17 @@ export const droiteNumerique = {
     const commandes = h('div', { class: 'outil-commandes droite-commandes' }, boutonsModes, avant, bonds, apres,
       h('button', { class: 'outil-btn', 'data-vider': '', onclick: () => vider() }, '🧽 Vider'));
 
-    /** Combien d'intervalles montrer : toute la droite si les graduations restent assez larges (28 px). */
+    /**
+     * Combien d'intervalles montrer : toute la droite si les graduations restent assez larges (28 px).
+     * La droite laisse 14 px de chaque côté, pour les nombres et la grenouille des deux bouts.
+     */
     function morceau() {
       const options = [lg.total, 20, 10].filter((c) => c <= lg.total);
-      return options.find((c) => largeur / (c + 1) >= 28) || options.at(-1);
+      return options.find((c) => (largeur - 2 * MARGE_DROITE) / (c + 1) >= 28) || options.at(-1);
     }
+    // la place de la graduation i, de 0 (bord gauche) à 100 (bord droit), et la même en CSS
     const x = (i) => ((i - debut + 0.5) / (k + 1)) * 100;
+    const gauche = (pourcent) => `calc(${MARGE_DROITE}px + (100% - ${2 * MARGE_DROITE}px) * ${(pourcent / 100).toFixed(4)})`;
     // la hauteur d'un arc (sur 50, la hauteur de son dessin) : plus le saut est long, plus il monte
     const hauteur = (de, a) => Math.min(40, 14 + Math.abs(x(a) - x(de)) * 0.4);
     const niveau = (i) => (i % lg.grand === 0 ? 2 : i % lg.moyen === 0 ? 1 : 0);
@@ -538,25 +545,25 @@ export const droiteNumerique = {
         return path;
       }));
       // l'axe part de 0 quand on voit le début de la droite, sinon du bord
-      const items = [h('span', { class: 'droite-axe', style: { left: debut === 0 ? `${x(0)}%` : '0' } })];
+      const items = [h('span', { class: 'droite-axe', style: { left: debut === 0 ? gauche(x(0)) : '0' } })];
       for (let i = debut; i <= fin; i++) {
-        items.push(h('span', { class: `droite-trait n${niveau(i)}`, style: { left: `${x(i)}%` } }));
-        if (niveau(i) >= lg.numeros) items.push(h('span', { class: 'droite-numero', style: { left: `${x(i)}%` } }, lg.texte(i)));
+        items.push(h('span', { class: `droite-trait n${niveau(i)}`, style: { left: gauche(x(i)) } }));
+        if (niveau(i) >= lg.numeros) items.push(h('span', { class: 'droite-numero', style: { left: gauche(x(i)) } }, lg.texte(i)));
       }
       for (const { de, a } of sauts) {
         const milieu = (x(de) + x(a)) / 2;
-        if (milieu < 2 || milieu > 98) continue;
+        if (milieu < 5 || milieu > 95) continue; // l'arc sort du morceau montré
         const p = hauteur(de, a);
         const s = Math.abs(a - de);
-        items.push(h('span', { class: 'droite-saut', style: { left: `${milieu}%`, '--haut': ((50 - p) / 50).toFixed(3) } }, `${a > de ? '+' : '−'}${lg.texte(s)}`));
+        items.push(h('span', { class: 'droite-saut', style: { left: gauche(milieu), '--haut': ((50 - p) / 50).toFixed(3) } }, `${a > de ? '+' : '−'}${lg.texte(s)}`));
       }
-      if (pos !== null && pos >= debut && pos <= fin) items.push(h('span', { class: 'droite-grenouille', style: { left: `${x(pos)}%` } }, '🐸'));
+      if (pos !== null && pos >= debut && pos <= fin) items.push(h('span', { class: 'droite-grenouille', style: { left: gauche(x(pos)) } }, '🐸'));
       dessinLigne.replaceChildren(...items);
       graduations.replaceChildren(...Array.from({ length: k + 1 }, (_, j) => {
         const i = debut + j;
         return h('button', {
           class: `droite-grad${i === pos ? ' ici' : ''}`, 'data-grad': i,
-          style: { left: `${(j / (k + 1)) * 100}%`, width: `${100 / (k + 1)}%` },
+          style: { left: gauche((j / (k + 1)) * 100), width: `calc((100% - ${2 * MARGE_DROITE}px) / ${k + 1})` },
           'aria-label': `${lg.nom(i)}${i === pos ? ' : la grenouille est ici' : ''}`,
           onclick: () => aller(i),
         });
@@ -884,7 +891,7 @@ export const balance = {
     }
     dessiner();
     return {
-      el: h('div', { class: 'outil-balance' }, h('div', { class: 'balance-corps' }, dessin, h('div', { class: 'balance-panneau' }, phrase, sommes, claviers, commandes))),
+      el: h('div', { class: 'outil-balance' }, h('div', { class: 'balance-corps' }, dessin, h('div', { class: 'balance-panneau' }, phrase, sommes, claviers), commandes)),
       etat: () => ({ gauche: cotes.gauche.slice(), droite: cotes.droite.slice() }),
       vider, preparer,
     };
