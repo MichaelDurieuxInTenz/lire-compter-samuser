@@ -48,7 +48,6 @@
 .zone-centaines .bloc-trait { stroke: #1f6b33; stroke-width: 0.5; }
 .zone-milliers .bloc-trait { stroke: #8f1d1d; stroke-width: 0.7; }
 
-
 /* ---------- la droite numérique ---------- */
 .outil-droite {
   flex: 1 1 auto; align-self: stretch; min-height: 0;
@@ -126,10 +125,9 @@
 .balance-cle:active { transform: translateY(2px); }
 .balance-cle:disabled { cursor: default; opacity: 0.6; }
 .balance-cle:disabled:active { transform: none; }
-.balance-marques { display: flex; gap: 2px; height: 7px; }
-.balance-marques i { width: 9px; height: 7px; border-radius: 2px; background: #f08c00; box-shadow: inset 0 0 0 1px #7a3d00; }
+.balance-marques { display: flex; gap: 1px; height: 7px; }
+.balance-marques i { width: 7px; height: 7px; border-radius: 2px; background: #f08c00; box-shadow: inset 0 0 0 1px #7a3d00; }
 .balance-marques i.fixe { background: repeating-linear-gradient(45deg, #5b4a99 0 2px, #c9bcf5 2px 4px); box-shadow: inset 0 0 0 1px #2e2366; }
-
 
 /* ---------- petits écrans ---------- */
 @media (orientation: portrait) and (max-height: 760px) {

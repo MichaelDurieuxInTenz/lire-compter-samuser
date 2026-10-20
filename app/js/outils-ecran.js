@@ -7,7 +7,7 @@
 import { h } from './render.js';
 import { createRng, pick } from './random.js';
 import { playSound } from './sounds.js';
-import { aDesDefis, FAMILLES, outilsDeLEnfant, PHRASES_OUTILS, RUBRIQUE_OUTILS, trouverOutil } from './outils.js';
+import { aDesDefis, estVide, FAMILLES, outilsDeLEnfant, PHRASES_OUTILS, RUBRIQUE_OUTILS, trouverOutil } from './outils.js';
 
 /** La liste des outils de l'enfant, rangés par famille. */
 export function outilsScreen(deps) {
@@ -83,7 +83,9 @@ export function outilScreen(deps, id) {
     dire(defi.consigne);
   }
   function verifier() {
-    if (defi.libre || outil.reussi(defi, inst.etat())) {
+    const etat = inst.etat();
+    // un défi libre (dessin, construction) n'est pas vérifié, mais il faut au moins avoir commencé
+    if (defi.libre ? !estVide(outil, etat) : outil.reussi(defi, etat)) {
       reussi = true;
       const bravo = defi.libre ? PHRASES_OUTILS.fini : pick(rng, PHRASES_OUTILS.bravo);
       retour.textContent = frenchSpacing(bravo);
@@ -92,7 +94,7 @@ export function outilScreen(deps, id) {
       dessinerBarre();
       dire(bravo);
     } else {
-      const indice = outil.indice?.(defi, inst.etat()) || PHRASES_OUTILS.pasEncore;
+      const indice = defi.libre ? PHRASES_OUTILS.rien : outil.indice?.(defi, etat) || PHRASES_OUTILS.pasEncore;
       retour.textContent = frenchSpacing(indice);
       retour.className = 'outil-retour pas-encore';
       playSound('error');

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { FAMILLES, OUTILS, outilsDeLEnfant, outilsPour, phrasesOutils, RUBRIQUE_OUTILS, trouverOutil } from '../app/js/outils.js';
+import { estVide, FAMILLES, OUTILS, outilsDeLEnfant, outilsPour, phrasesOutils, RUBRIQUE_OUTILS, trouverOutil } from '../app/js/outils.js';
 import { GRADES } from '../app/js/storage.js';
 import { tapText } from '../app/js/a11y-jeux.js';
 import { createRng } from '../app/js/random.js';
@@ -38,7 +38,11 @@ test('les défis : une consigne écrite, réussie par la solution, pas par l’o
         assert.match(defi.consigne, /^\p{Lu}.*[.!?]$/u, `${outil.id} ${grade} : « ${defi.consigne} »`);
         assert.ok(!/ [?!:;]/.test(defi.consigne), `${outil.id} : espace avant la ponctuation dans « ${defi.consigne} » (ajoutée à l'écran)`);
         assert.equal(tapText(defi.consigne), defi.consigne, `${outil.id} : « ${defi.consigne} » parle de glisser`);
-        if (defi.libre) continue;
+        // un défi libre n'est pas vérifié, mais « J'ai fini » ne vaut rien sur l'outil vide
+        if (defi.libre) {
+          assert.ok(estVide(outil, outil.vide), `${outil.id} : défi libre sans état vide`);
+          continue;
+        }
         assert.ok(outil.reussi(defi, outil.solution(defi)), `${outil.id} ${grade} : la solution ne répond pas à « ${defi.consigne} »`);
         if (outil.vide && !outil.reussi(defi, outil.vide)) {
           assert.ok(outil.indices.includes(outil.indice(defi, outil.vide)), `${outil.id} : indice inconnu`);

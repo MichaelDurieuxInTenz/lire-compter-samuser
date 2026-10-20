@@ -45,6 +45,7 @@ export const PHRASES_OUTILS = {
   bravo: ['Bravo, c’est ça !', 'Super, défi réussi !', 'Bien joué, c’est exactement ça !'],
   fini: 'Bravo ! Montre ton travail à un adulte.',
   pasEncore: 'Pas encore. Regarde bien et essaie encore.',
+  rien: 'Pas encore. Il n’y a rien pour l’instant.',
 };
 
 export function trouverOutil(id) {
@@ -62,6 +63,11 @@ export function outilsDeLEnfant(child) {
   return outilsPour(child?.grade || 'CP');
 }
 
+/** L'outil est-il comme vidé (rien posé, rien dessiné) ? Un défi libre ne se finit pas ainsi. */
+export function estVide(outil, etat) {
+  return Boolean(outil.vide) && Object.entries(outil.vide).every(([k, v]) => JSON.stringify(etat?.[k]) === JSON.stringify(v));
+}
+
 /** Un outil a-t-il des défis pour cette classe ? */
 export function aDesDefis(outil, grade) {
   return Boolean(outil.defi && outil.defi(grade, createRng(1)));
@@ -69,7 +75,7 @@ export function aDesDefis(outil, grade) {
 
 /** Les phrases fixes des outils (écrans, titres, aides, indices) : chacune est enregistrée entière. */
 export function phrasesFixesOutils() {
-  const out = new Set([PHRASES_OUTILS.liste, ...PHRASES_OUTILS.bravo, PHRASES_OUTILS.fini, PHRASES_OUTILS.pasEncore]);
+  const out = new Set([PHRASES_OUTILS.liste, ...PHRASES_OUTILS.bravo, PHRASES_OUTILS.fini, PHRASES_OUTILS.pasEncore, PHRASES_OUTILS.rien]);
   for (const outil of OUTILS) {
     out.add(outil.titre);
     out.add(outil.aide);
