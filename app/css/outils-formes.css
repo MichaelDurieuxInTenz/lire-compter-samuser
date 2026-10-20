@@ -150,5 +150,10 @@
 .ardoise-trait.epais { height: 9px; }
 @media (orientation: landscape) and (max-height: 520px) {
   .outil-ardoise { flex-direction: row; }
-  .ardoise-commandes { display: grid; grid-template-columns: repeat(2, auto); align-content: center; }
+  /* quatre rangées de boutons à côté de l'ardoise : elles se resserrent à la hauteur disponible
+     (sous la consigne d'un défi, 800 × 360), jusqu'à 48 px chacune */
+  .ardoise-commandes {
+    display: grid; grid-template-columns: repeat(2, auto); grid-auto-rows: minmax(0, 48px); align-content: center; align-self: stretch; gap: 4px 6px;
+  }
+  .ardoise-commandes .outil-btn { min-height: 0; height: 100%; padding: 2px 10px; }
 }
