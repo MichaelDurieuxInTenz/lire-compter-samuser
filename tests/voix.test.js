@@ -9,7 +9,7 @@ import { clipsFor, pauseBetween } from '../app/js/speech.js';
 import { GAMES } from '../app/js/games/index.js';
 import { createRng } from '../app/js/random.js';
 import { spoken } from '../scripts/voix/phrases.mjs';
-import { phrasesOutils } from '../app/js/outils.js';
+import { consignesOutils, phrasesFixesOutils } from '../app/js/outils.js';
 
 const APP = new URL('../app/', import.meta.url).pathname;
 const manifest = JSON.parse(readFileSync(join(APP, 'voix/manifest.json'), 'utf8'));
@@ -152,12 +152,15 @@ test('voix naturelle : la boîte à outils est dite par Estelle, presque toujour
   const available = (key) => Object.hasOwn(manifest.clips, key);
   const counts = {};
   const missing = [];
-  const textes = phrasesOutils(40);
+  // des consignes jamais tirées pour choisir les sons (decalage), comme pour les jeux
+  const textes = [...phrasesFixesOutils(), ...consignesOutils(30, 777).map((c) => c.consigne)];
   for (const text of textes) {
     const quality = qualitePlan(planLecture(text, available, { names: [] }));
     counts[quality] = (counts[quality] || 0) + 1;
     if (quality === 'absent') missing.push(text);
   }
   assert.deepEqual(missing.slice(0, 10), [], 'jamais la voix de l’appareil');
+  // les phrases fixes sont dites entières ; les consignes, au pire autour de leurs nombres
+  for (const text of phrasesFixesOutils()) assert.equal(qualitePlan(planLecture(text, available, { names: [] })), 'entier', text);
   assert.ok((counts.mot || 0) / textes.length < 0.03, JSON.stringify(counts));
 });

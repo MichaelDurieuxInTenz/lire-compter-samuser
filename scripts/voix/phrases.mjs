@@ -20,7 +20,7 @@ import { SPOKEN_SENTENCES } from '../../app/js/games/vocabulaire.js';
 import { voiciPartie } from '../../app/js/games/corps.js';
 import { tapText } from '../../app/js/a11y-jeux.js';
 import { EXPLAIN_SENTENCES } from '../../app/js/explications.js';
-import { phrasesOutils } from '../../app/js/outils.js';
+import { consignesOutils, phrasesFixesOutils } from '../../app/js/outils.js';
 import { createRng } from '../../app/js/random.js';
 import {
   autourDesPrenoms, cle, enMots, langue, morceaux, mots, normaliser, phrases, planLecture, propositions, qualitePlan, utile,
@@ -91,6 +91,14 @@ export function gameUtterances(seeds = SEEDS, offset = 0) {
   return list;
 }
 
+/** Consignes des défis des outils, avec leur poids (chaque outil pèse autant qu'un jeu). */
+export function outilsUtterances(tirages = SEEDS, decalage = 0) {
+  const consignes = consignesOutils(tirages, decalage);
+  const parOutil = {};
+  for (const c of consignes) parOutil[c.outil] = (parOutil[c.outil] || 0) + 1;
+  return consignes.map((c) => ({ text: c.consigne, poids: 1 / parOutil[c.outil], names: [], game: c.outil }));
+}
+
 // 1. ce que l'enfant entend
 const LOG = `${HERE}parole-e2e.json`;
 const SCENARIO_NAMES = ['Eva-Rose', 'Éva-Rose', 'Matteo', 'Lou', 'Zoé', 'Paris Saint-Germain Féminines'];
@@ -140,9 +148,11 @@ export function allUtterances() {
     }
   }
   for (const text of TOUJOURS) list.push({ text, poids: 1, names: [], game: 'app' });
-  // la boîte à outils (1.22.0) : aides, indices et consignes des défis, chacune enregistrée entière
-  // comme celles de TOUJOURS (les consignes ne changent que par leurs nombres : quelques centaines)
-  for (const text of phrasesOutils()) list.push({ text, poids: 1, names: [], game: 'outils' });
+  // la boîte à outils (1.22.0) : ses phrases fixes (aides, indices) enregistrées entières, comme
+  // celles de TOUJOURS ; les consignes des défis pèsent comme les questions d'un jeu (chaque outil
+  // autant, quelle que soit sa classe), et sont dites autour de leurs nombres quand elles sont rares
+  for (const text of phrasesFixesOutils()) list.push({ text, poids: 1, names: [], game: 'outils' });
+  list.push(...outilsUtterances());
   return list;
 }
 
@@ -234,7 +244,7 @@ function select(utterances) {
   const chosen = units.size;
   // d. toujours là : chaque mot (à la vitesse normale), les nombres, les prénoms ; les mots viennent
   // aussi de tirages supplémentaires, pour que des questions jamais vues trouvent tous leurs mots
-  for (const u of [...utterances, ...gameUtterances(SEEDS * 3, 50000)]) {
+  for (const u of [...utterances, ...gameUtterances(SEEDS * 3, 50000), ...outilsUtterances(SEEDS * 3, 50000)]) {
     const l = langue(u.lang);
     for (const s of phrases(enMots(u.text, l))) {
       for (const m of morceaux(s, u.names, l)) {
@@ -295,4 +305,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const keys = new Set(units.keys());
   console.log('énoncés tirés pour la sélection :', coverage(utterances, keys));
   console.log('autres tirages (jamais vus) :', coverage(gameUtterances(40, 100000), keys));
+  console.log('outils, autres tirages :', coverage(outilsUtterances(40, 100000), keys));
 }

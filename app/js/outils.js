@@ -67,24 +67,37 @@ export function aDesDefis(outil, grade) {
   return Boolean(outil.defi && outil.defi(grade, createRng(1)));
 }
 
-/**
- * Toutes les phrases que disent les outils (pour la voix d'Estelle, scripts/voix/phrases.mjs) :
- * écrans, aides, indices, et les consignes des défis tirées au hasard dans chaque classe.
- */
-export function phrasesOutils(tirages = 200) {
+/** Les phrases fixes des outils (écrans, titres, aides, indices) : chacune est enregistrée entière. */
+export function phrasesFixesOutils() {
   const out = new Set([PHRASES_OUTILS.liste, ...PHRASES_OUTILS.bravo, PHRASES_OUTILS.fini, PHRASES_OUTILS.pasEncore]);
   for (const outil of OUTILS) {
     out.add(outil.titre);
     out.add(outil.aide);
     for (const indice of outil.indices || []) out.add(indice);
-    for (const grade of outil.classes) {
-      if (!outil.defi) continue;
-      const rng = createRng(grade.length * 7919 + outil.id.length);
-      for (let i = 0; i < tirages; i++) {
-        const defi = outil.defi(grade, rng);
-        if (defi) out.add(defi.consigne);
-      }
-    }
   }
   return [...out];
+}
+
+/**
+ * Les consignes des défis, tirées au hasard dans chaque classe de chaque outil : { outil, grade,
+ * consigne }. « decalage » donne d'autres tirages (des consignes jamais vues, pour les tests).
+ */
+export function consignesOutils(tirages = 200, decalage = 0) {
+  const out = [];
+  OUTILS.forEach((outil, o) => {
+    if (!outil.defi) return;
+    outil.classes.forEach((grade, g) => {
+      const rng = createRng((decalage + 1) * 104729 + o * 7919 + g * 31);
+      for (let i = 0; i < tirages; i++) {
+        const defi = outil.defi(grade, rng);
+        if (defi) out.push({ outil: outil.id, grade, consigne: defi.consigne });
+      }
+    });
+  });
+  return out;
+}
+
+/** Toutes les phrases que disent les outils (pour les tests) : phrases fixes et consignes. */
+export function phrasesOutils(tirages = 200) {
+  return [...new Set([...phrasesFixesOutils(), ...consignesOutils(tirages).map((c) => c.consigne)])];
 }

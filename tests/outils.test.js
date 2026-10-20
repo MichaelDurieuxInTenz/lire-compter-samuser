@@ -44,7 +44,8 @@ test('les défis : une consigne écrite, réussie par la solution, pas par l’o
           assert.ok(outil.indices.includes(outil.indice(defi, outil.vide)), `${outil.id} : indice inconnu`);
         }
       }
-      assert.ok(vus.size >= 3, `${outil.id} ${grade} : seulement ${vus.size} défis différents`);
+      // un outil peut n'avoir de défis que dans certaines classes (defi renvoie null ailleurs)
+      if (vus.size) assert.ok(vus.size >= 3, `${outil.id} ${grade} : seulement ${vus.size} défis différents`);
     }
   }
 });
