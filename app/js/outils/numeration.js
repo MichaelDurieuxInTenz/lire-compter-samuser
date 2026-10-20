@@ -90,6 +90,8 @@ const INDICES_BLOCS = {
   sansCentaine: 'Pas encore. Casse les centaines en dizaines.',
   sansMillier: 'Pas encore. Casse les milliers en centaines.',
 };
+/** « de dizaines », « d’unités » (devant une voyelle). */
+const de = (mot) => (/^[aeiouyhé]/.test(mot) ? `d’${mot}` : `de ${mot}`);
 const INDICE_SANS = { dizaines: INDICES_BLOCS.sansDizaine, centaines: INDICES_BLOCS.sansCentaine, milliers: INDICES_BLOCS.sansMillier };
 
 // Les dessins des blocs (SVG) : l'unité est un petit carré, la dizaine une barre de 10, la centaine
@@ -228,7 +230,7 @@ export const baseDix = {
       return pick(rng, [
         () => tirer(20, () => {
           const n = randInt(rng, 11, 99);
-          return n % 10 ? fait({ type: 'montre', n }, `Montre ${n} avec des dizaines et des unités.`) : null;
+          return n % 10 ? fait({ type: 'montre', n, avecDizaines: true }, `Montre ${n} avec des dizaines et des unités.`) : null;
         }),
         () => avec(20, 99, 'dizaines', unDeMoins('dizaines')),
         () => avec(11, 19, 'dizaines', zero),
@@ -268,6 +270,8 @@ export const baseDix = {
     if (valeurBlocs(etat) !== defi.n) return false;
     if (defi.type === 'moins') return BLOCS.every((b) => (etat[b.cle] || 0) <= 9);
     if (defi.type === 'avec') return (etat[defi.cle] || 0) === defi.nb;
+    // « avec des dizaines et des unités » : pas seulement des unités
+    if (defi.avecDizaines) return (etat.dizaines || 0) > 0;
     return true;
   },
 
@@ -280,7 +284,7 @@ export const baseDix = {
     const v = valeurBlocs(etat);
     if (v < defi.n) return INDICES_BLOCS.petit;
     if (v > defi.n) return INDICES_BLOCS.grand;
-    if (defi.type === 'moins') return INDICES_BLOCS.moins;
+    if (defi.type === 'moins' || defi.avecDizaines) return INDICES_BLOCS.moins;
     if (defi.type === 'avec') return defi.nb === 0 ? INDICE_SANS[defi.cle] : INDICES_BLOCS[defi.cle];
     return INDICES_BLOCS.petit;
   },
@@ -342,8 +346,8 @@ export const baseDix = {
       if (mode === 'casser') {
         const petit = BLOCS[i + 1];
         if (!petit) dire('Une unité ne se casse pas.');
-        else if (!n[b.cle]) dire(`Il n’y a pas de ${b.un} à casser.`);
-        else if (n[petit.cle] + 10 > petit.max) dire(`Trop de ${petit.des}\u00a0: groupe-les d’abord.`);
+        else if (!n[b.cle]) dire(`Il n’y a pas ${de(b.un)} à casser.`);
+        else if (n[petit.cle] + 10 > petit.max) dire(`Trop ${de(petit.des)}\u00a0: groupe-les d’abord.`);
         else {
           n[b.cle]--;
           n[petit.cle] += 10;
@@ -601,22 +605,22 @@ export const droiteNumerique = {
       lg = x2;
       vider();
     }
+    // le départ du défi en cours (« La grenouille est sur 32. ») : « Vider » y remet la grenouille
+    let depart = null;
     function vider() {
-      pos = null;
+      pos = depart && depart.ligne === lg.id ? depart.pos : null;
       sauts = [];
       debut = 0;
       k = morceau();
+      if (pos !== null) montrer(pos);
       dessiner();
     }
     function preparer(defi) {
+      depart = null;
       if (!defi) return;
       lg = lignes.find((x2) => x2.id === defi.ligne) || lignes[0];
+      if (defi.depart !== undefined) depart = { ligne: lg.id, pos: defi.depart };
       vider();
-      if (defi.depart !== undefined) {
-        pos = defi.depart;
-        montrer(pos);
-        dessiner();
-      }
     }
     // la largeur réelle de la droite décide du morceau montré
     const suivre = typeof ResizeObserver === 'function' ? new ResizeObserver(([entry]) => {

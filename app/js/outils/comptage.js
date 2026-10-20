@@ -19,6 +19,7 @@ const INDICES_CADRE = {
   rouges: 'Pas encore. Compte d’abord les jetons rouges.',
   plein: 'Pas encore. Le cadre doit être plein.',
   pleins: 'Pas encore. Les deux cadres doivent être pleins.',
+  tropJaunes: 'Pas encore. Il y a trop de jetons jaunes.',
 };
 
 /**
@@ -41,13 +42,15 @@ export const cadreDix = {
   },
 
   defi(grade, rng) {
+    // au CP et au CE1, deux cadres : au-delà de 10 jetons, on remplit aussi le second
     const montre = (min, max) => {
       const n = randInt(rng, min, max);
-      return { type: 'montre', n, consigne: `Pose ${jetons(n)} dans le cadre.` };
+      return { type: 'montre', n, consigne: `Pose ${jetons(n)} dans ${n > 10 ? 'les deux cadres' : 'le cadre'}.` };
     };
     const complete = (min, max, total) => {
       const n = randInt(rng, min, max);
-      const fin = total === 10 ? 'complète le cadre avec des jetons jaunes.' : 'complète les deux cadres avec des jetons jaunes.';
+      const cadre = cadreDix.cases(grade) > 10 ? 'le premier cadre' : 'le cadre';
+      const fin = total === 10 ? `complète ${cadre} avec des jetons jaunes.` : 'complète les deux cadres avec des jetons jaunes.';
       return { type: 'complete', n, total, consigne: `Pose ${jetons(n, 'rouge')}, puis ${fin}` };
     };
     if (grade === 'PS') return montre(1, 3);
@@ -71,6 +74,7 @@ export const cadreDix = {
   indice(defi, etat) {
     if (defi.type === 'montre') return INDICES_CADRE.compte;
     if (etat.rouge !== defi.n) return INDICES_CADRE.rouges;
+    if (etat.jaune > defi.total - defi.n) return INDICES_CADRE.tropJaunes;
     return defi.total === 10 ? INDICES_CADRE.plein : INDICES_CADRE.pleins;
   },
 
@@ -678,7 +682,7 @@ export const desEtRoue = {
     }, `${n} dé${n > 1 ? 's' : ''}`));
     const moins = h('button', { class: 'outil-btn des-pm', 'data-secteurs': '-1', 'aria-label': 'Un secteur de moins', onclick: () => changerSecteurs(-1) }, '−');
     const plus = h('button', { class: 'outil-btn des-pm', 'data-secteurs': '1', 'aria-label': 'Un secteur de plus', onclick: () => changerSecteurs(1) }, '+');
-    const nbSecteurs = h('span', { class: 'roue-nb' });
+    const nbSecteurs = h('span', { class: 'roue-nb', 'aria-live': 'polite' }); // le nouveau nombre, dit après « + » ou « − »
     const lancer = h('button', { class: 'outil-btn des-lancer', 'data-lancer': '', onclick: () => (mode === 'des' ? lancerDes() : tournerRoue()) });
 
     const el = h('div', { class: 'outil-des' },
@@ -695,6 +699,7 @@ export const desEtRoue = {
             lancer))));
 
     function etat() {
+      finir?.(); // « Vérifier » pendant que les dés roulent : le lancer se termine d'abord
       return { mode, nbDes, des: [...faces], secteurs, tirages: [...tirages] };
     }
     function dessinerDes(valeurs) {

@@ -17,14 +17,19 @@ const scalaire = (u, v) => u[0] * v[0] + u[1] * v[1];
 const vectoriel = (u, v) => u[0] * v[1] - u[1] * v[0];
 const memeClou = (a, b) => a[0] === b[0] && a[1] === b[1];
 
-/** Les sommets d'une figure fermée : sans clou répété à la suite, sans point aligné avec ses voisins. */
+/**
+ * Les sommets d'une figure fermée : sans clou répété à la suite, sans point aligné entre ses voisins.
+ * Un point aligné où l'élastique repart en arrière (une « queue ») reste : la figure n'est pas simple.
+ */
 export function sommets(points) {
   const p = points.map(([x, y]) => [x, y]);
   for (let i = 0; p.length >= 3 && i < p.length;) {
     const avant = p[(i + p.length - 1) % p.length];
     const apres = p[(i + 1) % p.length];
+    const u = moins(p[i], avant);
+    const v = moins(apres, p[i]);
     // un clou répété donne un côté nul : il est aligné lui aussi
-    if (vectoriel(moins(p[i], avant), moins(apres, p[i])) === 0) {
+    if (vectoriel(u, v) === 0 && scalaire(u, v) >= 0) {
       p.splice(i, 1);
       i = 0;
     } else i++;
@@ -57,7 +62,8 @@ export function analyserFigure(points) {
   const n = p.length;
   if (!n) return null;
   const cotes = p.map((a, i) => moins(p[(i + 1) % n], a));
-  let simple = true;
+  // une queue (l'élastique repart en arrière sur lui-même) : la figure n'est pas simple
+  let simple = cotes.every((c, i) => vectoriel(cotes[(i + n - 1) % n], c) !== 0);
   for (let i = 0; i < n; i++) {
     for (let j = i + 2; j < n; j++) {
       if (i === 0 && j === n - 1) continue; // le dernier côté et le premier sont voisins
@@ -323,6 +329,13 @@ export const geoplan = {
     }
     function toucher(p) {
       let e = elastiques[courant];
+      // retoucher le premier clou d'un élastique resté ouvert le ferme (l'indice « ferme » le demande)
+      const ouvert = !e && elastiques.findLast((x) => !x.ferme && x.points.length >= 3 && memeClou(x.points[0], p));
+      if (ouvert) {
+        ouvert.ferme = true;
+        dessiner();
+        return;
+      }
       if (!e) {
         e = { couleur: elastiques.length % ELASTIQUES.length, points: [], ferme: false };
         elastiques.push(e);
@@ -535,6 +548,7 @@ export const blocsFormes = {
       b.y = Math.min(Math.max(Math.round(y * 4) / 4, dy), haut - dy);
     }
     const nomBloc = (b) => `${BLOCS[b.sorte].nom} ${BLOCS[b.sorte].couleur}`;
+    const leBloc = (b) => (/^[aeiouyhé]/.test(BLOCS[b.sorte].nom) ? `l’${nomBloc(b)}` : `le ${nomBloc(b)}`); // l’hexagone
     function dessiner() {
       posés.replaceChildren(...blocs.map((b, i) => {
         const [w, ht] = taille(b.sorte);
@@ -554,7 +568,7 @@ export const blocsFormes = {
       planche.classList.toggle('main', choix === 'main');
       const bloc = blocs[choisi];
       fond.setAttribute('aria-label', choix !== 'main' ? `Planche : touche pour poser un ${nomBloc({ sorte: choix })}`
-        : bloc ? `Planche : touche pour déplacer le ${nomBloc(bloc)}` : 'Planche : touche d’abord un bloc posé');
+        : bloc ? `Planche : touche pour déplacer ${leBloc(bloc)}` : 'Planche : touche d’abord un bloc posé');
       tourner.disabled = !bloc;
       enlever.disabled = !bloc;
     }
@@ -579,8 +593,9 @@ export const blocsFormes = {
     }
     function toucherBloc(i) {
       // avec un bloc de la palette, la planche reçoit les touchers (on pose par-dessus) : seul le
-      // clavier arrive ici, et choisit le bloc
-      choisi = choix === 'main' && choisi === i ? -1 : i;
+      // clavier arrive ici, et choisit le bloc ; avec la main, toucher un bloc le choisit toujours (le
+      // dernier posé, déjà choisi, se déplace aussi)
+      choisi = i;
       dessiner();
     }
     function tournerBloc() {
@@ -853,8 +868,11 @@ export const ardoise = {
       epaisseurs.forEach((b) => b.setAttribute('aria-pressed', String(!gomme && b.dataset.epaisseur === epaisseur)));
       boutonGomme.setAttribute('aria-pressed', String(gomme));
     }
+    // les traits de feutre (un coup de gomme sur l'ardoise vide n'y dessine rien)
+    const nbTraits = () => traits.filter((t) => !t.gomme).length;
     function decrire() {
-      toile.setAttribute('aria-label', traits.length ? `Ardoise : ${traits.length} trait${traits.length > 1 ? 's' : ''}` : 'Ardoise vide');
+      const n = nbTraits();
+      toile.setAttribute('aria-label', n ? `Ardoise : ${n} trait${n > 1 ? 's' : ''}` : 'Ardoise vide');
     }
     /** Un trait lisse : des courbes qui passent par le milieu de chaque segment. */
     function tracer(t, depuis = 0) {
@@ -936,7 +954,7 @@ export const ardoise = {
     dessinerBoutons();
     return {
       el: h('div', { class: 'outil-ardoise' }, h('div', { class: 'ardoise-cadre' }, toile), commandes),
-      etat: () => ({ traits: traits.length }),
+      etat: () => ({ traits: nbTraits() }),
       vider,
       arreter: () => suivre.disconnect(),
     };
