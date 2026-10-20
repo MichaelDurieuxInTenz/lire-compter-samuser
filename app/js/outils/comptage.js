@@ -717,7 +717,7 @@ export const desEtRoue = {
       dessinerDes(faces);
       const t = faces.reduce((a, b) => a + b, 0);
       total.textContent = faces.length > 1 ? `${faces.join(' + ')} = ${t}` : faces.length ? String(t) : '';
-      const [dernier, ...precedents] = tirages.slice(-4).reverse();
+      const [dernier, ...precedents] = tirages.slice(-3).reverse(); // et les 2 tours d'avant (2 fois de suite…)
       resultat.textContent = dernier ? `La flèche montre ${leNom(dernier)}.` : '';
       avant.textContent = precedents.length ? `Avant : ${precedents.join(', ')}.` : '';
     }

@@ -223,6 +223,25 @@ l'énergie, volcans et séismes)
 **Défi du jour** : chaque jour, 5 questions tirées des jeux de l'enfant, à son niveau. Une étoile
 bonus et un jour de plus dans la série 🔥.
 
+### La boîte à outils 🧰
+
+Inspirée des « Teacher Tools » de [Toy Theater](https://toytheater.com/category/teacher-tools/) : des
+outils de classe à manipuler librement, pour chercher, montrer, expliquer. Chaque enfant voit ceux de sa
+classe. Un bouton **🎯 Un défi** propose une consigne courte, dite par Estelle et adaptée à la classe
+(« Pose 7 jetons dans le cadre. », « Mets l’horloge à 3 heures et quart. ») ; **Vérifier** répond sans
+note ni étoiles, avec un indice qui ne donne pas la réponse. Pendant un défi, ce qui la donnerait (le
+nombre, l'heure écrite) est caché. Les parents peuvent masquer la rubrique dans *Ses jeux*.
+
+| Famille | Outils (classes) |
+|---|---|
+| Compter | le cadre de dix (PS–CE1), les jetons bicolores (MS–CE1), le tableau de cent (GS–CE2), les dés et la roue (PS–CM2) |
+| Les nombres | les blocs de base dix (CP–CM2), la droite numérique (GS–CM2), la balance des nombres (GS–CE1) |
+| Le temps et la monnaie | l'horloge (GS–CM1), les pièces et les billets (GS–CM2), le minuteur (PS–CM2, sans défi) |
+| Formes et fractions | le géoplan (GS–CM2), les blocs de formes (PS–CE2), les réglettes de fractions (CE1–CM2), l'ardoise (PS–CM2, défis libres) |
+
+Pour les développeurs : le catalogue et le contrat d'un outil sont dans `app/js/outils.js`, l'écran dans
+`app/js/outils-ecran.js`, chaque famille dans `app/js/outils/` (et `app/css/outils-*.css`).
+
 ---
 
 ## Pédagogie
