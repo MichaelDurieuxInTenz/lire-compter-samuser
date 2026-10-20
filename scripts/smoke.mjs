@@ -2690,7 +2690,8 @@ async function a11yPart() {
   await audit('espace parents, vos voix');
 
   // chaque écran a son propre titre
-  const sameTitle = [...titles].filter(([, t], i, all) => all.findIndex(([, u]) => u === t) !== i && !/^jeu |^bienvenue|×/.test(all[i][0]));
+  // (un outil pendant un défi reste le même écran : il garde son titre)
+  const sameTitle = [...titles].filter(([, t], i, all) => all.findIndex(([, u]) => u === t) !== i && !/^jeu |^bienvenue|×|^outil .*, défi$/.test(all[i][0]));
   if (sameTitle.length) problems.push(`titres de page identiques : ${sameTitle.map(([n, t]) => `${n} (« ${t} »)`).join(', ')}`);
 
   await context.close();

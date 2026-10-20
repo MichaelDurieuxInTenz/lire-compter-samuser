@@ -507,9 +507,10 @@ export const minuteur = {
     const temps = h('p', { class: 'minuteur-temps', role: 'timer' });
     const message = h('p', { class: 'minuteur-fin', 'aria-live': 'polite' });
     const choix = DUREES.map((s) => h('button', {
-      class: 'outil-btn minuteur-duree', 'data-duree': s, 'aria-label': tempsDit(s), onclick: () => choisir(s),
+      // le nom dit ce qui est écrit (« 30 s »), puis en toutes lettres
+      class: 'outil-btn minuteur-duree', 'data-duree': s, 'aria-label': `${tempsEcrit(s)}, ${tempsDit(s)}`, onclick: () => choisir(s),
     }, tempsEcrit(s)));
-    const plus = h('button', { class: 'outil-btn minuteur-duree', 'data-plus': '', 'aria-label': 'Ajouter 1 minute', onclick: () => ajouterMinute() }, '+1 min');
+    const plus = h('button', { class: 'outil-btn minuteur-duree', 'data-plus': '', 'aria-label': '+1 min, ajouter 1 minute', onclick: () => ajouterMinute() }, '+1 min');
     const go = h('button', { class: 'outil-btn minuteur-go', 'data-go': '', onclick: () => (minuterie ? pause() : demarrer()) });
     const again = h('button', { class: 'outil-btn', 'data-recommencer': '', 'aria-label': 'Recommencer', onclick: () => recommencer() }, '↺ Recommencer');
 
