@@ -43,7 +43,7 @@
 /* ---------- les blocs de formes : la palette, la planche, les commandes ---------- */
 .bf-palette {
   --pu: 17px; /* un côté de bloc, dans la palette */
-  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; width: min(100%, 480px);
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; width: min(100%, 540px);
 }
 .bf-choix {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
@@ -57,7 +57,7 @@
   display: flex; align-items: center; justify-content: center; height: calc(var(--pu) * 1.75); font-size: calc(var(--pu) * 1.5); line-height: 1;
 }
 .bf-dessin svg { width: calc(var(--pu) * var(--w)); height: calc(var(--pu) * var(--h)); display: block; overflow: visible; }
-.bf-nom { font-size: min(0.8rem, 3.3vw); font-weight: 700; line-height: 1.1; max-width: 100%; }
+.bf-nom { font-size: min(0.8rem, 3.3vw, 15px); font-weight: 700; line-height: 1.1; max-width: 100%; } /* « hexagone » tient dans son bouton */
 @media (max-width: 440px) {
   .bf-palette { --pu: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
   .bf-choix { flex-direction: row; min-height: 44px; gap: 5px; }
