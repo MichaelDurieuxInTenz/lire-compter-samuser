@@ -153,7 +153,7 @@ test('voix naturelle : la boîte à outils est dite par Estelle, presque toujour
   const counts = {};
   const missing = [];
   // des consignes jamais tirées pour choisir les sons (decalage), comme pour les jeux
-  const textes = [...phrasesFixesOutils(), ...consignesOutils(30, 777).map((c) => c.consigne)];
+  const textes = [...phrasesFixesOutils(), ...consignesOutils(30, 777).map((c) => c.dit)];
   for (const text of textes) {
     const quality = qualitePlan(planLecture(text, available, { names: [] }));
     counts[quality] = (counts[quality] || 0) + 1;

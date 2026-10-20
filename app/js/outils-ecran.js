@@ -44,7 +44,9 @@ export function outilScreen(deps, id) {
   let defi = null;
   let reussi = false;
 
-  const consigne = h('button', { class: 'bubble outil-consigne', 'data-consigne': '', onclick: () => defi && dire(defi.consigne) });
+  // la voix dit la consigne telle qu'elle s'entend (« Montre mille 305 », champ dit), l'écran l'écrit
+  const direConsigne = () => dire(defi.dit ?? defi.consigne);
+  const consigne = h('button', { class: 'bubble outil-consigne', 'data-consigne': '', onclick: () => defi && direConsigne() });
   const retour = h('p', { class: 'outil-retour', 'aria-live': 'polite' });
   const bandeau = h('div', { class: 'outil-defi', hidden: true }, consigne, retour);
   const barre = h('div', { class: 'outil-barre' });
@@ -80,7 +82,7 @@ export function outilScreen(deps, id) {
     retour.textContent = '';
     retour.className = 'outil-retour';
     dessinerBarre();
-    dire(defi.consigne);
+    direConsigne();
   }
   function verifier() {
     const etat = inst.etat();

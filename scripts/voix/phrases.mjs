@@ -96,7 +96,7 @@ export function outilsUtterances(tirages = SEEDS, decalage = 0) {
   const consignes = consignesOutils(tirages, decalage);
   const parOutil = {};
   for (const c of consignes) parOutil[c.outil] = (parOutil[c.outil] || 0) + 1;
-  return consignes.map((c) => ({ text: c.consigne, poids: 1 / parOutil[c.outil], names: [], game: c.outil }));
+  return consignes.map((c) => ({ text: c.dit, poids: 1 / parOutil[c.outil], names: [], game: c.outil }));
 }
 
 // 1. ce que l'enfant entend

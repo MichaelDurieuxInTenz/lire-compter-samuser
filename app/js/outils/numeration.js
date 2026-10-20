@@ -9,9 +9,10 @@ import { h } from '../render.js';
 import { pick, randInt } from '../random.js';
 import { dit, ecrit } from '../games/ce2.js';
 
-/** Une consigne et, si elle contient un grand nombre, ce que dit la voix. */
-function consigneNombre(texte, n) {
-  return n >= 1000 ? { consigne: texte, dit: texte.replace(ecrit(n), dit(n)) } : { consigne: texte };
+/** Une consigne et, si elle contient un grand nombre (« 1 305 »), ce que dit la voix (« mille 305 »). */
+function consigneNombre(texte) {
+  const voix = texte.replace(/\d{1,3}(?:\u202f\d{3})+/g, (n) => dit(Number(n.replace(/\D/g, ''))));
+  return voix === texte ? { consigne: texte } : { consigne: texte, dit: voix };
 }
 
 /** Tire une valeur jusqu'à ce qu'elle convienne (au plus `essais` fois) ; null sinon. */
@@ -95,12 +96,13 @@ const INDICE_SANS = { dizaines: INDICES_BLOCS.sansDizaine, centaines: INDICES_BL
 // une plaque de 10 × 10, le millier un gros cube. Dans sa colonne, une sorte de bloc garde la même
 // taille quel que soit leur nombre (la place est prévue pour le plafond) ; on les range par 5 et par
 // 10, comme dans un cadre de dix, en lignes plus ou moins longues selon ce qui les dessine le plus
-// grand dans la colonne (rangement).
+// grand dans la colonne (rangement). w, h : la taille d'un bloc ; par : les longueurs de ligne
+// essayées ; echelleMax : pas plus grand (sur iPad, les colonnes sont grandes).
 const FORMES = {
-  unites: { w: 10, h: 10, par: [5, 10, 2, 4], max: 2.4 },
-  dizaines: { w: 8, h: 80, par: [10, 5], max: 2 },
-  centaines: { w: 36, h: 36, par: [5, 10, 2, 4, 3], max: 1.8 },
-  milliers: { w: 30, h: 30, par: [3, 5, 2], max: 2.1 },
+  unites: { w: 10, h: 10, par: [5, 10, 2, 4], echelleMax: 2.4 },
+  dizaines: { w: 8, h: 80, par: [10, 5], echelleMax: 2 },
+  centaines: { w: 36, h: 36, par: [5, 10, 2, 4, 3], echelleMax: 1.8 },
+  milliers: { w: 30, h: 30, par: [3, 5, 2], echelleMax: 2.1 },
 };
 const ECART = 3;
 const PAQUET = 6; // écart en plus entre deux paquets de 5 sur une ligne, ou de 10
@@ -132,7 +134,7 @@ function rangement(w, h) {
     let best = null;
     for (const par of forme.par) {
       const [lw, lh] = placeTotale(forme, par, b.max);
-      const echelle = Math.min(w / (lw + 2), h / (lh + 2), forme.max);
+      const echelle = Math.min(w / (lw + 2), h / (lh + 2), forme.echelleMax);
       if (!best || echelle > best.echelle + 1e-6) best = { par, echelle };
     }
     out[b.cle] = best;
@@ -190,7 +192,7 @@ export const baseDix = {
 
   defi(grade, rng) {
     const cles = blocsDe(grade).map((b) => b.cle);
-    const fait = (d, texte) => ({ ...d, blocs: cles, ...consigneNombre(texte, d.n) });
+    const fait = (d, texte) => ({ ...d, blocs: cles, ...consigneNombre(texte) });
     const montre = (min, max) => {
       const n = randInt(rng, min, max);
       return fait({ type: 'montre', n }, `Montre ${ecrit(n)}.`);
@@ -442,7 +444,7 @@ export const droiteNumerique = {
 
   defi(grade, rng) {
     const [l, quarts] = droitesDe(grade);
-    const fait = (lg, d, texte) => ({ ...d, ligne: lg.id, cible: lg.valeur(d.but), ...consigneNombre(texte, lg.valeur(d.but)) });
+    const fait = (lg, d, texte) => ({ ...d, ligne: lg.id, cible: lg.valeur(d.but), ...consigneNombre(texte) });
     // les fractions se disent et s'écrivent en lettres : « trois quarts »
     const nomDe = (lg, i) => (lg.id === 'quarts' ? QUARTS[i] : lg.texte(i));
     const place = (lg, min, max) => {

@@ -38,6 +38,8 @@ test('les défis : une consigne écrite, réussie par la solution, pas par l’o
         assert.match(defi.consigne, /^\p{Lu}.*[.!?]$/u, `${outil.id} ${grade} : « ${defi.consigne} »`);
         assert.ok(!/ [?!:;]/.test(defi.consigne), `${outil.id} : espace avant la ponctuation dans « ${defi.consigne} » (ajoutée à l'écran)`);
         assert.equal(tapText(defi.consigne), defi.consigne, `${outil.id} : « ${defi.consigne} » parle de glisser`);
+        // un grand nombre écrit « 1 305 » serait dit « 1 », « 305 » : la voix dit « mille 305 » (dit)
+        assert.ok(!/\d[\s\u202f]\d{3}/.test(defi.dit ?? defi.consigne), `${outil.id} : « ${defi.consigne} » sans ce que dit la voix`);
         // un défi libre n'est pas vérifié, mais « J'ai fini » ne vaut rien sur l'outil vide
         if (defi.libre) {
           assert.ok(estVide(outil, outil.vide), `${outil.id} : défi libre sans état vide`);

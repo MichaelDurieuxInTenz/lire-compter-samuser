@@ -7,7 +7,8 @@
 //   id, titre, icone, famille (FAMILLES), classes (les classes où il est proposé),
 //   aide : la phrase dite à l'ouverture (toucher, jamais glisser : a11y-jeux.js),
 //   indices : toutes les phrases que indice() peut renvoyer (enregistrées par la voix d'Estelle),
-//   defi(grade, rng) : { consigne, …données } ou null (pas de défi) ; { libre: true } : pas de
+//   defi(grade, rng) : { consigne, dit?, …données } ou null (pas de défi) ; dit : ce que dit la voix
+//     quand l'écrit ne s'entend pas tel quel (« 1 305 » → « mille 305 ») ; { libre: true } : pas de
 //     vérification, l'enfant dit « J'ai fini » (un dessin, une construction libre) ;
 //   reussi(defi, etat) : vrai si l'état de l'outil répond au défi ;
 //   solution(defi) : un état qui répond au défi (pour les tests ; pas pour un défi libre) ;
@@ -86,7 +87,8 @@ export function phrasesFixesOutils() {
 
 /**
  * Les consignes des défis, tirées au hasard dans chaque classe de chaque outil : { outil, grade,
- * consigne }. « decalage » donne d'autres tirages (des consignes jamais vues, pour les tests).
+ * consigne, dit } (dit : ce que dit la voix). « decalage » donne d'autres tirages (des consignes
+ * jamais vues, pour les tests).
  */
 export function consignesOutils(tirages = 200, decalage = 0) {
   const out = [];
@@ -96,14 +98,14 @@ export function consignesOutils(tirages = 200, decalage = 0) {
       const rng = createRng((decalage + 1) * 104729 + o * 7919 + g * 31);
       for (let i = 0; i < tirages; i++) {
         const defi = outil.defi(grade, rng);
-        if (defi) out.push({ outil: outil.id, grade, consigne: defi.consigne });
+        if (defi) out.push({ outil: outil.id, grade, consigne: defi.consigne, dit: defi.dit ?? defi.consigne });
       }
     });
   });
   return out;
 }
 
-/** Toutes les phrases que disent les outils (pour les tests) : phrases fixes et consignes. */
+/** Toutes les phrases que disent les outils (pour les tests) : phrases fixes et consignes dites. */
 export function phrasesOutils(tirages = 200) {
-  return [...new Set([...phrasesFixesOutils(), ...consignesOutils(tirages).map((c) => c.consigne)])];
+  return [...new Set([...phrasesFixesOutils(), ...consignesOutils(tirages).map((c) => c.dit)])];
 }
