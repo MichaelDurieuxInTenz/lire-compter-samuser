@@ -373,17 +373,17 @@ export const baseDix = {
     }
     const el = h('div', { class: `outil-base-dix n${blocs.length}` },
       h('div', { class: 'base-dix-corps' }, tapis, h('div', { class: 'base-dix-panneau' }, nombre, info, commandes)));
-    if (typeof ResizeObserver === 'function') {
-      new ResizeObserver(([entry]) => {
-        const { width, height } = entry.contentRect;
-        if (!width || !height) return;
-        taille = [width - 12, height - 12]; // le dessin a 6 px de marge (outils-numeration.css)
-        rangs = rangement(...taille);
-        dessiner();
-      }).observe(colonnes[0].zone);
-    }
+    // suivi arrêté en quittant l'écran (arreter)
+    const suivre = typeof ResizeObserver === 'function' ? new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      if (!width || !height) return;
+      taille = [width - 12, height - 12]; // le dessin a 6 px de marge (outils-numeration.css)
+      rangs = rangement(...taille);
+      dessiner();
+    }) : null;
+    suivre?.observe(colonnes[0].zone);
     dessiner();
-    return { el, etat, vider };
+    return { el, etat, vider, arreter: () => suivre?.disconnect() };
   },
 };
 
@@ -619,24 +619,23 @@ export const droiteNumerique = {
       }
     }
     // la largeur réelle de la droite décide du morceau montré
-    if (typeof ResizeObserver === 'function') {
-      new ResizeObserver(([entry]) => {
-        const w = entry.contentRect.width;
-        if (!w || Math.abs(w - largeur) < 1) return;
-        largeur = w;
-        const avantK = k;
-        k = morceau();
-        if (k !== avantK) {
-          if (pos !== null) montrer(pos);
-          dessiner();
-        }
-      }).observe(zone);
-    }
+    const suivre = typeof ResizeObserver === 'function' ? new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      if (!w || Math.abs(w - largeur) < 1) return;
+      largeur = w;
+      const avantK = k;
+      k = morceau();
+      if (k !== avantK) {
+        if (pos !== null) montrer(pos);
+        dessiner();
+      }
+    }) : null;
+    suivre?.observe(zone);
     dessiner();
     return {
       el: h('div', { class: 'outil-droite' }, zone, nombre, commandes),
       etat: () => ({ valeur: pos === null ? null : lg.valeur(pos), ligne: lg.id }),
-      vider, preparer,
+      vider, preparer, arreter: () => suivre?.disconnect(),
     };
   },
 };

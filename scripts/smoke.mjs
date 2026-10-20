@@ -3301,6 +3301,30 @@ const STRESS = {
   'relie-calculs': 3, trous: 3, 'ordre-histoire': 6,
 };
 
+/**
+ * Un outil (outils.js) : rien ne sort de sa zone, entre la consigne et les boutons. checkLayout ne le
+ * voit pas toujours : les outils se calent sur la place restante (conteneurs de taille, cqw/cqh), et
+ * un contenu centré trop haut sortirait en haut, sous la consigne, sans faire défiler la page.
+ */
+async function checkOutilZone(page, label) {
+  const problem = await page.evaluate(() => {
+    const zone = document.querySelector('.outil-zone')?.getBoundingClientRect();
+    if (!zone) return 'zone de l’outil absente';
+    for (const el of document.querySelectorAll('.outil-zone *')) {
+      if (el.closest('svg') && el.tagName !== 'svg') continue; // le dessin compte en entier
+      if (el.closest('.visually-hidden, .droite-dessin, .droite-arcs')) continue; // les bonds de la grenouille passent au-dessus
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      if (r.top < zone.top - 1 || r.bottom > zone.bottom + 1 || r.left < zone.left - 1 || r.right > zone.right + 1) {
+        const name = el.getAttribute('aria-label') || el.className?.baseVal || el.className || el.tagName;
+        return `« ${String(name).slice(0, 40)} » sort de la zone de l’outil (${Math.round(r.top)}–${Math.round(r.bottom)} pour ${Math.round(zone.top)}–${Math.round(zone.bottom)})`;
+      }
+    }
+    return null;
+  });
+  if (problem) layoutProblems.push(`${label} : ${problem}`);
+}
+
 async function checkLayout(page, label, { reachable = true } = {}) {
   const problem = await page.evaluate((mustReach) => {
     if (document.documentElement.scrollWidth > window.innerWidth) return 'la page déborde en largeur';
@@ -3509,14 +3533,9 @@ async function checkDevice(device, repeat, deviceIndex) {
       }
     }
   }
-  if ((ONLY && !screens) || !mine(deviceIndex)) {
-    if (ONLY?.includes('histoires')) checked += await checkVoicesLayout(page, tag);
-    await ctx.close();
-    return checked;
-  }
-  // calcul : un palier sur trois, les 4 formes d'exercice (pas avec ONLY=ecrans)
   // la boîte à outils (outils.js) : chaque outil pour la première et la dernière de ses classes, en
-  // libre, puis pendant un défi après « Vérifier » (la consigne et l'indice au-dessus de l'outil)
+  // libre, puis pendant un défi après « Vérifier » (la consigne et l'indice au-dessus de l'outil) ;
+  // ONLY=outils (ou ONLY=<id d'un outil>) ne vérifie que la boîte à outils
   for (const [k, outil] of OUTILS.entries()) {
     if (ONLY ? !ONLY.includes(outil.id) && !ONLY.includes('outils') : !mine(k + deviceIndex)) continue;
     for (const grade of [...new Set([outil.classes[0], outil.classes.at(-1)])]) {
@@ -3526,15 +3545,24 @@ async function checkDevice(device, repeat, deviceIndex) {
       await page.click(`[data-outil="${outil.id}"]`);
       await page.waitForSelector('.screen.outil');
       await checkLayout(page, tag(`outil ${outil.id} ${grade}`));
+      await checkOutilZone(page, tag(`outil ${outil.id} ${grade}`));
       checked++;
       if (await page.locator('[data-defi]').count()) {
         await page.click('[data-defi]');
         await page.click('[data-verifier]');
         await checkLayout(page, tag(`outil ${outil.id} ${grade}, défi`));
+        await checkOutilZone(page, tag(`outil ${outil.id} ${grade}, défi`));
         checked++;
       }
     }
   }
+  await setStore(page, "store.profiles['eva-rose'].grade = 'CP';");
+  if ((ONLY && !screens) || !mine(deviceIndex)) {
+    if (ONLY?.includes('histoires')) checked += await checkVoicesLayout(page, tag);
+    await ctx.close();
+    return checked;
+  }
+  // calcul : un palier sur trois, les 4 formes d'exercice (pas avec ONLY=ecrans)
   await setStore(page, "store.profiles['eva-rose'].grade = 'CP';");
   for (const palier of ONLY ? [] : CALC_PALIERS.filter((_, i) => i % 3 === 2)) {
     for (let format = 0; format < 4; format++) {
