@@ -40,7 +40,8 @@ const INDICES_HORLOGE = {
   pile: 'Pas encore. À l’heure pile, la grande aiguille montre le 12.',
   demie: 'Pas encore. Et demie, c’est quand la grande aiguille a fait la moitié du tour.',
   quart: 'Pas encore. Et quart, c’est quand la grande aiguille a fait un quart de tour.',
-  moinsQuart: 'Pas encore. Moins le quart, c’est un quart d’heure avant l’heure.',
+  // (« c’est un quart d’heure avant l’heure. » : son coupé à chaque essai de la voix)
+  moinsQuart: 'Pas encore. Moins le quart, c’est quand il manque un quart de tour pour arriver à l’heure.',
   moins: 'Pas encore. Avec moins, il manque quelques minutes pour arriver à l’heure.',
   cinq: 'Pas encore. Compte les minutes de 5 en 5, en suivant les nombres du cadran.',
   minute: 'Pas encore. Compte les minutes de 5 en 5, puis une par une.',

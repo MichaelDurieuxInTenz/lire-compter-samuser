@@ -40896,15 +40896,6 @@
   "file": "fr/b2f1061f8f4e4169.mp3"
  },
  {
-  "key": "fr|1|Moins le quart, c'est un quart d'heure avant l'heure.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Moins le quart, c'est un quart d'heure avant l'heure.",
-  "voice": "estelle",
-  "file": "fr/69b3f8df090badba.mp3"
- },
- {
   "key": "fr|1|Touche les morceaux d'une réglette pour les colorier.",
   "lang": "fr",
   "rate": 1,
@@ -49543,6 +49534,15 @@
   "text": "coat",
   "voice": "estelle",
   "file": "en/c8c331c0a3580e26.mp3"
+ },
+ {
+  "key": "fr|1|Moins le quart, c'est quand il manque un quart de tour pour arriver à l'heure.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Moins le quart, c'est quand il manque un quart de tour pour arriver à l'heure.",
+  "voice": "estelle",
+  "file": "fr/ac6d96e3062fc40a.mp3"
  },
  {
   "key": "en|1|six",
@@ -131805,15 +131805,6 @@
   "file": "fr/aa864a9ea777991f.mp3"
  },
  {
-  "key": "fr|1|Oui : le Soleil est haut, l'ombre est courte.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Oui : le Soleil est haut, l'ombre est courte.",
-  "voice": "estelle",
-  "file": "fr/b0f9745b3502f74f.mp3"
- },
- {
   "key": "fr|1|À toi,",
   "lang": "fr",
   "rate": 1,
@@ -145134,6 +145125,15 @@
   "file": "fr/ff2f74c7f9df4dc4.mp3"
  },
  {
+  "key": "fr|1|l'ombre est courte.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "l'ombre est courte.",
+  "voice": "estelle",
+  "file": "fr/ce723acfd6bb0071.mp3"
+ },
+ {
   "key": "fr|1|Lou",
   "lang": "fr",
   "rate": 1,
@@ -154888,6 +154888,15 @@
   "text": "yellow,",
   "voice": "estelle",
   "file": "en/eed8fe289493e203.mp3"
+ },
+ {
+  "key": "fr|1|le Soleil est haut,",
+  "lang": "fr",
+  "rate": 1,
+  "type": "proposition",
+  "text": "le Soleil est haut,",
+  "voice": "estelle",
+  "file": "fr/8d4df52941e651c7.mp3"
  },
  {
   "key": "fr|1|9.",
@@ -170053,15 +170062,6 @@
   "text": "et facile à clouer.",
   "voice": "estelle",
   "file": "fr/aef79e2f94fd9034.mp3"
- },
- {
-  "key": "fr|1|l'ombre est courte.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "proposition",
-  "text": "l'ombre est courte.",
-  "voice": "estelle",
-  "file": "fr/ce723acfd6bb0071.mp3"
  },
  {
   "key": "fr|1|on ne les voit pas.",
@@ -306970,6 +306970,15 @@
   "text": "L'ombre est toujours du même côté que le Soleil.",
   "voice": "estelle",
   "file": "fr/c264d2b0702072b1.mp3"
+ },
+ {
+  "key": "fr|1|Oui : le Soleil est haut, l'ombre est courte.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Oui : le Soleil est haut, l'ombre est courte.",
+  "voice": "estelle",
+  "file": "fr/b0f9745b3502f74f.mp3"
  },
  {
   "key": "fr|1|L'ombre d'un arbre change pendant la journée.",
