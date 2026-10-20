@@ -20,6 +20,7 @@ import { SPOKEN_SENTENCES } from '../../app/js/games/vocabulaire.js';
 import { voiciPartie } from '../../app/js/games/corps.js';
 import { tapText } from '../../app/js/a11y-jeux.js';
 import { EXPLAIN_SENTENCES } from '../../app/js/explications.js';
+import { phrasesOutils } from '../../app/js/outils.js';
 import { createRng } from '../../app/js/random.js';
 import {
   autourDesPrenoms, cle, enMots, langue, morceaux, mots, normaliser, phrases, planLecture, propositions, qualitePlan, utile,
@@ -139,6 +140,9 @@ export function allUtterances() {
     }
   }
   for (const text of TOUJOURS) list.push({ text, poids: 1, names: [], game: 'app' });
+  // la boîte à outils (1.22.0) : aides, indices et consignes des défis, chacune enregistrée entière
+  // comme celles de TOUJOURS (les consignes ne changent que par leurs nombres : quelques centaines)
+  for (const text of phrasesOutils()) list.push({ text, poids: 1, names: [], game: 'outils' });
   return list;
 }
 

@@ -71,6 +71,7 @@ export function outilScreen(deps, id) {
     for (let i = 0; i < 20 && (!suivant || suivant.consigne === defi?.consigne); i++) suivant = outil.defi(grade, rng);
     defi = suivant;
     reussi = false;
+    globalThis.__lc = { outil: outil.id, defi }; // utilisé par les tests de bout en bout
     inst.vider?.();
     inst.preparer?.(defi);
     main.classList.add('en-defi');

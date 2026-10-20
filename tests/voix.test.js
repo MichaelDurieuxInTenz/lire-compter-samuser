@@ -9,6 +9,7 @@ import { clipsFor, pauseBetween } from '../app/js/speech.js';
 import { GAMES } from '../app/js/games/index.js';
 import { createRng } from '../app/js/random.js';
 import { spoken } from '../scripts/voix/phrases.mjs';
+import { phrasesOutils } from '../app/js/outils.js';
 
 const APP = new URL('../app/', import.meta.url).pathname;
 const manifest = JSON.parse(readFileSync(join(APP, 'voix/manifest.json'), 'utf8'));
@@ -145,4 +146,18 @@ test('voix naturelle : tout ce que disent les jeux est dit par Estelle, presque 
   assert.ok(share('entier') + share('virgule') + share('prenom') > 0.88, JSON.stringify(counts));
   // dit mot à mot : rare
   assert.ok(share('mot') < 0.03, JSON.stringify(counts));
+});
+
+test('voix naturelle : la boîte à outils est dite par Estelle, presque toujours phrase par phrase', () => {
+  const available = (key) => Object.hasOwn(manifest.clips, key);
+  const counts = {};
+  const missing = [];
+  const textes = phrasesOutils(40);
+  for (const text of textes) {
+    const quality = qualitePlan(planLecture(text, available, { names: [] }));
+    counts[quality] = (counts[quality] || 0) + 1;
+    if (quality === 'absent') missing.push(text);
+  }
+  assert.deepEqual(missing.slice(0, 10), [], 'jamais la voix de l’appareil');
+  assert.ok((counts.mot || 0) / textes.length < 0.03, JSON.stringify(counts));
 });
