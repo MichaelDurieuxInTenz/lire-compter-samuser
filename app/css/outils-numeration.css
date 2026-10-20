@@ -152,8 +152,7 @@
 @media (orientation: landscape) and (max-height: 520px) {
   .base-dix-corps { flex-direction: row; align-items: stretch; gap: 12px; }
   .base-dix-tapis { max-height: none; }
-  .base-dix-panneau { justify-content: center; width: min(250px, 38vw); }
-  .base-dix-commandes { flex-direction: column; align-items: stretch; }
+  .base-dix-panneau { justify-content: center; width: min(270px, 40vw); }
   /* la balance et « Vider » à gauche, les nombres à droite */
   .balance-corps {
     display: grid; grid-template-columns: minmax(0, 1fr) min(440px, 52vw); grid-template-rows: minmax(0, 1fr) auto;

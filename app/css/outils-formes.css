@@ -12,11 +12,16 @@
   display: flex; align-items: center; justify-content: center;
 }
 /* en paysage, les commandes passent à côté de la zone de jeu, qui ne prend pas plus de largeur que
-   son dessin (100cqh : la hauteur de l'outil) : le tout reste groupé au milieu */
+   son dessin (100cqh : la hauteur de l'outil) : le tout reste groupé au milieu. Les blocs, eux, ne
+   passent en ligne que sur un écran bas (téléphone) : sur tablette, la planche serait haute et étroite. */
 @media (orientation: landscape) {
-  .outil-geoplan, .outil-blocs-formes { container-type: size; flex-direction: row; justify-content: center; }
-  .geo-commandes, .bf-commandes { flex-direction: column; flex-wrap: nowrap; align-items: stretch; align-self: center; }
+  .outil-geoplan { container-type: size; flex-direction: row; justify-content: center; }
+  .geo-commandes { flex-direction: column; flex-wrap: nowrap; align-items: stretch; align-self: center; }
   .geo-zone { max-width: 100cqh; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .outil-blocs-formes { container-type: size; flex-direction: row; justify-content: center; }
+  .bf-commandes { flex-direction: column; flex-wrap: nowrap; align-items: stretch; align-self: center; }
   .bf-zone { max-width: calc(100cqh * 8 / 4); }
 }
 
@@ -86,7 +91,7 @@
 .bf-bloc:focus-visible { outline: 4px solid var(--ink); outline-offset: 3px; }
 .bf-commandes .outil-btn:disabled { opacity: 0.45; cursor: default; }
 
-@media (orientation: landscape) {
+@media (orientation: landscape) and (max-height: 520px) {
   .bf-palette { grid-template-columns: repeat(3, minmax(52px, 1fr)); width: auto; align-self: center; }
   .bf-choix { flex-direction: column; min-height: 56px; gap: 2px; }
 }
@@ -119,9 +124,9 @@
 .rgl-un::before, .rgl-num::before, .rgl-den::before { content: attr(data-t); }
 @media (orientation: landscape) and (max-height: 520px) {
   .outil-fractions { flex-direction: row; gap: 8px; }
-  /* les boutons à côté, étroits (le dessin au-dessus du mot) : les réglettes gardent la place */
+  /* les boutons à côté, serrés : les dixièmes gardent au moins 24 px de large */
   .rgl-commandes { flex-direction: column; flex-wrap: nowrap; align-items: stretch; justify-content: center; gap: 6px; }
-  .rgl-commandes .outil-btn { flex-direction: column; gap: 0; padding: 4px 8px; font-size: 0.85rem; border-radius: 18px; }
+  .rgl-commandes .outil-btn { padding: 4px 8px; font-size: 0.85rem; }
   /* beaucoup de réglettes : deux colonnes */
   .rgl-mur.nombreuses {
     --rgl-l: calc((100cqw - 10px) / 2);
@@ -146,7 +151,4 @@
 @media (orientation: landscape) and (max-height: 520px) {
   .outil-ardoise { flex-direction: row; }
   .ardoise-commandes { display: grid; grid-template-columns: repeat(2, auto); align-content: center; }
-}
-@media (orientation: landscape) and (min-height: 521px) {
-  .ardoise-commandes { flex-wrap: nowrap; }
 }

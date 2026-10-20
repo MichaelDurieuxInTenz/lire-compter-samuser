@@ -6,7 +6,7 @@
 // boutons : ce sont des conteneurs CSS (container-type: size, outils-formes.css).
 
 import { h } from '../render.js';
-import { pick, randInt, sample } from '../random.js';
+import { pick, randInt } from '../random.js';
 
 // ===================================================================== le géoplan
 
@@ -406,6 +406,11 @@ function blocSvg(sorte) {
   return `<svg viewBox="-0.05 -0.05 ${w + 0.1} ${ht + 0.1}" aria-hidden="true"><polygon points="${points}" fill="${BLOCS[sorte].fond}" class="bf-trait"/></svg>`;
 }
 
+// Les sortes de blocs demandées ensemble : peu de mélanges, pour que les consignes ne changent que par
+// leurs nombres (la voix d'Estelle les dit autour des nombres)
+const PAIRES = [['hexagone', 'carre'], ['triangle', 'carre'], ['hexagone', 'losange'], ['trapeze', 'triangle'], ['losange', 'triangle']];
+const TRIPLES = [['hexagone', 'losange', 'triangle'], ['trapeze', 'carre', 'triangle'], ['hexagone', 'trapeze', 'carre']];
+
 // Recouvrir un grand bloc avec des petits : combien en faut-il ?
 const RECOUVRIR = [['hexagone', 'triangle', 6], ['hexagone', 'losange', 3], ['hexagone', 'trapeze', 2], ['trapeze', 'triangle', 3], ['losange', 'triangle', 2]];
 
@@ -446,11 +451,12 @@ export const blocsFormes = {
 
   defi(grade, rng) {
     const petits = ['PS', 'MS', 'GS'].includes(grade);
-    // des blocs à compter : les couleurs sont dites aux petits (et quand il n'y a qu'une sorte)
-    const compte = (nSortes, min, max, sortes = SORTES) => {
-      const choisies = sample(rng, sortes, nSortes).sort((a, b) => SORTES.indexOf(a) - SORTES.indexOf(b));
+    // des blocs à compter (une sorte, une paire ou un triple de PAIRES, TRIPLES) : les couleurs sont
+    // dites aux petits, et quand il n'y a qu'une sorte
+    const compte = (sortes, min, max) => {
+      const choisies = typeof sortes[0] === 'string' ? [pick(rng, sortes)] : pick(rng, sortes);
       const blocs = Object.fromEntries(choisies.map((s) => [s, randInt(rng, min, max)]));
-      return { blocs, consigne: `Pose ${enumerer(choisies.map((s) => quantite(s, blocs[s], petits || nSortes === 1)))}.` };
+      return { blocs, consigne: `Pose ${enumerer(choisies.map((s) => quantite(s, blocs[s], petits || choisies.length === 1)))}.` };
     };
     const recouvrir = () => {
       const [grand, petit, n] = pick(rng, RECOUVRIR);
@@ -462,12 +468,12 @@ export const blocsFormes = {
     };
     const libre = (...cles) => () => ({ libre: true, consigne: LIBRES_BLOCS[pick(rng, cles)] });
     const choix = {
-      PS: [() => compte(1, 1, 3, ['carre', 'triangle', 'hexagone']), () => compte(1, 1, 3, ['carre', 'triangle', 'hexagone']), libre('maison', 'train')],
-      MS: [() => compte(1, 1, 5), () => compte(2, 1, 2), libre('maison', 'bonhomme', 'train')],
-      GS: [() => compte(2, 1, 4), () => compte(1, 3, 6), libre('maison', 'fleur', 'bateau', 'bonhomme')],
-      CP: [() => compte(2, 1, 5), () => compte(3, 1, 3), libre('fleur', 'bateau', 'etoile', 'hexaTriangles')],
-      CE1: [() => compte(3, 1, 4), recouvrir, libre('hexaTrapezes', 'hexaLosanges', 'trapezeTriangles', 'frise')],
-      CE2: [() => compte(3, 2, 5), recouvrir, recouvrir, libre('hexaTrapezes', 'hexaLosanges', 'frise', 'etoile')],
+      PS: [() => compte(['carre', 'triangle', 'hexagone'], 1, 3), () => compte(['carre', 'triangle', 'hexagone'], 1, 3), libre('maison', 'train')],
+      MS: [() => compte(SORTES, 1, 5), () => compte(PAIRES, 1, 2), libre('maison', 'bonhomme', 'train')],
+      GS: [() => compte(PAIRES, 1, 4), () => compte(SORTES, 3, 6), libre('maison', 'fleur', 'bateau', 'bonhomme')],
+      CP: [() => compte(PAIRES, 1, 5), () => compte(TRIPLES, 1, 3), libre('fleur', 'bateau', 'etoile', 'hexaTriangles')],
+      CE1: [() => compte(TRIPLES, 1, 4), recouvrir, libre('hexaTrapezes', 'hexaLosanges', 'trapezeTriangles', 'frise')],
+      CE2: [() => compte(TRIPLES, 2, 5), recouvrir, recouvrir, libre('hexaTrapezes', 'hexaLosanges', 'frise', 'etoile')],
     }[grade];
     return choix ? pick(rng, choix)() : null;
   },
