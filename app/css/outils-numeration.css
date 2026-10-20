@@ -137,8 +137,16 @@
   .base-dix-decomposition { font-size: 0.95rem; }
   .droite-ligne { height: 124px; }
   :is(.a11y-text-large, .a11y-big-targets) .base-dix-plus { min-height: 40px; }
-  :is(.a11y-text-large, .a11y-big-targets) .balance-cle { min-height: 40px; }
+  /* texte agrandi ou grandes cibles : la balance se fait un peu plus petite pour laisser la place aux nombres */
+  :is(.a11y-text-large, .a11y-big-targets) .balance-corps { gap: 4px; }
+  :is(.a11y-text-large, .a11y-big-targets) .balance-dessin { min-height: 56px; }
+  :is(.a11y-text-large, .a11y-big-targets) .balance-cle { min-height: 38px; }
+  :is(.a11y-text-large, .a11y-big-targets) .balance-titre { font-size: 0.8rem; }
   :is(.a11y-text-large, .a11y-big-targets) .balance-phrase { font-size: 0.95rem; }
+  /* pendant un défi (consigne de trois lignes) : sans les titres « À gauche », « À droite » (les nombres
+     sont en miroir, comme la balance) */
+  :is(.a11y-text-large, .a11y-big-targets) .outil.en-defi .balance-titre { display: none; }
+  :is(.a11y-text-large, .a11y-big-targets) .outil.en-defi .balance-dessin { min-height: 48px; }
 }
 /* téléphone en paysage : le dessin à gauche, le nombre et les boutons à droite */
 @media (orientation: landscape) and (max-height: 520px) {

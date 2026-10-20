@@ -140,7 +140,7 @@
 }
 .minuteur-durees { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: min(100%, 360px); }
 .minuteur-duree { min-width: 0; padding: 4px 6px; white-space: nowrap; }
-.minuteur-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(100%, 360px); }
+.minuteur-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(100%, 440px); }
 /* « Recommencer » tient sur un téléphone, même en texte agrandi */
 .minuteur-actions .outil-btn { min-width: 0; min-height: 52px; font-size: min(1.15rem, 5cqw); padding: 6px 8px; white-space: nowrap; }
 .minuteur-go { background: var(--good-dark); color: #fff; box-shadow: 0 3px 0 #06472f; }

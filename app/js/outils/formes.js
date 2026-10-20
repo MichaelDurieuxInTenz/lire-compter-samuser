@@ -715,10 +715,11 @@ export const fractions = {
     const mur = h('div', { class: `rgl-mur${ids.length > 5 ? ' nombreuses' : ''}`, style: { '--r': ids.length, '--r2': Math.ceil(ids.length / 2) } },
       ids.map((id) => {
         const r = reglette(id);
+        // l'étiquette (1 sur 4) est dessinée par le CSS (::before) : le nom du bouton (« Un quart ») la dit déjà
         morceaux[id] = Array.from({ length: r.parts }, (_, k) => h('button', {
           class: 'rgl-morceau', 'data-reglette': id, 'data-morceau': k, onclick: () => toucher(id, k),
         }, h('span', { class: 'rgl-etiquette', 'aria-hidden': 'true' },
-          r.parts === 1 ? h('span', { class: 'rgl-un' }, '1') : [h('span', { class: 'rgl-num' }, '1'), h('span', { class: 'rgl-den' }, String(r.parts))])));
+          r.parts === 1 ? h('span', { class: 'rgl-un', 'data-t': '1' }) : [h('span', { class: 'rgl-num', 'data-t': '1' }), h('span', { class: 'rgl-den', 'data-t': r.parts })])));
         return h('div', {
           class: `rgl-reglette rgl-${id}`, role: 'group', 'aria-label': r.parts === 1 ? 'L’unité' : `La réglette des ${r.noms}`,
           style: { '--parts': r.parts, '--rgl-couleur': r.fond },

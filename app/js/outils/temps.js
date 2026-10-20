@@ -162,15 +162,16 @@ export const horloge = {
       voir.setAttribute('aria-pressed', String(voir.getAttribute('aria-pressed') !== 'true'));
       dessiner();
     } }, '👁 L’heure');
-    // une colonne par unité (heures, 5 minutes, 1 minute) : « + » en haut, « − » en bas
+    // une colonne par unité (heures, 5 minutes, 1 minute) : « + » en haut, « − » en bas ; le nom dit
+    // aussi ce qui est écrit (commande vocale), comme dans le jeu « Règle l'horloge »
     const bouton = (minutes, texte, aria) => h('button', {
-      class: `outil-btn horloge-btn ${Math.abs(minutes) === 60 ? 'heures' : 'minutes'}`, 'data-shift': minutes, 'aria-label': aria,
+      class: `outil-btn horloge-btn ${Math.abs(minutes) === 60 ? 'heures' : 'minutes'}`, 'data-shift': minutes, 'aria-label': `${texte} : ${aria}`,
       onclick: () => regler(shiftClock(t, minutes)),
     }, texte);
     const boutons = h('div', { class: `horloge-boutons${fin ? ' fin' : ''}` },
-      bouton(60, '+1 h', 'Avancer d’une heure'), bouton(-60, '−1 h', 'Reculer d’une heure'),
-      bouton(5, '+5 min', 'Avancer de 5 minutes'), bouton(-5, '−5 min', 'Reculer de 5 minutes'),
-      fin ? [bouton(1, '+1 min', 'Avancer d’une minute'), bouton(-1, '−1 min', 'Reculer d’une minute')] : []);
+      bouton(60, '+1 h', 'avancer d’une heure'), bouton(-60, '−1 h', 'reculer d’une heure'),
+      bouton(5, '+5 min', 'avancer de 5 minutes'), bouton(-5, '−5 min', 'reculer de 5 minutes'),
+      fin ? [bouton(1, '+1 min', 'avancer d’une minute'), bouton(-1, '−1 min', 'reculer d’une minute')] : []);
 
     function etat() {
       return fromClockMinutes(t);

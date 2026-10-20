@@ -116,6 +116,7 @@
   font-size: min(16px, calc(var(--rgl-h) * 0.34), calc(var(--rgl-l) / var(--parts) * 0.4));
 }
 .rgl-den { border-top: 1.5px solid currentColor; }
+.rgl-un::before, .rgl-num::before, .rgl-den::before { content: attr(data-t); }
 @media (orientation: landscape) and (max-height: 520px) {
   .outil-fractions { flex-direction: row; gap: 8px; }
   /* les boutons à côté, étroits (le dessin au-dessus du mot) : les réglettes gardent la place */
