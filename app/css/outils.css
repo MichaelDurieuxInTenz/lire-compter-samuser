@@ -1,0 +1,120 @@
+/* =====================================================================
+   1.22 : la boîte à outils (outils.js, outils-ecran.js) : sa tuile sur l'accueil, la liste des
+   outils, l'écran d'un outil (zone, défi, boutons), puis chaque outil
+   ===================================================================== */
+:root {
+  --outils: #475569;
+  --outils-dark: #334155;
+  --outils-soft: #e2e8f0;
+}
+.domain-theme-outils { --accent: var(--outils); --accent-dark: var(--outils-dark); --accent-soft: var(--outils-soft); }
+.domain-outils { background: var(--outils); box-shadow: 0 6px 0 var(--outils-dark); }
+
+/* ---------- accueil à 9 rubriques (avec les outils) : 3 colonnes en portrait, 5 en paysage ---------- */
+@media (orientation: portrait) {
+  .home-grid.n9 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .home-grid.n9 .domain-tile { min-height: 80px; font-size: 1rem; padding: 6px 4px; }
+  .home-grid.n9 .domain-tile .domain-icon { font-size: 1.9rem; }
+  .home-grid.n9 .domain-tile:last-child:nth-child(odd) { grid-column: auto; }
+  /* texte agrandi, grandes cibles (a11y.js) : le dessin reste au-dessus du nom (3 tuiles par ligne) */
+  :is(.a11y-text-large, .a11y-big-targets) .home-grid.n9 .domain-tile {
+    flex-direction: column; justify-content: center; text-align: center; gap: 0; min-height: 64px; padding: 4px 2px; font-size: 0.85rem; overflow-wrap: normal;
+  }
+  :is(.a11y-text-large, .a11y-big-targets) .home-grid.n9 .domain-tile .domain-icon { font-size: 1.5rem; }
+  /* jeux conseillés en plus (« Conseillé pour toi ») : tuiles plus basses */
+  .home.has-featured .home-grid.n9 .domain-tile {
+    flex-direction: column; justify-content: center; text-align: center; gap: 0; min-height: 60px; padding: 4px 2px; font-size: 0.9rem; overflow-wrap: normal;
+  }
+  .home.has-featured .home-grid.n9 .domain-tile .domain-icon { font-size: 1.5rem; }
+  :is(.a11y-text-large, .a11y-big-targets) .home.has-featured .home-grid.n9 .domain-tile { font-size: 0.8rem; min-height: 60px; }
+}
+@media (orientation: landscape) and (min-aspect-ratio: 5/4) {
+  .home-grid.n9 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+  .home-grid.n9 .domain-tile { font-size: 1.05rem; padding: 6px 4px; }
+  .a11y-text-large .home-grid.n9 .domain-tile { font-size: 0.85rem; overflow-wrap: normal; }
+  .home.has-featured .home-grid.n9 .domain-tile {
+    flex-direction: column; justify-content: center; text-align: center; gap: 0; padding: 4px 2px; font-size: 0.85rem; overflow-wrap: normal;
+  }
+  .home.has-featured .home-grid.n9 .domain-tile .domain-icon { font-size: 1.4rem; }
+  .a11y-text-large .home.has-featured .home-grid.n9 .domain-tile { font-size: 0.75rem; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .home-grid.n9 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+  .home-grid.n9 .domain-tile { flex-direction: column; gap: 0; min-height: 60px; font-size: 0.85rem; padding: 4px; }
+  .home-grid.n9 .domain-tile .domain-icon { font-size: 1.4rem; }
+}
+
+/* ---------- l'écran d'un outil : la consigne du défi, l'outil, les boutons ---------- */
+.screen.outil { gap: 6px; }
+.outil-defi { display: flex; flex-direction: column; align-items: stretch; gap: 4px; margin: 4px 0 0; }
+.outil-defi[hidden] { display: none; }
+.outil-consigne { margin: 0; font-size: 1.15rem; line-height: 1.3; padding: 8px 14px; text-align: left; }
+.outil-retour { margin: 0; min-height: 1.3em; font-weight: 700; font-size: 1.1rem; text-align: center; }
+.outil-retour.bien { color: var(--good-dark); }
+.outil-retour.pas-encore { color: #b3261e; }
+.outil-zone {
+  flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 6px 0;
+}
+.outil-zone > * { max-width: 100%; }
+.outil-barre { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 4px 0 6px; }
+.outil-barre .big-btn { flex: 1 1 0; max-width: 280px; min-height: 56px; font-size: 1.15rem; padding: 0 12px; }
+.outil-barre:empty { display: none; }
+/* pendant un défi, ce qui donnerait la réponse (le nombre affiché) est caché */
+.outil.en-defi .outil-aide-nombre { display: none !important; }
+
+/* les commandes d'un outil (couleur, vider…) : de petits boutons arrondis */
+.outil-commandes { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.outil-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 48px; padding: 6px 14px; border-radius: 999px;
+  background: var(--card); color: var(--ink); font-weight: 700; font-size: 1rem;
+  box-shadow: 0 3px 0 var(--line), 0 0 0 2px var(--field-line) inset;
+}
+.outil-btn:active { transform: translateY(2px); }
+.outil-btn[aria-pressed='true'] { background: var(--accent); color: #fff; box-shadow: 0 3px 0 var(--accent-dark); }
+.outil-nombre { margin: 0; font-size: 2rem; font-weight: 700; color: var(--accent-dark); line-height: 1.1; }
+.outil-nombre[hidden] { display: none; }
+
+/* téléphone en paysage : peu de hauteur, tout se resserre */
+@media (orientation: landscape) and (max-height: 520px) {
+  .screen.outil { gap: 2px; }
+  .outil-consigne { font-size: 1rem; padding: 4px 12px; }
+  .outil-retour { font-size: 1rem; }
+  .outil-zone { gap: 6px; padding: 2px 0; }
+  .outil-barre { padding: 2px 0; }
+  .outil-barre .big-btn { min-height: 48px; font-size: 1.05rem; }
+  .outil-btn { min-height: 44px; padding: 4px 12px; }
+  .outil-nombre { font-size: 1.5rem; }
+}
+
+/* ---------- les jetons (cadre de dix, jetons bicolores) : jamais la couleur seule ---------- */
+.jeton { display: inline-block; width: 1.4em; height: 1.4em; border-radius: 50%; flex: none; }
+.jeton.rouge { background: #d62828; box-shadow: inset 0 0 0 2px #8f1a1a; }
+/* le jaune se distingue aussi par son anneau pointillé (et son nom, dit et écrit) */
+.jeton.jaune { background: #ffd23f; box-shadow: inset 0 0 0 2px #7a5c00; outline: 3px dotted #7a5c00; outline-offset: -8px; }
+
+/* ---------- le cadre de dix ---------- */
+.outil-cadre-dix { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.cadres { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; --case: min(64px, 15vw, 12vh); }
+.cadre {
+  display: grid; grid-template-columns: repeat(5, var(--case)); grid-template-rows: repeat(2, var(--case));
+  background: #fff; border: 4px solid var(--ink); border-radius: 10px; overflow: hidden;
+}
+.cadre .case { width: var(--case); height: var(--case); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1px var(--field-line); }
+.cadre .case .jeton { width: 76%; height: 76%; }
+.cadre .case .jeton.jaune { outline-offset: calc(var(--case) * -0.22); }
+@media (orientation: landscape) and (max-height: 520px) {
+  .cadres { --case: min(56px, 14vh); flex-wrap: nowrap; }
+}
+/* pendant un défi, la consigne et sa réponse prennent de la place : deux cadres un peu plus petits */
+@media (orientation: portrait) and (max-height: 760px) {
+  .outil.en-defi .cadres.n20 { --case: min(56px, 14vw, 8.5vh); }
+  :is(.a11y-text-large, .a11y-big-targets) .outil-consigne { font-size: 1rem; padding: 6px 12px; }
+  :is(.a11y-text-large, .a11y-big-targets) .outil-retour { font-size: 0.95rem; }
+  :is(.a11y-text-large, .a11y-big-targets) .outil-btn { font-size: 0.9rem; padding: 4px 10px; gap: 4px; }
+  :is(.a11y-text-large, .a11y-big-targets) .outil.en-defi .cadres.n20 { --case: min(50px, 13vw, 7.5vh); }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .outil.en-defi .cadres { --case: min(52px, 12vh); }
+  :is(.a11y-text-large, .a11y-big-targets) .outil-consigne { font-size: 0.9rem; padding: 2px 10px; }
+}
