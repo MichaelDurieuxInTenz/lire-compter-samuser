@@ -4,13 +4,24 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.21.0',
+  version: '1.22.0',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.22.0',
+    date: '2026-10-21',
+    changes: [
+      'Nouvelle rubrique 🧰 Outils : 14 outils de classe à manipuler librement, inspirés des « Teacher Tools » de Toy Theater, choisis selon la classe de l’enfant.',
+      'Compter : le cadre de dix, les jetons, le tableau de cent, les dés et la roue. Les nombres : les blocs de base dix, la droite numérique, la balance des nombres.',
+      'Le temps et la monnaie : l’horloge, les pièces et les billets, le minuteur. Formes et fractions : le géoplan, les blocs de formes, les réglettes de fractions, l’ardoise.',
+      'Un bouton « 🎯 Un défi » propose une consigne courte, dite par Estelle et adaptée à la classe ; « Vérifier » répond sans note ni étoiles, avec un indice quand ce n’est pas encore ça.',
+      'Espace parents : la rubrique Outils se masque comme les autres, dans « Ses jeux ».',
+    ],
+  },
   {
     version: '1.21.0',
     date: '2026-10-13',

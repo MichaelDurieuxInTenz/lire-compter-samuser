@@ -1,0 +1,159 @@
+/* Outils de la famille « formes » (js/outils/formes.js). Les styles communs sont dans outils.css.
+   Chaque outil remplit la place laissée par la consigne et les boutons : sa zone de jeu (planche,
+   réglettes, ardoise) est un conteneur (container-type: size) dont la taille ne dépend pas du contenu ;
+   ce qu'elle contient se mesure en cqw / cqh et tient donc toujours dans l'écran. */
+
+.outil-geoplan, .outil-blocs-formes, .outil-fractions, .outil-ardoise {
+  flex: 1 1 0; min-height: 0; align-self: stretch; width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.geo-zone, .bf-zone, .rgl-zone {
+  flex: 1 1 0; min-height: 0; min-width: 0; align-self: stretch; container-type: size;
+  display: flex; align-items: center; justify-content: center;
+}
+/* en paysage, les commandes passent à côté de la zone de jeu, qui ne prend pas plus de largeur que
+   son dessin (100cqh : la hauteur de l'outil) : le tout reste groupé au milieu. Les blocs, eux, ne
+   passent en ligne que sur un écran bas (téléphone) : sur tablette, la planche serait haute et étroite. */
+@media (orientation: landscape) {
+  .outil-geoplan { container-type: size; flex-direction: row; justify-content: center; }
+  .geo-commandes { flex-direction: column; flex-wrap: nowrap; align-items: stretch; align-self: center; }
+  .geo-zone { max-width: 100cqh; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .outil-blocs-formes { container-type: size; flex-direction: row; justify-content: center; }
+  .bf-commandes { flex-direction: column; flex-wrap: nowrap; align-items: stretch; align-self: center; }
+  .bf-zone { max-width: calc(100cqh * 8 / 4); }
+}
+
+/* ---------- le géoplan : des clous (boutons) sur une planche en bois, les élastiques dessous ---------- */
+.geo-planche {
+  --geo-case: calc(min(100cqw, 100cqh, 80px * var(--n)) / var(--n));
+  position: relative; flex: none; display: grid;
+  grid-template-columns: repeat(var(--n), var(--geo-case)); grid-auto-rows: var(--geo-case);
+  background: #f4e2bf; border-radius: 12px; box-shadow: inset 0 0 0 3px #8c6d2f;
+}
+.geo-dessin, .geo-dessin svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.geo-grille { fill: none; stroke: #c9b07c; stroke-width: 0.025; }
+.geo-elastique { stroke-width: 0.14; stroke-linecap: round; stroke-linejoin: round; }
+.geo-anneau { fill: none; stroke-width: 0.06; }
+.geo-clou { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.geo-clou:focus-visible { outline-offset: -3px; border-radius: 50%; }
+.geo-tete {
+  width: 32%; height: 32%; max-width: 16px; max-height: 16px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #a07a3c 0 25%, #4a3410 60%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+.geo-clou:active .geo-tete { transform: scale(1.3); }
+
+/* ---------- les blocs de formes : la palette, la planche, les commandes ---------- */
+.bf-palette {
+  --pu: 17px; /* un côté de bloc, dans la palette */
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; width: min(100%, 540px);
+}
+.bf-choix {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-width: 0; min-height: 58px; padding: 4px 2px; border-radius: 14px;
+  background: var(--card); color: var(--ink);
+  box-shadow: 0 3px 0 var(--line), 0 0 0 2px var(--field-line) inset;
+}
+.bf-choix:active { transform: translateY(2px); }
+.bf-choix[aria-pressed='true'] { background: var(--accent); color: #fff; box-shadow: 0 3px 0 var(--accent-dark); }
+.bf-dessin {
+  display: flex; align-items: center; justify-content: center; height: calc(var(--pu) * 1.75); font-size: calc(var(--pu) * 1.5); line-height: 1;
+}
+.bf-dessin svg { width: calc(var(--pu) * var(--w)); height: calc(var(--pu) * var(--h)); display: block; overflow: visible; }
+.bf-nom { font-size: min(0.8rem, 3.3vw, 15px); font-weight: 700; line-height: 1.1; max-width: 100%; } /* « hexagone » tient dans son bouton */
+@media (max-width: 440px) {
+  .bf-palette { --pu: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+  .bf-choix { flex-direction: row; min-height: 44px; gap: 5px; }
+  .bf-nom { font-size: min(0.85rem, 3.9vw); }
+}
+
+.bf-planche {
+  --u: min(80px, calc(100cqw / var(--l)), calc(100cqh / var(--hmin))); /* un côté de bloc */
+  position: relative; flex: none; width: calc(var(--u) * var(--l)); height: 100cqh;
+  border-radius: 12px; overflow: hidden;
+  background: radial-gradient(circle, #c3bcad 0 1.5px, transparent 2px) calc(var(--u) / -2) calc(var(--u) / -2) / var(--u) var(--u), #fff;
+  box-shadow: inset 0 0 0 2px var(--field-line);
+}
+.bf-fond { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 12px; }
+.bf-fond:focus-visible { outline-offset: -5px; }
+/* avec un bloc de la palette, on pose par-dessus les autres : seule la planche reçoit les touchers ;
+   avec la main, les blocs posés (leur forme, pas leur cadre) se touchent */
+.bf-poses, .bf-bloc, .bf-bloc svg * { pointer-events: none; }
+.bf-planche.main .bf-bloc polygon { pointer-events: all; cursor: pointer; } /* « auto » ne suffit pas sous un parent à « none » (Chrome) */
+.bf-bloc { position: absolute; display: block; border-radius: 0; }
+.bf-bloc svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.bf-trait { stroke: #212529; stroke-width: 0.04; stroke-linejoin: round; }
+/* le bloc choisi : un trait épais et un cadre en tirets (pas seulement une couleur) */
+.bf-bloc[aria-pressed='true'] .bf-trait { stroke-width: 0.1; }
+.bf-bloc[aria-pressed='true'] { outline: 3px dashed var(--ink); outline-offset: 3px; }
+.bf-bloc:focus-visible { outline: 4px solid var(--ink); outline-offset: 3px; }
+.bf-commandes .outil-btn:disabled { opacity: 0.45; cursor: default; }
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .bf-palette { grid-template-columns: repeat(3, minmax(52px, 1fr)); width: auto; align-self: center; }
+  .bf-choix { flex-direction: column; min-height: 56px; gap: 2px; }
+}
+
+/* ---------- les réglettes de fractions ---------- */
+.rgl-mur {
+  --gap: 5px;
+  --rgl-l: min(100cqw, 680px); /* la longueur d'une réglette */
+  --rgl-h: min(72px, calc((100cqh - (var(--r) - 1) * var(--gap)) / var(--r)));
+  width: var(--rgl-l); display: grid; gap: var(--gap);
+}
+.rgl-reglette {
+  display: grid; grid-template-columns: repeat(var(--parts), minmax(0, 1fr)); height: var(--rgl-h);
+  margin: 0 2px; border-radius: 6px; overflow: hidden; background: #fff; box-shadow: 0 0 0 2px var(--ink);
+}
+.rgl-morceau { position: relative; min-width: 0; height: 100%; border-radius: 0; display: flex; align-items: center; justify-content: center; background: #fff; }
+.rgl-morceau + .rgl-morceau { box-shadow: inset 2px 0 0 var(--ink); }
+/* colorié : la couleur de la réglette et des rayures blanches (il se voit sans les couleurs) */
+.rgl-morceau.colorie { background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0 3px, transparent 3px 10px), var(--rgl-couleur); }
+.rgl-morceau:focus-visible { outline: 4px solid var(--ink); outline-offset: -6px; border-radius: 4px; }
+.rgl-etiquette { display: none; }
+/* l'étiquette (1 sur 4) : sur un fond blanc, à la taille du morceau (les dixièmes sont étroits) */
+.rgl-mur.etiquettes .rgl-etiquette {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 0 2px; border-radius: 4px; background: #fff; color: var(--ink); box-shadow: 0 0 0 1px var(--ink);
+  font-weight: 700; line-height: 1.05;
+  font-size: min(16px, calc(var(--rgl-h) * 0.34), calc(var(--rgl-l) / var(--parts) * 0.4));
+}
+.rgl-den { border-top: 1.5px solid currentColor; }
+.rgl-un::before, .rgl-num::before, .rgl-den::before { content: attr(data-t); }
+@media (orientation: landscape) and (max-height: 520px) {
+  .outil-fractions { flex-direction: row; gap: 8px; }
+  /* les boutons à côté, serrés : les dixièmes gardent au moins 24 px de large */
+  .rgl-commandes { flex-direction: column; flex-wrap: nowrap; align-items: stretch; justify-content: center; gap: 6px; }
+  .rgl-commandes .outil-btn { padding: 4px 8px; font-size: 0.85rem; }
+  /* beaucoup de réglettes : deux colonnes */
+  .rgl-mur.nombreuses {
+    --rgl-l: calc((100cqw - 10px) / 2);
+    --rgl-h: min(52px, calc((100cqh - (var(--r2) - 1) * var(--gap)) / var(--r2)));
+    width: 100cqw; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(var(--r2), auto); grid-auto-flow: column; column-gap: 10px;
+  }
+}
+
+/* ---------- l'ardoise ---------- */
+.outil-ardoise { align-items: stretch; gap: 8px; }
+.ardoise-cadre {
+  flex: 1 1 0; min-height: 0; position: relative; overflow: hidden;
+  background: #fff; border: 3px solid var(--field-line); border-radius: 14px;
+}
+.ardoise-toile { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+.ardoise-commandes { gap: 6px; }
+.ardoise-commandes .outil-btn { padding: 6px 12px; }
+.ardoise-pastille { display: inline-block; width: 1.1em; height: 1.1em; border-radius: 50%; flex: none; box-shadow: 0 0 0 2px #fff; } /* l’anneau blanc : visible aussi sur le bouton choisi, foncé */
+.ardoise-trait { display: inline-block; width: 1.3em; border-radius: 99px; background: currentColor; flex: none; }
+.ardoise-trait.fin { height: 3px; }
+.ardoise-trait.epais { height: 9px; }
+@media (orientation: landscape) and (max-height: 520px) {
+  .outil-ardoise { flex-direction: row; }
+  /* quatre rangées de boutons à côté de l'ardoise : elles se resserrent à la hauteur disponible
+     (sous la consigne d'un défi, 800 × 360), jusqu'à 48 px chacune */
+  .ardoise-commandes {
+    display: grid; grid-template-columns: repeat(2, auto); grid-auto-rows: minmax(0, 48px); align-content: center; align-self: stretch; gap: 4px 6px;
+  }
+  .ardoise-commandes .outil-btn { min-height: 0; height: 100%; padding: 2px 10px; }
+}

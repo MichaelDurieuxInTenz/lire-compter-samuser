@@ -2,7 +2,7 @@
 // (en voiture, en vacances…). Changer VERSION à chaque mise à jour publiée.
 // Tout nouveau fichier de l'app doit être ajouté à PRECACHE (vérifié par les tests).
 
-const VERSION = 'v36';
+const VERSION = 'v37';
 const CACHE = `lire-et-compter-${VERSION}`;
 // Sons de la voix naturelle (voix/fr/…, voix/en/…) : leurs noms changent avec leur contenu, on les
 // garde donc d'une version à l'autre (seuls ceux qui ne sont plus dans voix/manifest.json sont retirés).
@@ -19,6 +19,11 @@ const PRECACHE = [
   './css/acces.css',
   './css/demo.css',
   './css/fiches.css',
+  './css/outils.css',
+  './css/outils-comptage.css',
+  './css/outils-formes.css',
+  './css/outils-numeration.css',
+  './css/outils-temps.css',
   './css/explications.css',
   './css/style.css',
   './fonts/andika-400.woff2',
@@ -38,6 +43,12 @@ const PRECACHE = [
   './js/emoji.js',
   './js/demo.js',
   './js/fiches-ecran.js',
+  './js/outils.js',
+  './js/outils-ecran.js',
+  './js/outils/comptage.js',
+  './js/outils/formes.js',
+  './js/outils/numeration.js',
+  './js/outils/temps.js',
   './js/fiches.js',
   './js/explications.js',
   './js/explications-rendu.js',

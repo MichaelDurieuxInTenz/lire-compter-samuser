@@ -1,0 +1,173 @@
+/* Outils de la famille « numeration » (js/outils/numeration.js). Les styles communs sont dans outils.css. */
+
+/* Chaque outil prend toute la place que l'écran lui laisse : le dessin (blocs, balance) remplit ce
+   qui reste une fois les boutons posés (flex), en libre comme pendant un défi, texte agrandi ou non.
+   Sur un téléphone en paysage, les boutons passent à droite du dessin. */
+.outil-base-dix, .outil-balance {
+  flex: 1 1 auto; align-self: stretch; min-height: 0;
+  display: flex; flex-direction: column;
+}
+.base-dix-corps, .balance-corps {
+  flex: 1 1 0; min-height: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+}
+.base-dix-panneau, .balance-panneau { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: none; width: 100%; }
+
+/* ---------- les blocs de base dix : une colonne par sorte de bloc ---------- */
+.base-dix-tapis {
+  flex: 1 1 0; min-height: 0; max-height: 420px; width: 100%; max-width: 560px;
+  display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px;
+}
+.base-dix-colonne { display: flex; flex-direction: column; gap: 4px; min-width: 0; min-height: 0; }
+.base-dix-titre {
+  text-align: center; font-weight: 700; line-height: 1.2; color: var(--ink);
+  font-size: min(0.95rem, 3.6vw); white-space: nowrap;
+}
+.base-dix-zone {
+  position: relative; flex: 1 1 0; min-height: 48px; width: 100%;
+  background: var(--card); border-radius: 12px; box-shadow: inset 0 0 0 2px var(--field-line);
+}
+.base-dix-zone:active { background: var(--accent-soft); }
+/* casser ou grouper : les colonnes ont un bord en tirets (et le bouton du mode est enfoncé) */
+.outil-base-dix:not([data-mode='enlever']) .base-dix-zone { box-shadow: none; outline: 3px dashed var(--ink); outline-offset: -3px; }
+.base-dix-zone:focus-visible { outline: 4px solid var(--ink); outline-offset: 2px; }
+.base-dix-zone svg { position: absolute; left: 6px; top: 6px; width: calc(100% - 12px); height: calc(100% - 12px); }
+.base-dix-plus { width: 100%; min-height: 44px; padding: 0; font-size: 1.7rem; line-height: 1; }
+.base-dix-nombre { text-align: center; font-size: 1.6rem; line-height: 1.2; }
+.base-dix-decomposition { font-size: 1.05rem; color: var(--ink); }
+.base-dix-info { margin: 0; min-height: 1.3em; font-size: 0.95rem; line-height: 1.3; font-weight: 700; color: var(--muted); text-align: center; }
+/* les blocs : une couleur et une forme par sorte (le nom est écrit au-dessus de la colonne) */
+.bloc-unite { fill: #ffd23f; stroke: #7a5c00; stroke-width: 1.2; }
+.bloc-dizaine { fill: #74c0fc; stroke: #1b4f80; stroke-width: 1.2; }
+.bloc-centaine { fill: #8ce99a; stroke: #1f6b33; stroke-width: 1.6; }
+.bloc-millier { fill: #ffa8a8; stroke: #8f1d1d; stroke-width: 1.2; }
+.bloc-millier-haut { fill: #ffd0d0; stroke: #8f1d1d; stroke-width: 1.2; stroke-linejoin: round; }
+.bloc-millier-cote { fill: #e57373; stroke: #8f1d1d; stroke-width: 1.2; stroke-linejoin: round; }
+.bloc-trait { fill: none; stroke-width: 0.6; }
+.zone-dizaines .bloc-trait { stroke: #1b4f80; }
+.zone-centaines .bloc-trait { stroke: #1f6b33; stroke-width: 0.5; }
+.zone-milliers .bloc-trait { stroke: #8f1d1d; stroke-width: 0.7; }
+
+/* ---------- la droite numérique ---------- */
+.outil-droite {
+  flex: 1 1 auto; align-self: stretch; min-height: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+}
+/* la droite : l'axe à 62 % de la hauteur, les arcs au-dessus, les nombres en dessous */
+.droite-ligne { position: relative; flex: none; width: 100%; max-width: 900px; height: 132px; }
+/* les arcs : dans la droite sans ses marges de 14 px (MARGE_DROITE, numeration.js) */
+.droite-arcs { position: absolute; left: 14px; top: 0; width: calc(100% - 28px); height: 62%; overflow: hidden; pointer-events: none; }
+.droite-arcs path { fill: none; stroke: var(--accent-dark); stroke-width: 3; stroke-linecap: round; }
+.droite-dessin { position: absolute; inset: 0; pointer-events: none; }
+.droite-axe {
+  position: absolute; top: 62%; right: 0; height: 4px; transform: translateY(-50%);
+  background: var(--ink); border-radius: 2px;
+}
+/* la flèche : la droite continue */
+.droite-axe::after {
+  content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  border-style: solid; border-width: 8px 0 8px 12px; border-color: transparent transparent transparent var(--ink);
+}
+.droite-trait { position: absolute; top: 62%; width: 3px; height: 14px; transform: translate(-50%, -50%); background: var(--ink); border-radius: 2px; }
+.droite-trait.n1 { height: 22px; }
+.droite-trait.n2 { height: 30px; width: 4px; }
+.droite-numero {
+  position: absolute; top: calc(62% + 17px); transform: translateX(-50%);
+  font-weight: 700; font-size: min(1.05rem, 4.2vw); line-height: 1.1; white-space: nowrap; color: var(--ink);
+}
+.droite-grenouille {
+  position: absolute; bottom: 38%; transform: translateX(-50%);
+  font-size: min(34px, 9vw); line-height: 1; animation: droite-hop 0.3s ease-out;
+}
+@keyframes droite-hop { from { transform: translate(-50%, -40%); } to { transform: translate(-50%, 0); } }
+.droite-saut {
+  position: absolute; top: calc(62% * var(--haut)); transform: translate(-50%, -85%);
+  padding: 0 2px; border-radius: 6px; background: var(--card); color: var(--accent-dark);
+  font-size: min(0.8rem, 3.4vw); font-weight: 700; line-height: 1.2; white-space: nowrap;
+}
+.droite-graduations { position: absolute; inset: 0; }
+.droite-grad { position: absolute; top: 0; bottom: 0; border-radius: 10px; }
+.droite-grad:active { background: rgba(71, 85, 105, 0.14); }
+.droite-grad:focus-visible { outline-offset: -3px; }
+.droite-nombre { font-size: 1.4rem; text-align: center; }
+.droite-bonds { display: contents; }
+.droite-bond { min-width: 56px; font-variant-numeric: tabular-nums; }
+.droite-nav { min-width: 48px; padding: 6px 10px; }
+.droite-nav[hidden] { display: none; }
+.droite-nav:disabled { opacity: 0.4; cursor: default; }
+
+/* ---------- la balance des nombres ---------- */
+.balance-dessin { position: relative; flex: 1 1 0; min-height: 70px; max-height: 280px; width: 100%; max-width: 640px; }
+.balance-dessin svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bal-pied { fill: #8a7f6e; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+.bal-socle { fill: var(--ink); }
+.bal-fleau { fill: #c9b48a; stroke: var(--ink); stroke-width: 3; }
+.bal-cheville { fill: var(--ink); }
+.bal-num { font: 700 17px/1 Andika, system-ui, sans-serif; fill: var(--ink); text-anchor: middle; }
+.bal-pivot { fill: #fff; stroke: var(--ink); stroke-width: 4; }
+.bal-fil { stroke: var(--ink); stroke-width: 2; }
+.bal-poids { fill: #f08c00; stroke: #7a3d00; stroke-width: 2; }
+/* un poids imposé (défi) : rayé, en plus de sa couleur */
+.bal-poids.fixe { fill: url(#bal-raye); stroke: #2e2366; }
+.balance-phrase { margin: 0; font-weight: 700; font-size: 1.1rem; line-height: 1.25; text-align: center; }
+.balance-sommes { font-size: 1.35rem; text-align: center; }
+.balance-claviers { display: flex; gap: 16px; justify-content: center; width: 100%; max-width: 560px; }
+.balance-cote { flex: 1 1 0; min-width: 0; max-width: 270px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.balance-titre { font-weight: 700; font-size: 0.95rem; line-height: 1.2; }
+.balance-clavier { width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.balance-cle {
+  min-width: 0; min-height: 46px; padding: 2px 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  background: var(--card); border-radius: 10px; box-shadow: inset 0 0 0 2px var(--field-line);
+  font-weight: 700; font-size: 1.1rem; line-height: 1;
+}
+.balance-cle.charge { box-shadow: inset 0 0 0 3px var(--ink); background: #fff1dc; }
+.balance-cle:active { transform: translateY(2px); }
+.balance-cle:disabled { cursor: default; opacity: 0.6; }
+.balance-cle:disabled:active { transform: none; }
+.balance-marques { display: flex; gap: 1px; height: 7px; }
+.balance-marques i { width: 7px; height: 7px; border-radius: 2px; background: #f08c00; box-shadow: inset 0 0 0 1px #7a3d00; }
+.balance-marques i.fixe { background: repeating-linear-gradient(45deg, #5b4a99 0 2px, #c9bcf5 2px 4px); box-shadow: inset 0 0 0 1px #2e2366; }
+
+/* ---------- petits écrans ---------- */
+@media (orientation: portrait) and (max-height: 760px) {
+  .base-dix-nombre { font-size: 1.35rem; }
+  .base-dix-decomposition { font-size: 0.95rem; }
+  .droite-ligne { height: 124px; }
+  :is(.a11y-text-large, .a11y-big-targets) .base-dix-plus { min-height: 40px; }
+  /* texte agrandi ou grandes cibles : la balance se fait un peu plus petite pour laisser la place aux nombres */
+  :is(.a11y-text-large, .a11y-big-targets) .balance-corps { gap: 4px; }
+  :is(.a11y-text-large, .a11y-big-targets) .balance-dessin { min-height: 56px; }
+  :is(.a11y-text-large, .a11y-big-targets) .balance-cle { min-height: 38px; }
+  :is(.a11y-text-large, .a11y-big-targets) .balance-titre { font-size: 0.8rem; }
+  :is(.a11y-text-large, .a11y-big-targets) .balance-phrase { font-size: 0.95rem; }
+  /* pendant un défi (consigne de trois lignes) : sans les titres « À gauche », « À droite » (les nombres
+     sont en miroir, comme la balance) */
+  :is(.a11y-text-large, .a11y-big-targets) .outil.en-defi .balance-titre { display: none; }
+  :is(.a11y-text-large, .a11y-big-targets) .outil.en-defi .balance-dessin { min-height: 48px; }
+}
+/* téléphone en paysage : le dessin à gauche, le nombre et les boutons à droite */
+@media (orientation: landscape) and (max-height: 520px) {
+  .base-dix-corps { flex-direction: row; align-items: stretch; gap: 12px; }
+  .base-dix-tapis { max-height: none; }
+  .base-dix-panneau { justify-content: center; width: min(270px, 40vw); }
+  /* la balance et « Vider » à gauche, les nombres à droite */
+  .balance-corps {
+    display: grid; grid-template-columns: minmax(0, 1fr) min(440px, 52vw); grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: "dessin panneau" "commandes panneau"; align-items: center; gap: 4px 12px;
+  }
+  .balance-dessin { grid-area: dessin; align-self: stretch; max-height: none; min-height: 0; }
+  .balance-panneau { grid-area: panneau; width: auto; }
+  .balance-commandes { grid-area: commandes; }
+  .balance-claviers { gap: 10px; }
+  .base-dix-titre { font-size: 0.85rem; }
+  .base-dix-plus { min-height: 40px; }
+  .base-dix-nombre { font-size: 1.25rem; }
+  .base-dix-decomposition { font-size: 0.9rem; }
+  .droite-ligne { height: 112px; }
+  .droite-numero { font-size: 0.95rem; }
+  .droite-grenouille { font-size: 30px; }
+  .balance-cle { min-height: 40px; }
+  .balance-phrase { font-size: 1rem; }
+  .balance-sommes { font-size: 1.15rem; }
+}

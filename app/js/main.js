@@ -56,6 +56,8 @@ import { STORY_DATA } from './games/histoires.js';
 import * as recordings from './recordings.js';
 import { formatDuration, MAX_SECONDS, pickMime, sentenceAt, sentenceTimeline } from './recordings.js';
 import { fichesScreen } from './fiches-ecran.js';
+import { outilsScreen } from './outils-ecran.js';
+import { outilsDeLEnfant, RUBRIQUE_OUTILS } from './outils.js';
 import { creerSauvegarde, dateEnClair, exporterEnregistrements, importerEnregistrements, lireSauvegarde, nomFichier } from './sauvegarde.js';
 import { apresErreur, ATTENTE_OUBLI_MS, attente, calculDifficile, calculOubli, CODE_LENGTH, dureeEnClair, etapeOubli, problemeCode } from './code-parental.js';
 import { cetAppareil, ecransAVerifier, mesurerEcran, rapportTexte } from './verif-affichage.js';
@@ -842,6 +844,12 @@ function homeScreen() {
   const c = me();
   const domains = childProgram();
   const featured = featuredBlock();
+  // la boîte à outils (outils.js) : une rubrique de plus, après les autres
+  const outils = outilsDeLEnfant(child()).length
+    ? h('button', { class: `domain-tile domain-${RUBRIQUE_OUTILS.id}`, 'data-domain': RUBRIQUE_OUTILS.id, onclick: () => outilsScreen(outilsDeps()) },
+      h('span', { class: 'domain-icon', 'aria-hidden': 'true' }, RUBRIQUE_OUTILS.icon), h('span', { class: 'domain-name' }, RUBRIQUE_OUTILS.title))
+    : null;
+  const tiles = domains.length + (outils ? 1 : 0);
   show(h('main', { class: `screen home${featured ? ' has-featured' : ''}` },
     homeBar(),
     h('div', { class: 'home-hero' },
@@ -851,10 +859,11 @@ function homeScreen() {
     h('nav', { class: 'home-menu' },
       featured,
       h('div', { class: 'home-top' }, dailyButton(), reviewButton()),
-      domains.length
-        ? h('div', { class: `home-grid n${domains.length}` },
+      tiles
+        ? h('div', { class: `home-grid n${tiles}` },
           domains.map((d) => h('button', { class: `domain-tile domain-${d.id}`, 'data-domain': d.id, onclick: () => domainScreen(d.id) },
-            h('span', { class: 'domain-icon', 'aria-hidden': 'true' }, d.icon), h('span', { class: 'domain-name' }, d.title))))
+            h('span', { class: 'domain-icon', 'aria-hidden': 'true' }, d.icon), h('span', { class: 'domain-name' }, d.title))),
+          outils)
         : h('p', { class: 'muted home-empty' }, 'Pas de jeux pour le moment : demande à un parent.'),
       h('div', { class: 'home-bottom' },
         h('button', { class: 'domain-btn domain-album', onclick: albumScreen },
@@ -864,6 +873,14 @@ function homeScreen() {
         h('button', { class: 'domain-btn domain-dress', 'data-dress': '', onclick: () => characterScreen() },
           h('span', { class: 'domain-icon', 'aria-hidden': 'true' }, '🎨'),
           h('span', {}, 'Mon personnage'))))));
+}
+
+/** Ce que les écrans de la boîte à outils (outils-ecran.js) empruntent à l'app. */
+function outilsDeps() {
+  return {
+    show, topBar, say, me, child, frenchSpacing, onBack: homeScreen,
+    quitter: (stop) => { leaveScreen = stop; }, // un minuteur s'arrête quand on quitte l'outil
+  };
 }
 
 /** « ⭐ Conseillé pour toi » : les jeux choisis par les parents, en haut de l'accueil. */
@@ -5344,7 +5361,9 @@ function playTimeState(kid) {
 function kidGamesState(kid) {
   const domains = programFor(kid.grade);
   const ids = new Set(domains.flatMap((d) => d.games.map(({ game }) => game.id)));
-  const hiddenDomains = domains.filter((d) => (kid.hiddenDomains || []).includes(d.id)).length;
+  // la boîte à outils compte comme une rubrique (outils.js)
+  const outilsMasques = (kid.hiddenDomains || []).includes(RUBRIQUE_OUTILS.id) && outilsDeLEnfant({ ...kid, hiddenDomains: [] }).length ? 1 : 0;
+  const hiddenDomains = domains.filter((d) => (kid.hiddenDomains || []).includes(d.id)).length + outilsMasques;
   const hiddenGames = (kid.hiddenGames || []).filter((g) => ids.has(g)).length;
   const featured = featuredGames(kid).length;
   const list = [
@@ -5615,11 +5634,27 @@ function kidGamesCard(id) {
             toggleBox),
           details);
       }),
+      outilsSwitch(kid, hiddenDomains, change, setIn),
       full ? h('p', { class: 'muted small kid-games-full' }, `${MAX_FEATURED} jeux conseillés : retirez-en un pour en choisir un autre.`) : null,
     ].filter(Boolean));
   };
   draw();
   return card;
+}
+
+/** « Ses jeux » : la rubrique Outils (outils.js) s'affiche ou se masque comme les autres. */
+function outilsSwitch(kid, hiddenDomains, change, setIn) {
+  const { id, icon, title } = RUBRIQUE_OUTILS;
+  if (!outilsDeLEnfant({ ...kid, hiddenDomains: [] }).length) return null;
+  const hidden = hiddenDomains.has(id);
+  const toggleBox = h('input', { type: 'checkbox', role: 'switch', checked: !hidden, 'data-domain-switch': id, 'aria-label': `Afficher la rubrique ${title}` });
+  toggleBox.addEventListener('change', change(() => setIn('hiddenDomains', id, !toggleBox.checked)));
+  return h('div', { class: hidden ? 'kid-domain off' : 'kid-domain', 'data-kid-domain': id },
+    h('label', { class: 'setting kid-domain-head' },
+      h('span', { class: 'kid-domain-title' }, h('span', { 'aria-hidden': 'true' }, icon), ' ', title),
+      h('span', { class: 'kid-domain-state', 'aria-hidden': 'true' }, hidden ? 'Masquée' : 'Affichée'),
+      toggleBox),
+    h('p', { class: 'muted small kid-domain-note' }, `${outilsDeLEnfant({ ...kid, hiddenDomains: [] }).length} outils à manipuler, avec des défis sans note`));
 }
 
 // ---- Voix naturelle : les sons sont téléchargés peu à peu, pour être joués hors connexion

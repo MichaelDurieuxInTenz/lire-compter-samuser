@@ -40,6 +40,7 @@ import { seasonOf } from '../app/js/themes.js';
 import { cle, planLecture } from '../app/js/voix-cles.js';
 import { DRAG_WORDS } from '../app/js/a11y-jeux.js';
 import { explain } from '../app/js/explications.js';
+import { OUTILS, trouverOutil } from '../app/js/outils.js';
 
 const PORT = Number(process.env.PORT) || 8123;
 const BASE = `http://localhost:${PORT}/`;
@@ -1479,6 +1480,57 @@ await page.waitForSelector('.home');
 if (!(await page.textContent('.home-title')).replace('\u2011', '-').includes('Eva-Rose')) fail('prénom absent de l’accueil');
 await shot('02-accueil');
 
+const bubbleText = (t) => t.replace(/[\u00a0\u202f]/g, ' ').replace(/\u2011/g, '-').replace(/\s+/g, ' ').trim();
+
+// la boîte à outils : la liste de la classe, le cadre de dix manipulé, un défi raté puis réussi
+{
+  await page.click('[data-domain="outils"]');
+  await page.waitForSelector('.screen.outils');
+  const ids = await page.$$eval('[data-outil]', (els) => els.map((e) => e.dataset.outil));
+  const attendus = OUTILS.filter((o) => o.classes.includes('CP')).map((o) => o.id);
+  if ([...ids].sort().join() !== [...attendus].sort().join()) fail(`outils du CP : ${ids.join(', ')} au lieu de ${attendus.join(', ')}`);
+  await shot('60-outils');
+  await page.click('[data-outil="cadre-dix"]');
+  await page.waitForSelector('.screen.outil .cadre');
+  // trois jetons rouges, un jaune ; un jeton touché s'enlève
+  for (const i of [0, 1, 2]) await page.click(`[data-case="${i}"]`);
+  await page.click('[data-couleur="jaune"]');
+  await page.click('[data-case="3"]');
+  await page.click('[data-case="2"]');
+  if ((await page.getAttribute('[data-case="3"]', 'aria-label')) !== 'Case 4 : jeton jaune') fail('cadre de dix : le jeton jaune n’est pas posé');
+  if ((await page.getAttribute('[data-case="2"]', 'aria-label')) !== 'Case 3 : vide') fail('cadre de dix : le jeton touché n’est pas enlevé');
+  await page.click('[data-voir-nombre]');
+  if ((await page.textContent('.outil-nombre')).trim() !== '2 + 1 = 3') fail(`cadre de dix : « ${await page.textContent('.outil-nombre')} » au lieu de « 2 + 1 = 3 »`);
+  await shot('61-cadre-dix');
+  // un défi : la consigne écrite et dite, le nombre caché, un indice sur le cadre vide
+  await page.click('[data-defi]');
+  const { defi } = await page.evaluate(() => globalThis.__lc);
+  const cadre = trouverOutil('cadre-dix');
+  if (bubbleText(await page.textContent('.outil-consigne')) !== bubbleText(defi.consigne)) fail('défi : la consigne n’est pas écrite');
+  await page.waitForFunction((c) => (globalThis.__spoken || []).some((t) => t.includes(c.slice(0, 12))), defi.consigne, { timeout: 15000 })
+    .catch(() => fail('défi : la consigne n’est pas dite'));
+  if (await page.locator('.outil-nombre:visible').count()) fail('défi : le nombre reste affiché');
+  await page.click('[data-verifier]');
+  const indice = bubbleText(await page.textContent('.outil-retour'));
+  if (!cadre.indices.map(bubbleText).includes(indice)) fail(`défi : indice inattendu « ${indice} »`);
+  // la réponse : des rouges, puis des jaunes
+  const etat = cadre.solution(defi);
+  await page.click('[data-couleur="rouge"]');
+  for (let i = 0; i < etat.rouge; i++) await page.click(`[data-case="${i}"]`);
+  await page.click('[data-couleur="jaune"]');
+  for (let i = etat.rouge; i < etat.total; i++) await page.click(`[data-case="${i}"]`);
+  await page.click('[data-verifier]');
+  await page.waitForSelector('.outil-retour.bien');
+  await shot('62-cadre-dix-defi');
+  // un autre défi, puis « Arrêter » : l'outil redevient libre
+  await page.click('[data-defi]');
+  await page.click('[data-arreter]');
+  if (await page.locator('.outil-defi:not([hidden])').count()) fail('défi : « Arrêter » ne cache pas la consigne');
+  if (!(await page.locator('[data-defi]').count())) fail('défi : plus de bouton « Un défi » après « Arrêter »');
+  await goProfile(page);
+  console.log('✔ boîte à outils (liste du CP, cadre de dix, défi raté puis réussi, arrêter)');
+}
+
 const shotsWanted = {
   compter: '10-compter', 'vite-vu': '11-vite-vu', panier: '12-panier', dizaines: '13-dizaines', ecoute: '18-anglais',
   patates: '20-patates', labyrinthe: '21-labyrinthe', 'chemin-nombres': '22-chemin', ranger: '23-ranger',
@@ -1488,7 +1540,6 @@ const shotsWanted = {
   'animaux-monde': '38-animaux', saisons: '39-saisons', pays: '40-pays', histoires: '44-histoire', monnaie: '45-monnaie',
   mesures: '46-mesures', calendrier: '47-calendrier', tangram: '48-tangram', reproduire: '49-reproduire', 'parle-anglais': '50-parle',
 };
-const bubbleText = (t) => t.replace(/[\u00a0\u202f]/g, ' ').replace(/\u2011/g, '-').replace(/\s+/g, ' ').trim();
 let extraStars = 0; // étoiles gagnées en plus des 2 étoiles par jeu (deuxième défi chrono)
 for (const game of GAMES.filter((g) => !PLAY || PLAY.includes(g.id))) {
   const grade = gradeFor(game.id);
@@ -1991,17 +2042,21 @@ await page.click('[data-feature-game="problemes"]');
 await page.waitForSelector('[data-feature-game="problemes"][aria-pressed="true"]');
 await page.click('[data-domain-switch="monde"]');
 await page.waitForSelector('[data-kid-domain="monde"].off');
+await page.click('[data-domain-switch="outils"]');
+await page.waitForSelector('[data-kid-domain="outils"].off');
 await shot('54-ses-jeux');
 const gamesState = await page.textContent('[data-fold="jeux"] .fold-sub');
-if (gamesState !== '1 conseillé ⭐ · 1 rubrique masquée · 1 jeu masqué') fail(`ses jeux : état replié « ${gamesState} »`);
+if (gamesState !== '1 conseillé ⭐ · 2 rubriques masquées · 1 jeu masqué') fail(`ses jeux : état replié « ${gamesState} »`);
 const kidSettings = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).profiles['eva-rose'], STORAGE_KEY);
-if (!kidSettings.hiddenGames.includes('tables') || !kidSettings.featured.includes('problemes') || !kidSettings.hiddenDomains.includes('monde')) {
+if (!kidSettings.hiddenGames.includes('tables') || !kidSettings.featured.includes('problemes') || !kidSettings.hiddenDomains.includes('monde')
+  || !kidSettings.hiddenDomains.includes('outils')) {
   fail(`ses jeux : réglages non enregistrés (${JSON.stringify([kidSettings.hiddenGames, kidSettings.featured, kidSettings.hiddenDomains])})`);
 }
 await goProfile(page, 'eva-rose');
 if (!(await page.textContent('.home-featured')).includes('Conseillé pour toi')) fail('accueil : bloc « Conseillé pour toi » absent');
 if (!(await page.locator('.home-featured [data-featured="problemes"]').count())) fail('accueil : le jeu conseillé est absent');
 if (await page.locator('[data-domain="monde"]').count()) fail('accueil : la rubrique masquée est affichée');
+if (await page.locator('[data-domain="outils"]').count()) fail('accueil : la boîte à outils masquée est affichée');
 await shot('55-accueil-conseille');
 await page.click('[data-domain="maths"]');
 if (await page.locator('[data-game="tables"]').count()) fail('rubrique : le jeu masqué est affiché');
@@ -2019,8 +2074,10 @@ await openFold(page, 'jeux');
 await page.click('[data-domain-games="maths"] summary');
 await page.click('[data-show-game="tables"]');
 await page.click('[data-domain-switch="monde"]');
+await page.click('[data-domain-switch="outils"]');
 await page.waitForSelector('[data-show-game="tables"][aria-pressed="true"]');
 await page.waitForSelector('[data-kid-domain="monde"]:not(.off)');
+await page.waitForSelector('[data-kid-domain="outils"]:not(.off)');
 console.log('✔ ses jeux (jeu masqué, jeu conseillé en haut de l’accueil et avec un badge, rubrique masquée)');
 
 // accessibilité : un réglage tout prêt allume les siens ; éteint, il garde ceux qu'un autre, allumé, demande aussi
@@ -2414,6 +2471,24 @@ async function a11yPart() {
     await page.click(`[data-domain="${domain.id}"]`);
     await audit(`rubrique ${domain.title}`);
   }
+  // la boîte à outils : la liste, puis chaque outil (une de ses classes), en libre et pendant un défi
+  await goProfile(page, 'eva-rose');
+  await page.click('[data-domain="outils"]');
+  await audit('rubrique Outils');
+  for (const outil of OUTILS) {
+    await setStore(page, `store.profiles['eva-rose'].grade = '${outil.classes.includes('CP') ? 'CP' : outil.classes[0]}';`);
+    await goProfile(page, 'eva-rose');
+    await page.click('[data-domain="outils"]');
+    await page.click(`[data-outil="${outil.id}"]`);
+    await page.waitForSelector('.screen.outil');
+    await audit(`outil ${outil.titre}`);
+    if (await page.locator('[data-defi]').count()) {
+      await page.click('[data-defi]');
+      await page.click('[data-verifier]');
+      await audit(`outil ${outil.titre}, défi`);
+    }
+  }
+  await setStore(page, "store.profiles['eva-rose'].grade = 'CP';");
   // sur les petits écrans, les textes rapetissent : le texte blanc des tuiles doit rester lisible
   for (const size of [{ width: 375, height: 667 }, { width: 667, height: 375 }]) {
     await page.setViewportSize(size);
@@ -2428,6 +2503,7 @@ async function a11yPart() {
     ['accueil', () => goProfile(page, 'eva-rose')],
     ['rubrique', async () => { await goProfile(page, 'eva-rose'); await page.click('[data-domain="francais"]'); }],
     ['jeu', async () => { await openGame(page, findGame('compter')); await page.waitForSelector('.choices'); }],
+    ['outil', async () => { await goProfile(page, 'eva-rose'); await page.click('[data-domain="outils"]'); await page.click('[data-outil="cadre-dix"]'); }],
     ['suivi', async () => { await openParents(page); await page.click('.skill-domain > summary'); await page.click('.skill-domain[open] .game-row > summary'); }],
     ['fiche d’un enfant', async () => {
       await openParents(page);
@@ -2614,7 +2690,8 @@ async function a11yPart() {
   await audit('espace parents, vos voix');
 
   // chaque écran a son propre titre
-  const sameTitle = [...titles].filter(([, t], i, all) => all.findIndex(([, u]) => u === t) !== i && !/^jeu |^bienvenue|×/.test(all[i][0]));
+  // (un outil pendant un défi reste le même écran : il garde son titre)
+  const sameTitle = [...titles].filter(([, t], i, all) => all.findIndex(([, u]) => u === t) !== i && !/^jeu |^bienvenue|×|^outil .*, défi$/.test(all[i][0]));
   if (sameTitle.length) problems.push(`titres de page identiques : ${sameTitle.map(([n, t]) => `${n} (« ${t} »)`).join(', ')}`);
 
   await context.close();
@@ -3225,10 +3302,34 @@ const STRESS = {
   'relie-calculs': 3, trous: 3, 'ordre-histoire': 6,
 };
 
+/**
+ * Un outil (outils.js) : rien ne sort de sa zone, entre la consigne et les boutons. checkLayout ne le
+ * voit pas toujours : les outils se calent sur la place restante (conteneurs de taille, cqw/cqh), et
+ * un contenu centré trop haut sortirait en haut, sous la consigne, sans faire défiler la page.
+ */
+async function checkOutilZone(page, label) {
+  const problem = await page.evaluate(() => {
+    const zone = document.querySelector('.outil-zone')?.getBoundingClientRect();
+    if (!zone) return 'zone de l’outil absente';
+    for (const el of document.querySelectorAll('.outil-zone *')) {
+      if (el.closest('svg') && el.tagName !== 'svg') continue; // le dessin compte en entier
+      if (el.closest('.visually-hidden, .droite-dessin, .droite-arcs')) continue; // les bonds de la grenouille passent au-dessus
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      if (r.top < zone.top - 1 || r.bottom > zone.bottom + 1 || r.left < zone.left - 1 || r.right > zone.right + 1) {
+        const name = el.getAttribute('aria-label') || el.className?.baseVal || el.className || el.tagName;
+        return `« ${String(name).slice(0, 40)} » sort de la zone de l’outil (${Math.round(r.top)}–${Math.round(r.bottom)} pour ${Math.round(zone.top)}–${Math.round(zone.bottom)})`;
+      }
+    }
+    return null;
+  });
+  if (problem) layoutProblems.push(`${label} : ${problem}`);
+}
+
 async function checkLayout(page, label, { reachable = true } = {}) {
   const problem = await page.evaluate((mustReach) => {
     if (document.documentElement.scrollWidth > window.innerWidth) return 'la page déborde en largeur';
-    for (const el of document.querySelectorAll('.choice, .key, .match-item, .tile, .fill-row, .stage > *, .palier-tile, .game-card, .domain-btn, .profile-card, .parent-tab, .look-option, .child-row, .maze-arrow, .path-cell, .order-item, .order-slot, .level-row, .level-pick, .story-text, .text-body, .sudoku-cell, .sudoku-symbol, .sym-cell, .featured-game, .domain-tile, .kid-game, .son-chip, .fiche-chip')) {
+    for (const el of document.querySelectorAll('.choice, .key, .match-item, .tile, .fill-row, .stage > *, .palier-tile, .game-card, .domain-btn, .profile-card, .parent-tab, .look-option, .child-row, .maze-arrow, .path-cell, .order-item, .order-slot, .level-row, .level-pick, .story-text, .text-body, .sudoku-cell, .sudoku-symbol, .sym-cell, .featured-game, .domain-tile, .kid-game, .son-chip, .fiche-chip, .outil-btn, .outil-barre .big-btn, .outil-consigne')) {
       if (el.clientWidth <= 1) continue; // caché à l'écran, gardé pour le clavier (flèches du labyrinthe rond)
       if (el.closest('.choices-seek')) continue; // cherche et trouve : l'image tourne exprès dans son rond
       if (el.scrollWidth > el.clientWidth + 1) return `contenu trop large : « ${el.textContent.trim().slice(0, 30)} »`;
@@ -3248,7 +3349,8 @@ async function checkLayout(page, label, { reachable = true } = {}) {
         if (el.getBoundingClientRect().right > band.left + 1) return `${el.className.split(' ')[0]} sous les sous-titres`;
       }
     }
-    const zone = document.querySelector('.choices, .home-menu, .profile-list');
+    // un outil (outils-ecran.js) : ses boutons (défi, vérifier) sous l'outil
+    const zone = document.querySelector('.choices, .home-menu, .profile-list, .outil-barre:not(:empty)');
     if (mustReach && zone && zone.getBoundingClientRect().bottom > bottom + 1) {
       return `boutons hors de l'écran (${Math.round(zone.getBoundingClientRect().bottom)} > ${bottom})`;
     }
@@ -3258,7 +3360,7 @@ async function checkLayout(page, label, { reachable = true } = {}) {
       return `« C’est parti ! » hors de l'écran (${Math.round(go.getBoundingClientRect().bottom)} > ${window.innerHeight})`;
     }
     // en paysage, le dessin est à côté des réponses : il doit aussi tenir dans l'écran
-    const stage = document.querySelector('.stage');
+    const stage = document.querySelector('.stage, .outil-zone');
     if (mustReach && stage && stage.getBoundingClientRect().bottom > bottom + 1) {
       return `dessin hors de l'écran (${Math.round(stage.getBoundingClientRect().bottom)} > ${bottom})`;
     }
@@ -3350,7 +3452,8 @@ async function checkDevice(device, repeat, deviceIndex) {
     await setStore(page, `store.profiles['${id}'] = store.profiles['${id}'] || {}; store.profiles['${id}'].grade = '${grade}';`);
     await goProfile(page, id);
     await checkLayout(page, tag(`accueil ${id} ${grade}`));
-    for (const domain of DOMAINS.map((d) => d.id)) {
+    for (const domain of [...DOMAINS.map((d) => d.id), 'outils']) {
+      if (!(await page.locator(`[data-domain="${domain}"]`).count())) continue;
       await page.click(`[data-domain="${domain}"]`);
       await checkLayout(page, tag(`liste ${domain} ${id} ${grade}`), { reachable: false });
       await page.click('.top-bar .icon-btn');
@@ -3431,6 +3534,30 @@ async function checkDevice(device, repeat, deviceIndex) {
       }
     }
   }
+  // la boîte à outils (outils.js) : chaque outil pour la première et la dernière de ses classes, en
+  // libre, puis pendant un défi après « Vérifier » (la consigne et l'indice au-dessus de l'outil) ;
+  // ONLY=outils (ou ONLY=<id d'un outil>) ne vérifie que la boîte à outils
+  for (const [k, outil] of OUTILS.entries()) {
+    if (ONLY ? !ONLY.includes(outil.id) && !ONLY.includes('outils') : !mine(k + deviceIndex)) continue;
+    for (const grade of [...new Set([outil.classes[0], outil.classes.at(-1)])]) {
+      await setStore(page, `store.profiles['eva-rose'].grade = '${grade}';`);
+      await goProfile(page);
+      await page.click('[data-domain="outils"]');
+      await page.click(`[data-outil="${outil.id}"]`);
+      await page.waitForSelector('.screen.outil');
+      await checkLayout(page, tag(`outil ${outil.id} ${grade}`));
+      await checkOutilZone(page, tag(`outil ${outil.id} ${grade}`));
+      checked++;
+      if (await page.locator('[data-defi]').count()) {
+        await page.click('[data-defi]');
+        await page.click('[data-verifier]');
+        await checkLayout(page, tag(`outil ${outil.id} ${grade}, défi`));
+        await checkOutilZone(page, tag(`outil ${outil.id} ${grade}, défi`));
+        checked++;
+      }
+    }
+  }
+  await setStore(page, "store.profiles['eva-rose'].grade = 'CP';");
   if ((ONLY && !screens) || !mine(deviceIndex)) {
     if (ONLY?.includes('histoires')) checked += await checkVoicesLayout(page, tag);
     await ctx.close();
