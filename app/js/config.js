@@ -13,7 +13,7 @@ export const APP = {
 export const CHANGELOG = [
   {
     version: '1.22.0',
-    date: '2026-10-20',
+    date: '2026-10-21',
     changes: [
       'Nouvelle rubrique 🧰 Outils : 14 outils de classe à manipuler librement, inspirés des « Teacher Tools » de Toy Theater, choisis selon la classe de l’enfant.',
       'Compter : le cadre de dix, les jetons, le tableau de cent, les dés et la roue. Les nombres : les blocs de base dix, la droite numérique, la balance des nombres.',
