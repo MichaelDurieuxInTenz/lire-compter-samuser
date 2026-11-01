@@ -198,9 +198,20 @@ async function tourner(pilote) {
 // ---------------------------------------------------------------- pilotes : Safari (WebDriver) ou Playwright
 
 async function wd(methode, chemin, corps) {
-  const res = await fetch(`${WD}${chemin}`, {
-    method: methode, headers: { 'Content-Type': 'application/json' }, body: corps ? JSON.stringify(corps) : undefined,
-  });
+  // safaridriver laisse parfois tomber une connexion (« fetch failed », vu sur l'iPhone 17) : jusqu'à
+  // trois essais quand la requête ne l'a pas atteint ; une erreur WebDriver, elle, n'est pas réessayée
+  let res;
+  for (let essai = 1; ; essai++) {
+    try {
+      res = await fetch(`${WD}${chemin}`, {
+        method: methode, headers: { 'Content-Type': 'application/json' }, body: corps ? JSON.stringify(corps) : undefined,
+      });
+      break;
+    } catch (e) {
+      if (essai >= 3) throw e;
+      await pause(1000 * essai);
+    }
+  }
   const json = await res.json().catch(() => ({}));
   if (!res.ok || json.value?.error) throw new Error(`${methode} ${chemin} : ${json.value?.error || res.status} ${json.value?.message || ''}`.trim());
   return json.value;
