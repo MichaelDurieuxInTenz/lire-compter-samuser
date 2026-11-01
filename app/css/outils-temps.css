@@ -157,3 +157,8 @@
   .minuteur-durees, .minuteur-actions { width: min(48cqw, 340px); }
   .minuteur-actions .outil-btn { min-height: 48px; font-size: min(1.15rem, 2.6cqw); }
 }
+/* à côté du cadran sur un téléphone en portrait (zone basse : la consigne d'un défi dans Safari) : une
+   rangée par unité, « + » et « − » côte à côte, pour que « +5 min » tienne dans son bouton */
+@container outil-temps (min-aspect-ratio: 7 / 5) and (max-width: 520px) {
+  .horloge-boutons { grid-template-rows: none; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: row; }
+}

@@ -101,8 +101,9 @@
 .des-pm { width: 48px; padding: 0; font-size: 1.5rem; }
 .roue-nb { font-weight: 700; text-align: center; white-space: nowrap; }
 .des-lancer { background: var(--accent); color: #fff; box-shadow: 0 3px 0 var(--accent-dark); padding: 6px 18px; }
-/* large (téléphone en paysage) : l'outil à gauche, les boutons en colonne à droite */
-@container des (min-aspect-ratio: 3/2) {
+/* large (téléphone en paysage) : l'outil à gauche, les boutons en colonne à droite ; pas sur un
+   téléphone en portrait, même quand la zone est basse (les réglages de la roue n'y tiendraient pas) */
+@container des (min-aspect-ratio: 3/2) and (min-width: 480px) {
   .des-corps { flex-direction: row; align-items: stretch; }
   .des-commandes { flex: none; width: min(270px, 45cqw); }
 }
