@@ -1,8 +1,9 @@
 // Test sur un vrai simulateur iOS (Xcode, sur un Mac) : l'app est ouverte dans Safari, pilotée par
 // safaridriver (le WebDriver d'Apple). Le parcours passe par le premier lancement, « Qui joue ? »,
 // l'accueil, un jeu de chaque rubrique, les jeux aux mises en page délicates (textes et grands
-// nombres du CM, pavé et explication d'une erreur) et les réglages des parents ; chaque écran est
-// capturé et mesuré (débordements, erreurs JavaScript), avec un rapport en Markdown et en HTML.
+// nombres du CM, pavé et explication d'une erreur), chaque outil de la boîte à outils (libre, puis
+// pendant un défi) et les réglages des parents ; chaque écran est capturé et mesuré (débordements,
+// erreurs JavaScript), avec un rapport en Markdown et en HTML.
 //
 // Usage, sur un Mac avec Xcode (une fois : sudo safaridriver --enable) :
 //   IOS_APPAREIL="iPhone SE (3rd generation)" npm run test:ios
@@ -23,6 +24,7 @@ import { homedir } from 'node:os';
 import { startServer } from './serve.mjs';
 import { addChild, defaultStore, storeSnapshot, STORAGE_KEY } from '../app/js/storage.js';
 import { findGame } from '../app/js/games/index.js';
+import { OUTILS } from '../app/js/outils.js';
 import { PROGRAMS } from '../app/js/programs.js';
 
 // un nom, ou plusieurs séparés par « | » dans l'ordre de préférence : les appareils proposés changent d'une
@@ -317,7 +319,7 @@ function mesurer() {
   const largeur = window.innerWidth;
   const hauteur = window.innerHeight;
   if (document.documentElement.scrollWidth > largeur + 1) problemes.push(`la page déborde en largeur (${document.documentElement.scrollWidth} > ${largeur})`);
-  for (const el of document.querySelectorAll('.choice, .key, .match-item, .tile, .fill-row, .stage > *, .text-body, .order-item, .level-row, .game-card, .domain-btn, .profile-card, .featured-game, .domain-tile')) {
+  for (const el of document.querySelectorAll('.choice, .key, .match-item, .tile, .fill-row, .stage > *, .text-body, .order-item, .level-row, .game-card, .domain-btn, .profile-card, .featured-game, .domain-tile, .outil-btn, .outil-barre .big-btn, .outil-consigne')) {
     if (el.clientWidth <= 1) continue;
     if (el.scrollWidth > el.clientWidth + 1) {
       problemes.push(`contenu trop large : « ${el.textContent.trim().slice(0, 30)} » (${el.scrollWidth} > ${el.clientWidth})`);
@@ -327,6 +329,25 @@ function mesurer() {
   const zone = document.querySelector('.choices, .home-menu, .profile-list');
   if (zone && zone.getBoundingClientRect().bottom > hauteur + 1) {
     avertissements.push(`réponses sous le bas de la fenêtre de Safari (${Math.round(zone.getBoundingClientRect().bottom)} > ${hauteur})`);
+  }
+  // un outil (outils.js) : rien ne sort de sa zone, entre la consigne et les boutons ; les boutons
+  // du bas sous les barres de Safari sont un avertissement, comme les réponses
+  const zoneOutil = document.querySelector('.outil-zone')?.getBoundingClientRect();
+  if (zoneOutil) {
+    for (const el of document.querySelectorAll('.outil-zone *')) {
+      if (el.closest('svg') && el.tagName !== 'svg') continue;
+      if (el.closest('.visually-hidden, .droite-dessin, .droite-arcs')) continue; // les bonds de la grenouille passent au-dessus
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      if (r.top < zoneOutil.top - 1 || r.bottom > zoneOutil.bottom + 1 || r.left < zoneOutil.left - 1 || r.right > zoneOutil.right + 1) {
+        problemes.push(`« ${String(el.getAttribute('aria-label') || el.className?.baseVal || el.className || el.tagName).slice(0, 40)} » sort de la zone de l'outil`);
+        break;
+      }
+    }
+  }
+  const barreOutil = document.querySelector('.outil-barre:not(:empty)');
+  if (barreOutil && barreOutil.getBoundingClientRect().bottom > hauteur + 1) {
+    avertissements.push(`boutons de l'outil sous le bas de la fenêtre de Safari (${Math.round(barreOutil.getBoundingClientRect().bottom)} > ${hauteur})`);
   }
   const explication = document.querySelector('.explain');
   if (explication && explication.getBoundingClientRect().bottom > hauteur + 1) {
@@ -532,6 +553,29 @@ async function main() {
           }
         }
       });
+    }
+    // la boîte à outils : chaque outil pour la première et la dernière de ses classes, libre, puis
+    // pendant un défi après « Vérifier » (la consigne et l'indice au-dessus de l'outil)
+    for (const outil of OUTILS) {
+      for (const classe of [...new Set([outil.classes[0], outil.classes.at(-1)])]) {
+        const nom = `outil ${outil.id} (${classe})${suffixe}`;
+        await etape(nom, async () => {
+          await accueil(magasin(classe));
+          await pilote.toucher('[data-domain="outils"]');
+          await attendre(pilote, `[data-outil="${outil.id}"]`);
+          await pilote.toucher(`[data-outil="${outil.id}"]`);
+          await attendre(pilote, '.screen.outil');
+          await pause(400);
+          await capturer(nom, { appareil: outil.id === 'cadre-dix' && classe === 'CP' });
+          if (!(await pilote.evaluer(() => Boolean(document.querySelector('[data-defi]'))))) return;
+          await pilote.toucher('[data-defi]');
+          await attendre(pilote, '[data-verifier]');
+          await pilote.toucher('[data-verifier]');
+          await attendre(pilote, '.outil-retour.bien, .outil-retour.pas-encore');
+          await pause(400);
+          await capturer(`${nom}, défi`);
+        });
+      }
     }
     await etape(`réglages des parents${suffixe}`, async () => {
       await reglages();
