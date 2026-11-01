@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.22.1',
+  version: '1.22.2',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.22.2',
+    date: '2026-11-01',
+    changes: [
+      'Sur un petit téléphone, dans Safari ou Chrome (app pas installée) : l’accueil et les jeux se font un peu plus petits pour que les réponses restent au-dessus de la barre du navigateur, avec la même mise en page que l’app installée.',
+    ],
+  },
   {
     version: '1.22.1',
     date: '2026-11-01',

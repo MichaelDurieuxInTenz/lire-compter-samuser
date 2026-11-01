@@ -3258,6 +3258,9 @@ if ((!ONLY && !PLAY && PARTS.includes('scenario')) || ONLY?.includes('demo')) aw
 // des iPad, et des principaux Android (le plus étroit : 360 points).
 const DEVICES = [
   { name: 'iPhone 6-7-8-SE', width: 375, height: 667 },
+  // l'app dans Safari, pas installée : les barres du navigateur ne laissent que 547 points de haut
+  // (main.js, fitShortScreen : l'accueil et les jeux sont réduits d'autant)
+  { name: 'iPhone 6-7-8-SE dans Safari', width: 375, height: 547 },
   { name: 'iPhone 6-7-8 Plus', width: 414, height: 736 },
   { name: 'iPhone X-XS-11 Pro-12 mini-13 mini', width: 375, height: 812 },
   { name: 'iPhone XR-11-XS Max-11 Pro Max', width: 414, height: 896 },
@@ -3638,7 +3641,7 @@ counts.forEach((n, i) => console.log(`✔ ${devices[i].name} (${devices[i].width
 
 /**
  * La boîte à outils dans un navigateur (app pas installée) : ses barres prennent une part de l'écran
- * (iPhone SE dans Safari : 375 × 547 points, vu par scripts/ios.mjs ; Android dans Chrome : 360 × 640).
+ * (Android dans Chrome : 360 × 640 ; l'iPhone SE dans Safari, 375 × 547, est dans DEVICES).
  * Chaque outil y tient quand même, libre et pendant un défi, pour la première et la dernière de ses classes.
  */
 async function checkOutilsNavigateur(device) {
@@ -3671,7 +3674,8 @@ async function checkOutilsNavigateur(device) {
   await ctx.close();
   return checked;
 }
-const NAVIGATEURS = [{ name: 'iPhone SE dans Safari', width: 375, height: 547 }, { name: 'Android dans Chrome', width: 360, height: 640 }];
+// (l'iPhone SE dans Safari, 375 × 547, est l'un des appareils : ses outils y sont vérifiés)
+const NAVIGATEURS = [{ name: 'Android dans Chrome', width: 360, height: 640 }];
 const navigateurs = PLAY || !PARTS.includes('layout') || A11Y || (SHARD && SHARD[0] !== 1) ? []
   : NAVIGATEURS.filter((d) => !ONLY_DEVICES || ONLY_DEVICES.includes(`${d.width}x${d.height}`));
 for (const d of navigateurs) console.log(`✔ boîte à outils, ${d.name} (${d.width}×${d.height}) : ${await checkOutilsNavigateur(d)} écrans vérifiés`);
