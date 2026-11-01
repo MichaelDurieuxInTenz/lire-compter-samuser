@@ -146,9 +146,10 @@
   :is(.a11y-text-large, .a11y-big-targets) .outil.en-defi .balance-titre { display: none; }
   :is(.a11y-text-large, .a11y-big-targets) .outil.en-defi .balance-dessin { min-height: 48px; }
 }
-/* dans le navigateur d'un petit téléphone (iPhone SE dans Safari : 547 points de haut) : la balance se
-   fait plus petite, comme en texte agrandi, et pendant un défi sans les titres « À gauche », « À droite » */
-@media (orientation: portrait) and (max-height: 600px) {
+/* dans le navigateur d'un petit téléphone (iPhone SE dans Safari : 547 points de haut ; Android dans
+   Chrome : 640) : la balance se fait plus petite, comme en texte agrandi, et pendant un défi sans les
+   titres « À gauche », « À droite » */
+@media (orientation: portrait) and (max-height: 680px) {
   .balance-corps { gap: 4px; }
   .balance-dessin { min-height: 48px; }
   .balance-cle { min-height: 38px; }

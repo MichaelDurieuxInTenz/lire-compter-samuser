@@ -268,6 +268,22 @@ function fitCaptions() {
 }
 window.addEventListener('resize', fitCaptions);
 
+/**
+ * Un téléphone dans son navigateur, l'app pas installée : les barres prennent de la hauteur (iPhone SE
+ * dans Safari : 547 points au lieu de 667). L'accueil et les écrans de jeu sont réduits (transform, voir
+ * .ecran-court dans style.css) pour garder la mise en page de l'app installée : les réponses restent
+ * au-dessus de la barre du bas. Les outils ont leur propre mise en page resserrée (outils.css).
+ */
+const HAUTEUR_PREVUE = 667;
+function fitShortScreen() {
+  const { innerWidth: w, innerHeight: h } = window;
+  const court = h > w && w < 700 && h < HAUTEUR_PREVUE;
+  document.documentElement.classList.toggle('ecran-court', court);
+  document.documentElement.style.setProperty('--fit', court ? Math.max(0.75, h / HAUTEUR_PREVUE).toFixed(4) : '1');
+}
+window.addEventListener('resize', fitShortScreen);
+fitShortScreen();
+
 /** Le texte du bandeau, en entier : écrit plus petit s'il est long. */
 function showCaption(nodes) {
   captionText.style.fontSize = '';
