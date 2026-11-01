@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.22.0',
+  version: '1.22.1',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.22.1',
+    date: '2026-11-01',
+    changes: [
+      'Boîte à outils dans Safari ou Chrome (app pas installée) sur un petit téléphone : la balance, l’horloge du CM1 et la roue des dés tiennent dans l’écran pendant un défi ; la consigne et les boutons se resserrent quand les barres du navigateur prennent de la place.',
+    ],
+  },
   {
     version: '1.22.0',
     date: '2026-10-21',

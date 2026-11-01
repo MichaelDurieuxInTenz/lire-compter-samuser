@@ -3635,6 +3635,46 @@ for (let i = 0; i < devices.length; i += 6) {
   counts.push(...await Promise.all(devices.slice(i, i + 6).map((d, k) => checkDevice(d, smallest(d) ? 3 : 1, i + k))));
 }
 counts.forEach((n, i) => console.log(`✔ ${devices[i].name} (${devices[i].width}×${devices[i].height}) : ${n} écrans vérifiés`));
+
+/**
+ * La boîte à outils dans un navigateur (app pas installée) : ses barres prennent une part de l'écran
+ * (iPhone SE dans Safari : 375 × 547 points, vu par scripts/ios.mjs ; Android dans Chrome : 360 × 640).
+ * Chaque outil y tient quand même, libre et pendant un défi, pour la première et la dernière de ses classes.
+ */
+async function checkOutilsNavigateur(device) {
+  const ctx = await newContext({ width: device.width, height: device.height });
+  const page = await ctx.newPage();
+  page.on('pageerror', (e) => errors.push(`${device.name} : ${e.message}`));
+  const tag = (label) => `${label} (${device.name}, ${device.width}×${device.height})`;
+  let checked = 0;
+  await page.goto(BASE);
+  await page.waitForSelector('.welcome');
+  for (const outil of OUTILS.filter((o) => !ONLY || ONLY.includes(o.id) || ONLY.includes('outils'))) {
+    for (const grade of [...new Set([outil.classes[0], outil.classes.at(-1)])]) {
+      await setStore(page, `store.profiles['eva-rose'].grade = '${grade}';`);
+      await goProfile(page);
+      await page.click('[data-domain="outils"]');
+      await page.click(`[data-outil="${outil.id}"]`);
+      await page.waitForSelector('.screen.outil');
+      await checkLayout(page, tag(`outil ${outil.id} ${grade}`));
+      await checkOutilZone(page, tag(`outil ${outil.id} ${grade}`));
+      checked++;
+      if (await page.locator('[data-defi]').count()) {
+        await page.click('[data-defi]');
+        await page.click('[data-verifier]');
+        await checkLayout(page, tag(`outil ${outil.id} ${grade}, défi`));
+        await checkOutilZone(page, tag(`outil ${outil.id} ${grade}, défi`));
+        checked++;
+      }
+    }
+  }
+  await ctx.close();
+  return checked;
+}
+const NAVIGATEURS = [{ name: 'iPhone SE dans Safari', width: 375, height: 547 }, { name: 'Android dans Chrome', width: 360, height: 640 }];
+const navigateurs = PLAY || !PARTS.includes('layout') || A11Y || (SHARD && SHARD[0] !== 1) ? []
+  : NAVIGATEURS.filter((d) => !ONLY_DEVICES || ONLY_DEVICES.includes(`${d.width}x${d.height}`));
+for (const d of navigateurs) console.log(`✔ boîte à outils, ${d.name} (${d.width}×${d.height}) : ${await checkOutilsNavigateur(d)} écrans vérifiés`);
 if (layoutProblems.length) fail(`mise en page :\n${layoutProblems.join('\n')}`);
 
 await browser.close();

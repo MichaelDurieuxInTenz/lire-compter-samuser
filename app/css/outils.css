@@ -87,6 +87,18 @@
   .outil-nombre { font-size: 1.5rem; }
 }
 
+/* un téléphone dans son navigateur, l'app pas installée : les barres prennent de la hauteur (iPhone SE
+   dans Safari : 375 × 547 points). La consigne et les boutons se resserrent pour laisser l'outil entier. */
+@media (orientation: portrait) and (max-height: 600px) {
+  .screen.outil { gap: 2px; }
+  .outil-consigne { font-size: 1rem; padding: 4px 12px; }
+  .outil-retour { font-size: 0.95rem; }
+  .outil-zone { gap: 6px; padding: 2px 0; }
+  .outil-barre { padding: 2px 0 4px; }
+  .outil-barre .big-btn { min-height: 48px; font-size: 1.05rem; }
+  .outil-btn { min-height: 44px; }
+}
+
 /* ---------- les jetons (cadre de dix, jetons bicolores) : jamais la couleur seule ---------- */
 .jeton { display: inline-block; width: 1.4em; height: 1.4em; border-radius: 50%; flex: none; }
 .jeton.rouge { background: #d62828; box-shadow: inset 0 0 0 2px #8f1a1a; }
