@@ -1,0 +1,7 @@
+[
+ {
+  "key": "fr|1|canaux",
+  "text": "canaux",
+  "erreur": "meilleur essai : {'hauteur': 276, 'duree': 0.88, 'essai': 'canaux', 'entendu': 'cadeau', 'ressemblance': 0.67, 'phonemes_attendus': 'kano', 'phonemes_entendus': 'kɛnu', 'fautes': [], 'ecart_phonemes': 0.5}"
+ }
+]

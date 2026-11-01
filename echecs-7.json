@@ -1,0 +1,7 @@
+[
+ {
+  "key": "fr|1|champs",
+  "text": "champs",
+  "erreur": "meilleur essai : {'hauteur': 236, 'duree': 0.56, 'essai': 'Voici le mot. Champs.', 'entendu': 'chant', 'ressemblance': 0.55, 'phonemes_attendus': 'ʃɑ̃', 'phonemes_entendus': 's.ong5', 'fautes': [], 'ecart_phonemes': 0.5}"
+ }
+]

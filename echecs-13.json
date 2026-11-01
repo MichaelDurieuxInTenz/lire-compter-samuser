@@ -1,0 +1,17 @@
+[
+ {
+  "key": "fr|1|et l'eau,",
+  "text": "et l'eau,",
+  "erreur": "meilleur essai : {'hauteur': 264, 'duree': 0.88, 'essai': \"et l'eau,\", 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'elo', 'phonemes_entendus': 'enu', 'fautes': [], 'ecart_phonemes': 0.67}"
+ },
+ {
+  "key": "fr|1|riz,",
+  "text": "riz,",
+  "erreur": "silence de 1.3 s au milieu"
+ },
+ {
+  "key": "fr|1|matelas",
+  "text": "matelas",
+  "erreur": "meilleur essai : {'hauteur': 233, 'duree': 0.84, 'essai': 'Voici le mot. Matelas.', 'entendu': 'matelas', 'ressemblance': 1.0, 'phonemes_attendus': 'matla', 'phonemes_entendus': 'mɛtilas', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 1.6}"
+ }
+]
