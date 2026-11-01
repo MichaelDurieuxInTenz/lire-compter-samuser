@@ -270,7 +270,7 @@ window.addEventListener('resize', fitCaptions);
 
 /**
  * Un téléphone dans son navigateur, l'app pas installée : les barres prennent de la hauteur (iPhone SE
- * dans Safari : 547 points au lieu de 667). L'accueil et les écrans de jeu sont réduits (zoom, voir
+ * dans Safari : 547 points au lieu de 667). L'accueil et les écrans de jeu sont réduits (transform, voir
  * .ecran-court dans style.css) pour garder la mise en page de l'app installée : les réponses restent
  * au-dessus de la barre du bas. Les outils ont leur propre mise en page resserrée (outils.css).
  */
