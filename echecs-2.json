@@ -1,0 +1,7 @@
+[
+ {
+  "key": "fr|1|eûmes",
+  "text": "eûmes",
+  "erreur": "meilleur essai : {'hauteur': 273, 'duree': 0.7, 'essai': 'Voici le mot. Eûmes.', 'entendu': 'euh', 'ressemblance': 0.5, 'phonemes_attendus': 'ym', 'phonemes_entendus': 'bʌm', 'fautes': [], 'ecart_phonemes': 1.0}"
+ }
+]

@@ -1,0 +1,12 @@
+[
+ {
+  "key": "fr|1|8 filles,",
+  "text": "huit filles,",
+  "erreur": "meilleur essai : {'hauteur': 246, 'duree': 0.73, 'essai': 'Écoute bien. Huit filles.', 'entendu': 'wi fi', 'ressemblance': 0.5, 'phonemes_attendus': 'yifij', 'phonemes_entendus': 'wifi', 'fautes': [], 'ecart_phonemes': 0.4}"
+ },
+ {
+  "key": "fr|1|qu'ont",
+  "text": "qu'ont",
+  "erreur": "meilleur essai : {'hauteur': 230, 'duree': 0.4, 'essai': \"Écoute bien. Qu'ont.\", 'entendu': 'conte', 'ressemblance': 0.55, 'phonemes_attendus': 'kɔ̃', 'phonemes_entendus': 'ku', 'fautes': [], 'ecart_phonemes': 0.5}"
+ }
+]
