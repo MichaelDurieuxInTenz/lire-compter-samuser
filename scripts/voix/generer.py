@@ -46,6 +46,7 @@ parser.add_argument('--verifier-mots', action='store_true', help='réécouter le
 parser.add_argument('--nouvelle-voix', help='dossier des sons déjà refaits avec la nouvelle voix : tous les autres sont refaits')
 parser.add_argument('--duree-max', type=float, help='secondes : au-delà, plus aucun son n’est commencé (la suite à la prochaine exécution)')
 parser.add_argument('--limite', type=int, help='au plus ce nombre de sons par morceau (essai)')
+parser.add_argument('--evaluer', action='store_true', help='noter les sons déjà faits de --refaire sans rien fabriquer (comparer deux voix)')
 args = parser.parse_args()
 k, n = map(int, args.shard.split('/'))
 OUT = Path(args.sortie)
@@ -424,6 +425,13 @@ with tempfile.TemporaryDirectory() as tmp:
                 best = (note, None, measures)
             except subprocess.CalledProcessError:
                 problems.append('ancien son illisible')
+        if args.evaluer:
+            # seulement la note de l'ancien son, avec les contrôles d'aujourd'hui
+            if best:
+                report.append({'key': e['key'], 'note': round(best[0], 2), 'garde': True, **best[2]})
+            else:
+                failures.append({'key': e['key'], 'text': text, 'erreur': '; '.join(problems) or 'pas d’ancien son'})
+            continue
         for attempt in ([] if best and best[0] <= 1 else attempts(text, args.essais, lang)):
             cut = isinstance(attempt, tuple)
             attempt = attempt[1] if cut else attempt
