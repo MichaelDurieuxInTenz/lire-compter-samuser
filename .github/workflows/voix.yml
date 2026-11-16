@@ -29,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NOUVELLE_VOIX: '0'
+  NOUVELLE_VOIX: '1'
 
 jobs:
   generer:
@@ -67,7 +67,7 @@ jobs:
       # --duree-max : plus aucun son commencé après 5 h 15, pour tout déposer avant la limite de 350 min
       - run: >-
           python scripts/voix/generer.py --shard ${{ matrix.morceau }}/16 --sortie voix-sortie --essais 4
-          --whisper large-v3-turbo --phonemes --duree-max 18900 --evaluer
+          --whisper large-v3-turbo --phonemes --duree-max 18900
           $( [ "$NOUVELLE_VOIX" = 1 ] && echo --nouvelle-voix deja-faits )
           $( [ "$NOUVELLE_VOIX" != 1 ] && [ -f scripts/voix/a-refaire.json ] && echo --refaire scripts/voix/a-refaire.json )
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

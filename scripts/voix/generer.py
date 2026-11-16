@@ -52,8 +52,9 @@ k, n = map(int, args.shard.split('/'))
 OUT = Path(args.sortie)
 EXISTING = ROOT / 'app/voix'
 LANGUAGES = {'fr': 'french', 'en': 'english'}
-# hauteur habituelle de la voix (Hz, médiane mesurée sur les sons de la version 1.8.1)
-PITCH = {'estelle': 254.0}
+# hauteur habituelle de la voix (Hz, médiane mesurée sur l'essai de la nouvelle voix, pocket-tts 4.0.1 :
+# 245 Hz en français, 238 Hz en anglais ; le français fait 9 sons sur 10). 254 Hz avec pocket-tts 3.
+PITCH = {'estelle': 244.0}
 PITCH_TOLERANCE = 0.15  # ± 15 % : au-delà, la voix paraît changer
 TARGET_DB = -20.0  # volume moyen des passages parlés (dBFS)
 MP3 = ['-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '32k', '-write_xing', '0', '-id3v2_version', '0']
