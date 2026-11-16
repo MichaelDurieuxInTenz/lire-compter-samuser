@@ -9,7 +9,9 @@ const CACHE = `lire-et-compter-${VERSION}`;
 // Ils ne sont pas dans PRECACHE. Sur le site, ils sont rangés dans des paquets (voix/paquet-….mp3) :
 // l'app télécharge les paquets et les redécoupe (voir prefetchVoices dans main.js) ; un son demandé
 // avant est pris directement dans son paquet (une partie du fichier seulement).
-const VOICE_CACHE = 'lire-et-compter-voix';
+// nouveau nom quand toute la voix change (1.23.0, nouveau modèle) : l'ancien cache est effacé d'un coup à
+// l'activation, sans avoir à le lister (au-delà d'environ 20 000 sons, Chrome refuse cache.keys())
+const VOICE_CACHE = 'lire-et-compter-voix-2';
 const isVoiceClip = (url) => /\/voix\/(fr|en)\/[0-9a-f]+\.mp3$/.test(url.pathname);
 const isVoicePack = (url) => /\/voix\/paquet-[0-9a-f]+\.mp3$/.test(url.pathname);
 

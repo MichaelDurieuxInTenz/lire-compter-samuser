@@ -5675,7 +5675,7 @@ function outilsSwitch(kid, hiddenDomains, change, setIn) {
 
 // ---- Voix naturelle : les sons sont téléchargés peu à peu, pour être joués hors connexion
 
-const VOICE_CACHE = 'lire-et-compter-voix'; // le même que dans sw.js
+const VOICE_CACHE = 'lire-et-compter-voix-2'; // le même que dans sw.js
 // total, done : sons ; bytes, received : octets à télécharger cette fois-ci, et déjà reçus
 const voiceDownload = { total: 0, done: 0, bytes: 0, received: 0, running: false, listeners: new Set() };
 
