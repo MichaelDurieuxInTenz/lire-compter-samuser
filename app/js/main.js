@@ -4160,7 +4160,7 @@ function buildZone(ctx) {
           'aria-label': `Enlever ${item.one}`,
           onclick: () => { counts[i]--; render(); },
         }, item.emoji)))
-        : null)));
+        : null)).filter(Boolean)); // un fruit pas encore posé : rien (replaceChildren écrirait « null »)
     if (!bags && counts.every((c) => !c)) basket.append(h('span', { class: 'basket-empty' }, '🧺'));
     const parts = items.map((item, i) => `${amount(i)} ${item.emoji}`);
     counter.textContent = `Tu as mis ${parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts.at(-1)}` : parts[0]}.`;

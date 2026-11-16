@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.22.2',
+  version: '1.22.3',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.22.3',
+    date: '2026-11-16',
+    changes: [
+      'Le panier à plusieurs fruits : le mot « null » ne s’affiche plus dans le panier à la place d’un fruit pas encore posé.',
+    ],
+  },
   {
     version: '1.22.2',
     date: '2026-11-01',
