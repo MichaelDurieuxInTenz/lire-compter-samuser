@@ -10,10 +10,16 @@
 # Le meilleur essai est gardé ; chaque son est décrit dans rapport-k.json (hauteur, volume, débit,
 # texte reconnu), les sons ratés dans echecs-k.json.
 #
+# Changement de voix (nouveau modèle) : --nouvelle-voix DOSSIER fait refaire tous les sons, sauf ceux
+# déjà refaits avec la nouvelle voix et posés dans DOSSIER (fr/…, en/…, sous leur nom de a-generer.json) ;
+# l'ancien son ne concourt pas. Le travail se fait en plusieurs exécutions (--duree-max : on s'arrête
+# à temps pour tout déposer, la suite à la prochaine exécution).
+#
 # Usage : python scripts/voix/generer.py --shard 3/8 --sortie voix-sortie [--essais 4] [--whisper small]
 import argparse
 import difflib
 import json
+import os
 import re
 import subprocess
 import tempfile
@@ -37,6 +43,9 @@ parser.add_argument('--whisper', default='small', help="modèle de reconnaissanc
 parser.add_argument('--refaire', help='liste JSON de clés à refaire même si leur son existe (le meilleur, ancien ou nouveau, est gardé)')
 parser.add_argument('--phonemes', action='store_true', help='prononciation vérifiée phonème par phonème (phonemes.py)')
 parser.add_argument('--verifier-mots', action='store_true', help='réécouter les mots déjà faits et refaire ceux qui sont mal prononcés')
+parser.add_argument('--nouvelle-voix', help='dossier des sons déjà refaits avec la nouvelle voix : tous les autres sont refaits')
+parser.add_argument('--duree-max', type=float, help='secondes : au-delà, plus aucun son n’est commencé (la suite à la prochaine exécution)')
+parser.add_argument('--limite', type=int, help='au plus ce nombre de sons par morceau (essai)')
 args = parser.parse_args()
 k, n = map(int, args.shard.split('/'))
 OUT = Path(args.sortie)
@@ -54,8 +63,19 @@ items = json.loads(Path(args.liste).read_text(encoding='utf-8'))
 manifest = EXISTING / 'manifest.json'
 made = json.loads(manifest.read_text(encoding='utf-8')).get('clips', {}) if manifest.exists() else {}
 redo = set(json.loads(Path(args.refaire).read_text(encoding='utf-8'))) if args.refaire else set()
-todo = [e for i, e in enumerate(items) if i % n == k - 1
-        and (e['key'] in redo or (e['key'] not in made and not (EXISTING / e['file']).exists()))]
+if args.nouvelle_voix:
+    # nouvelle voix : l'ancien son ne compte plus (ni sauté, ni gardé), seul compte le son déjà refait
+    if redo or args.verifier_mots:
+        parser.error('--nouvelle-voix se lance seul (sans --refaire ni --verifier-mots)')
+    fresh = Path(args.nouvelle_voix)
+    todo = [e for i, e in enumerate(items) if i % n == k - 1 and not (fresh / e['file']).exists()]
+else:
+    todo = [e for i, e in enumerate(items) if i % n == k - 1
+            and (e['key'] in redo or (e['key'] not in made and not (EXISTING / e['file']).exists()))]
+if args.limite:
+    todo = todo[:args.limite]
+# rapports nommés par exécution : plusieurs exécutions se cumulent sans s'écraser (--nouvelle-voix)
+RUN = f"-{os.environ['GITHUB_RUN_NUMBER']}" if os.environ.get('GITHUB_RUN_NUMBER') else ''
 print(f'morceau {k}/{n} : {len(todo)} sons à fabriquer', flush=True)
 
 
@@ -354,7 +374,12 @@ spoken = 0.0
 with tempfile.TemporaryDirectory() as tmp:
     wav = Path(tmp) / 'son.wav'
     trial = Path(tmp) / 'essai.mp3'
+    left = 0
     for i, e in enumerate(todo, 1):
+        if args.duree_max and time.time() - start > args.duree_max:
+            left = len(todo) - i + 1
+            print(f'  temps écoulé : {left} sons laissés pour la prochaine exécution', flush=True)
+            break
         lang, voice = e['lang'], e['voice']
         if lang not in models:
             models[lang] = TTSModel.load_model(language=LANGUAGES[lang])
@@ -459,8 +484,9 @@ with tempfile.TemporaryDirectory() as tmp:
             print(f'  {i}/{len(todo)} sons, {spoken:.0f} s de voix en {spent:.0f} s', flush=True)
 
 OUT.mkdir(parents=True, exist_ok=True)
-(OUT / f'echecs-{k}.json').write_text(json.dumps(failures, ensure_ascii=False, indent=1), encoding='utf-8')
-(OUT / f'rapport-{k}.json').write_text(json.dumps(report, ensure_ascii=False), encoding='utf-8')
+(OUT / f'echecs-{k}{RUN}.json').write_text(json.dumps(failures, ensure_ascii=False, indent=1), encoding='utf-8')
+(OUT / f'rapport-{k}{RUN}.json').write_text(json.dumps(report, ensure_ascii=False), encoding='utf-8')
 if checked:
-    (OUT / f'verification-{k}.json').write_text(json.dumps(checked, ensure_ascii=False), encoding='utf-8')
-print(f'morceau {k}/{n} : {len(todo) - len(failures)} sons fabriqués, {len(failures)} échecs', flush=True)
+    (OUT / f'verification-{k}{RUN}.json').write_text(json.dumps(checked, ensure_ascii=False), encoding='utf-8')
+print(f'morceau {k}/{n} : {len(todo) - left - len(failures)} sons fabriqués, {len(failures)} échecs'
+      + (f', {left} pour la prochaine exécution' if left else ''), flush=True)
