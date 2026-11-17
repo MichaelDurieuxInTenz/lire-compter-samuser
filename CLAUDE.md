@@ -36,6 +36,9 @@ Interface et commentaires en français.
   naturelle » fabrique et contrôle les sons sur GitHub : hauteur, débit, diction vérifiée par Whisper,
   prononciation phonème par phonème par `phonemes.py`), puis
   `bash scripts/voix/recuperer.sh` et committer `app/voix/`. Vérifier écran par écran : `node scripts/voix/rapport.mjs`.
+  Changer toute la voix (nouveau modèle, comme pocket-tts 4 pour la 1.23.0) : `NOUVELLE_VOIX: '1'` dans
+  `voix.yml`, relancer le workflow jusqu'à ce qu'il ne reste rien, `bash scripts/voix/recuperer.sh --nouvelle-voix`,
+  remettre `'0'`, et renommer le cache des voix (`VOICE_CACHE` dans `sw.js` et `main.js`).
   Pour mettre à jour ce que dit l'app hors des jeux : `SPEECH_LOG=scripts/voix/parole-e2e.json PARTS=scenario npm run test:e2e`.
 
 L'affiche foot, longtemps dans `affiche/`, vit désormais dans son propre dépôt (`affiche-foot`). Sa dernière
