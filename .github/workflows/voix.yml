@@ -30,6 +30,9 @@ concurrency:
 
 env:
   NOUVELLE_VOIX: '1'
+  # '1' : les sons d'une seule syllabe sont retravaillés (deux fois plus d'essais, note quasi parfaite
+  # exigée, le son actuel concourt) ; avec a-refaire.json, les sons douteux aussi
+  MONOSYLLABES: '0'
 
 jobs:
   generer:
@@ -70,6 +73,7 @@ jobs:
           --whisper large-v3-turbo --phonemes --duree-max 18900
           $( [ "$NOUVELLE_VOIX" = 1 ] && echo --nouvelle-voix deja-faits )
           $( [ "$NOUVELLE_VOIX" != 1 ] && [ -f scripts/voix/a-refaire.json ] && echo --refaire scripts/voix/a-refaire.json )
+          $( [ "$NOUVELLE_VOIX" != 1 ] && [ "$MONOSYLLABES" = 1 ] && echo --monosyllabes )
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always() # même si le temps est écoulé : les sons déjà fabriqués ne sont pas perdus
         with:

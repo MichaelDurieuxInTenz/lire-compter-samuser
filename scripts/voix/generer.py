@@ -46,6 +46,8 @@ parser.add_argument('--verifier-mots', action='store_true', help='réécouter le
 parser.add_argument('--nouvelle-voix', help='dossier des sons déjà refaits avec la nouvelle voix : tous les autres sont refaits')
 parser.add_argument('--duree-max', type=float, help='secondes : au-delà, plus aucun son n’est commencé (la suite à la prochaine exécution)')
 parser.add_argument('--limite', type=int, help='au plus ce nombre de sons par morceau (essai)')
+parser.add_argument('--monosyllabes', action='store_true',
+                    help='retravailler les sons d’une seule syllabe : deux fois plus d’essais, une note quasi parfaite exigée, le son actuel concourt')
 parser.add_argument('--evaluer', action='store_true', help='noter les sons déjà faits de --refaire sans rien fabriquer (comparer deux voix)')
 args = parser.parse_args()
 k, n = map(int, args.shard.split('/'))
@@ -74,6 +76,16 @@ if args.nouvelle_voix:
 else:
     todo = [e for i, e in enumerate(items) if i % n == k - 1
             and (e['key'] in redo or (e['key'] not in made and not (EXISTING / e['file']).exists()))]
+if args.monosyllabes:
+    # une seule syllabe (d'après les phonèmes d'espeak-ng) : sans contexte, la voix les rate plus souvent
+    import phonemes as ph
+    def one_syllable(e):
+        try:
+            return len(re.findall('[aeiouyøÕẼ]+', ph._broad(ph.expected(e['text'], e['lang'])))) == 1
+        except subprocess.CalledProcessError:
+            return False
+    todo = [e for i, e in enumerate(items) if i % n == k - 1 and len(re.findall(r"[\w'-]+", e['text'])) <= 2 and one_syllable(e)]
+    redo |= {e['key'] for e in todo}
 if args.limite:
     todo = todo[:args.limite]
 # rapports nommés par exécution : plusieurs exécutions se cumulent sans s'écraser (--nouvelle-voix)
@@ -433,7 +445,10 @@ with tempfile.TemporaryDirectory() as tmp:
             else:
                 failures.append({'key': e['key'], 'text': text, 'erreur': '; '.join(problems) or 'pas d’ancien son'})
             continue
-        for attempt in ([] if best and best[0] <= 1 else attempts(text, args.essais, lang)):
+        # une syllabe seule : deux séries d'essais, et on ne s'arrête qu'à une note quasi parfaite
+        enough = 0.3 if args.monosyllabes else 1
+        tries = attempts(text, args.essais, lang) * (2 if args.monosyllabes else 1)
+        for attempt in ([] if best and best[0] <= enough else tries):
             cut = isinstance(attempt, tuple)
             attempt = attempt[1] if cut else attempt
             audio = model.generate_audio(states[(lang, voice)], attempt).numpy().reshape(-1)
@@ -473,7 +488,7 @@ with tempfile.TemporaryDirectory() as tmp:
                     continue
             if best is None or note < best[0]:
                 best = (note, audio, measures)
-            if note <= 1:
+            if note <= enough:
                 break
         if best is None or best[0] > 4:
             failures.append({'key': e['key'], 'text': text, 'erreur': '; '.join(problems) or f'meilleur essai : {best[2] if best else None}'})
