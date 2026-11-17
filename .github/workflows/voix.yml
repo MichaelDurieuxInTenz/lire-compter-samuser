@@ -29,10 +29,10 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NOUVELLE_VOIX: '1'
+  NOUVELLE_VOIX: '0'
   # '1' : les sons d'une seule syllabe sont retravaillés (deux fois plus d'essais, note quasi parfaite
   # exigée, le son actuel concourt) ; avec a-refaire.json, les sons douteux aussi
-  MONOSYLLABES: '0'
+  MONOSYLLABES: '1'
 
 jobs:
   generer:
