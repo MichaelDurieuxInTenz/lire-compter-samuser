@@ -1,0 +1,37 @@
+[
+ {
+  "key": "fr|0.8|et nez",
+  "text": "et nez",
+  "erreur": "meilleur essai : {'hauteur': 240, 'duree': 1.12, 'essai': '« et nez »', 'entendu': 'aine', 'ressemblance': 0.4, 'phonemes_attendus': 'ene', 'phonemes_entendus': 'eni', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|6 filles,",
+  "text": "six filles,",
+  "erreur": "meilleur essai : {'hauteur': 232, 'duree': 1.36, 'essai': 'six filles,', 'entendu': 'sifi', 'ressemblance': 0.57, 'phonemes_attendus': 'sifij', 'phonemes_entendus': 'sifi', 'fautes': [], 'ecart_phonemes': 0.2}"
+ },
+ {
+  "key": "fr|1|feutres.",
+  "text": "feutres.",
+  "erreur": "meilleur essai : {'hauteur': 238, 'duree': 0.9, 'essai': 'Voici le mot. Feutres.', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'føtʁ', 'phonemes_entendus': 'føt', 'fautes': [], 'ecart_phonemes': 0.25}"
+ },
+ {
+  "key": "fr|1|pot",
+  "text": "pot",
+  "erreur": "pas de pause après la phrase d’appel"
+ },
+ {
+  "key": "fr|1|t'offre",
+  "text": "t'offre",
+  "erreur": "meilleur essai : {'hauteur': 259, 'duree': 1.04, 'essai': \"t'offre\", 'entendu': 'tof', 'ressemblance': 0.6, 'phonemes_attendus': 'tɔfʁ', 'phonemes_entendus': 'tof', 'fautes': [], 'ecart_phonemes': 0.25}"
+ },
+ {
+  "key": "fr|1|naine",
+  "text": "naine",
+  "erreur": "meilleur essai : {'hauteur': 245, 'duree': 1.04, 'essai': 'naine…', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'nɛn', 'phonemes_entendus': 'nen', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|Ilyes",
+  "text": "Ilyes",
+  "erreur": "meilleur essai : {'hauteur': 245, 'duree': 1.28, 'essai': 'Ilyes !', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'ili', 'phonemes_entendus': 'bi', 'fautes': [], 'ecart_phonemes': 0.67}"
+ }
+]

@@ -1,0 +1,32 @@
+[
+ {
+  "key": "fr|1|puis elles dorment.",
+  "text": "puis elles dorment.",
+  "erreur": "meilleur essai : {'hauteur': 226, 'duree': 1.44, 'essai': 'puis elles dorment.', 'entendu': \"Il don't.\", 'ressemblance': 0.54, 'phonemes_attendus': 'pyizɛldɔʁm', 'phonemes_entendus': 'fialdɔm', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|10 filles,",
+  "text": "dix filles,",
+  "erreur": "meilleur essai : {'hauteur': 231, 'duree': 1.0, 'essai': 'Écoute bien. Dix filles.', 'entendu': 'diffine', 'ressemblance': 0.59, 'phonemes_attendus': 'difij', 'phonemes_entendus': 'difi', 'fautes': [], 'ecart_phonemes': 0.2}"
+ },
+ {
+  "key": "fr|1|billes.",
+  "text": "billes.",
+  "erreur": "meilleur essai : {'hauteur': 206, 'duree': 0.89, 'essai': 'Écoute bien. Billes.', 'entendu': 'lille', 'ressemblance': 0.73, 'phonemes_attendus': 'bij', 'phonemes_entendus': 'ni', 'fautes': [], 'ecart_phonemes': 0.67}"
+ },
+ {
+  "key": "fr|1|rient",
+  "text": "rient",
+  "erreur": "meilleur essai : {'hauteur': 259, 'duree': 1.04, 'essai': 'Rient !', 'entendu': 'rine', 'ressemblance': 0.67, 'phonemes_attendus': 'ʁi', 'phonemes_entendus': 'ʁin', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|cligne",
+  "text": "cligne",
+  "erreur": "meilleur essai : {'hauteur': 255, 'duree': 1.12, 'essai': 'cligne', 'entendu': 'clean', 'ressemblance': 0.55, 'phonemes_attendus': 'kliɲ', 'phonemes_entendus': 'kmi', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|geler",
+  "text": "geler",
+  "erreur": "meilleur essai : {'hauteur': 213, 'duree': 1.12, 'essai': '« geler »', 'entendu': 'violere', 'ressemblance': 0.5, 'phonemes_attendus': 'ʒəle', 'phonemes_entendus': 'ʒøle', 'fautes': [], 'ecart_phonemes': 0.0}"
+ }
+]

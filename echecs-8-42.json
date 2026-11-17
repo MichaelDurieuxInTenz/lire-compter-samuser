@@ -1,0 +1,37 @@
+[
+ {
+  "key": "fr|1|et nez ?",
+  "text": "et nez ?",
+  "erreur": "meilleur essai : {'hauteur': 229, 'duree': 1.12, 'essai': 'et nez ?', 'entendu': 'aine', 'ressemblance': 0.4, 'phonemes_attendus': 'ene', 'phonemes_entendus': 'eni', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|et main ?",
+  "text": "et main ?",
+  "erreur": "meilleur essai : {'hauteur': 217, 'duree': 0.84, 'essai': 'Écoute bien. Et main.', 'entendu': 'eman', 'ressemblance': 0.73, 'phonemes_attendus': 'emɛ̃', 'phonemes_entendus': 'ima', 'fautes': [], 'ecart_phonemes': 0.67}"
+ },
+ {
+  "key": "fr|1|plus,",
+  "text": "plus,",
+  "erreur": "meilleur essai : {'hauteur': 216, 'duree': 0.77, 'essai': 'Écoute bien. Plus.', 'phonemes_attendus': 'ply', 'phonemes_entendus': 'pys', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 1.67}"
+ },
+ {
+  "key": "fr|1|a 6 billes.",
+  "text": "a six billes.",
+  "erreur": "meilleur essai : {'hauteur': 227, 'duree': 1.44, 'essai': 'a six billes.', 'entendu': 'Asisbi', 'ressemblance': 0.56, 'phonemes_attendus': 'asibij', 'phonemes_entendus': 'asizbi', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|canaux",
+  "text": "canaux",
+  "erreur": "meilleur essai : {'hauteur': 224, 'duree': 1.12, 'essai': '« canaux »', 'entendu': 'canot', 'ressemblance': 0.55, 'phonemes_attendus': 'kano', 'phonemes_entendus': 'kanu', 'fautes': [], 'ecart_phonemes': 0.25}"
+ },
+ {
+  "key": "fr|1|vinrent",
+  "text": "vinrent",
+  "erreur": "meilleur essai : {'hauteur': 211, 'duree': 0.91, 'essai': 'Écoute bien. Vinrent.', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'vɛ̃ʁ', 'phonemes_entendus': 'val', 'fautes': [], 'ecart_phonemes': 0.67}"
+ },
+ {
+  "key": "fr|1|phoque",
+  "text": "phoque",
+  "erreur": "meilleur essai : {'hauteur': 245, 'duree': 1.04, 'essai': 'phoque…', 'entendu': 'ok', 'ressemblance': 0.25, 'phonemes_attendus': 'fok', 'phonemes_entendus': 'fok', 'fautes': [], 'ecart_phonemes': 0.0}"
+ }
+]

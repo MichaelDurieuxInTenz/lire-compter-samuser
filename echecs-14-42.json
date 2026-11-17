@@ -1,0 +1,17 @@
+[
+ {
+  "key": "fr|1|es",
+  "text": "es",
+  "erreur": "meilleur essai : {'hauteur': 245, 'duree': 1.12, 'essai': 'es.', 'phonemes_attendus': 'ɛ', 'phonemes_entendus': 'ɛz', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 2.0}"
+ },
+ {
+  "key": "fr|1|laverez",
+  "text": "laverez",
+  "erreur": "meilleur essai : {'hauteur': 229, 'duree': 0.96, 'essai': 'Écoute bien. Laverez.', 'entendu': 'la vraie', 'ressemblance': 0.53, 'phonemes_attendus': 'lavʁe', 'phonemes_entendus': 'lavɹi', 'fautes': [], 'ecart_phonemes': 0.2}"
+ },
+ {
+  "key": "fr|1|billes vertes.",
+  "text": "billes vertes.",
+  "erreur": "meilleur essai : {'hauteur': 229, 'duree': 1.36, 'essai': 'billes vertes.', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'bijvɛʁt', 'phonemes_entendus': 'bivɛ', 'fautes': [], 'ecart_phonemes': 0.43}"
+ }
+]

@@ -1,0 +1,37 @@
+[
+ {
+  "key": "fr|1|kangourou et loup ?",
+  "text": "kangourou et loup ?",
+  "erreur": "meilleur essai : {'hauteur': 233, 'duree': 1.28, 'essai': 'kangourou et loup ?', 'entendu': 'En gros, et nous ? Et nous ?', 'ressemblance': 0.5, 'phonemes_attendus': 'kɑ̃guʁuelu', 'phonemes_entendus': 'aŋguhinuin', 'fautes': [], 'ecart_phonemes': 0.89}"
+ },
+ {
+  "key": "fr|1|a 6 bocaux.",
+  "text": "a six bocaux.",
+  "erreur": "meilleur essai : {'hauteur': 234, 'duree': 1.44, 'essai': 'a six bocaux.', 'entendu': 'Merci beaucoup.', 'ressemblance': 0.38, 'phonemes_attendus': 'asiboko', 'phonemes_entendus': 'asibuku', 'fautes': [], 'ecart_phonemes': 0.29}"
+ },
+ {
+  "key": "fr|1|prenais",
+  "text": "prenais",
+  "erreur": "pas de pause après la phrase d’appel"
+ },
+ {
+  "key": "fr|1|fîmes",
+  "text": "fîmes",
+  "erreur": "meilleur essai : {'hauteur': 279, 'duree': 1.2, 'essai': 'fîmes…', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'fim', 'phonemes_entendus': 'fim', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|d'œufs",
+  "text": "d'œufs",
+  "erreur": "meilleur essai : {'hauteur': 222, 'duree': 1.04, 'essai': \"d'œufs\", 'entendu': 'de', 'ressemblance': 0.25, 'phonemes_attendus': 'dø', 'phonemes_entendus': 'dø', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|buenos",
+  "text": "buenos",
+  "erreur": "meilleur essai : {'hauteur': 224, 'duree': 1.2, 'essai': 'buenos…', 'entendu': 'buenos', 'ressemblance': 1.0, 'phonemes_attendus': 'byəno', 'phonemes_entendus': 'bwinos', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 1.6}"
+ },
+ {
+  "key": "fr|1|empty",
+  "text": "empty",
+  "erreur": "meilleur essai : {'hauteur': 242, 'duree': 1.2, 'essai': 'Empty !', 'entendu': 'en petit', 'ressemblance': 0.46, 'phonemes_attendus': 'ɑ̃pti', 'phonemes_entendus': 'ɔmti', 'fautes': [], 'ecart_phonemes': 0.5}"
+ }
+]

@@ -1,0 +1,52 @@
+[
+ {
+  "key": "fr|1|froid",
+  "text": "froid",
+  "erreur": "meilleur essai : {'hauteur': 237, 'duree': 1.2, 'essai': 'froid', 'entendu': 'freud', 'ressemblance': 0.6, 'phonemes_attendus': 'fʁwa', 'phonemes_entendus': 'kon', 'fautes': [], 'ecart_phonemes': 1.0}"
+ },
+ {
+  "key": "fr|1|Au lit !",
+  "text": "Au lit !",
+  "erreur": "meilleur essai : {'hauteur': 250, 'duree': 1.12, 'essai': 'Au lit !', 'entendu': 'oli', 'ressemblance': 0.44, 'phonemes_attendus': 'oli', 'phonemes_entendus': 'poni', 'fautes': [], 'ecart_phonemes': 0.67}"
+ },
+ {
+  "key": "fr|1|euros,",
+  "text": "euros,",
+  "erreur": "meilleur essai : {'hauteur': 239, 'duree': 1.2, 'essai': 'euros,', 'entendu': 'heureuse', 'ressemblance': 0.62, 'phonemes_attendus': 'øʁo', 'phonemes_entendus': 'bvos', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 2.0}"
+ },
+ {
+  "key": "fr|1|avait",
+  "text": "avait",
+  "erreur": "meilleur essai : {'hauteur': 216, 'duree': 1.12, 'essai': 'avait', 'entendu': 'ave', 'ressemblance': 0.5, 'phonemes_attendus': 'avɛ', 'phonemes_entendus': 'ave', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|billes :",
+  "text": "billes :",
+  "erreur": "meilleur essai : {'hauteur': 202, 'duree': 0.85, 'essai': 'Voici le mot. Billes.', 'entendu': 'oui', 'ressemblance': 0.22, 'phonemes_attendus': 'bij', 'phonemes_entendus': 'bi', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|bocaux",
+  "text": "bocaux",
+  "erreur": "meilleur essai : {'hauteur': 220, 'duree': 1.28, 'essai': 'bocaux.', 'entendu': 'bocco', 'ressemblance': 0.55, 'phonemes_attendus': 'boko', 'phonemes_entendus': 'buku', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|avais",
+  "text": "avais",
+  "erreur": "meilleur essai : {'hauteur': 242, 'duree': 1.28, 'essai': 'avais…', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'avɛ', 'phonemes_entendus': 'ave', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|pulpe",
+  "text": "pulpe",
+  "erreur": "meilleur essai : {'hauteur': 250, 'duree': 0.86, 'essai': 'Voici le mot. Pulpe.', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'pylp', 'phonemes_entendus': 'py', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|bâilles",
+  "text": "bâilles",
+  "erreur": "meilleur essai : {'hauteur': 234, 'duree': 1.12, 'essai': 'Bâilles !', 'entendu': 'bye', 'ressemblance': 0.4, 'phonemes_attendus': 'baj', 'phonemes_entendus': 'baɪ', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|Wassim",
+  "text": "Wassim",
+  "erreur": "meilleur essai : {'hauteur': 229, 'duree': 1.36, 'essai': 'Wassim !', 'entendu': 'voici', 'ressemblance': 0.18, 'phonemes_attendus': '(en)wɒsɪm(fʁ)', 'phonemes_entendus': 'wasim', 'fautes': [], 'ecart_phonemes': 0.2}"
+ }
+]

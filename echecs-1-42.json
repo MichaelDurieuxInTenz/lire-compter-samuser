@@ -1,0 +1,17 @@
+[
+ {
+  "key": "fr|1|euros",
+  "text": "euros",
+  "erreur": "meilleur essai : {'hauteur': 211, 'duree': 0.93, 'essai': 'Voici le mot. Euros.', 'entendu': 'euros', 'ressemblance': 1.0, 'phonemes_attendus': 'øʁo', 'phonemes_entendus': 'yʁus', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 2.0}"
+ },
+ {
+  "key": "fr|1|qu'ont",
+  "text": "qu'ont",
+  "erreur": "meilleur essai : {'hauteur': 242, 'duree': 1.04, 'essai': \"qu'ont.\", 'entendu': 'coup', 'ressemblance': 0.2, 'phonemes_attendus': 'kɔ̃', 'phonemes_entendus': 'ku', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|plisse",
+  "text": "plisse",
+  "erreur": "meilleur essai : {'hauteur': 250, 'duree': 1.04, 'essai': 'plisse', 'entendu': 'peace', 'ressemblance': 0.36, 'phonemes_attendus': 'plis', 'phonemes_entendus': 'pis', 'fautes': [], 'ecart_phonemes': 0.25}"
+ }
+]

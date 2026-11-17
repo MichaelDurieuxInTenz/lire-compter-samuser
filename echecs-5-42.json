@@ -1,0 +1,37 @@
+[
+ {
+  "key": "fr|0.8|rat",
+  "text": "rat",
+  "erreur": "meilleur essai : {'hauteur': 230, 'duree': 1.12, 'essai': 'rat.', 'phonemes_attendus': 'ʁa', 'phonemes_entendus': 'ʁat', 'fautes': ['« t » final prononcé'], 'ecart_phonemes': 1.5}"
+ },
+ {
+  "key": "fr|1|prune",
+  "text": "prune",
+  "erreur": "meilleur essai : {'hauteur': 229, 'duree': 0.83, 'essai': 'Écoute bien. Prune.', 'entendu': 'queen', 'ressemblance': 0.4, 'phonemes_attendus': 'pʁyn', 'phonemes_entendus': 'pin', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|prenaient",
+  "text": "prenaient",
+  "erreur": "pas de pause après la phrase d’appel"
+ },
+ {
+  "key": "fr|1|trait",
+  "text": "trait",
+  "erreur": "meilleur essai : {'hauteur': None, 'duree': 0.81, 'essai': 'Écoute bien. Trait.', 'entendu': 'tres', 'ressemblance': 0.44, 'phonemes_attendus': 'tʁɛ', 'phonemes_entendus': 'tʁe', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|cueillent-ils",
+  "text": "cueillent-ils",
+  "erreur": "meilleur essai : {'hauteur': 240, 'duree': 1.28, 'essai': 'cueillent-ils.', 'entendu': 'que est il', 'ressemblance': 0.61, 'phonemes_attendus': 'kœjtil', 'phonemes_entendus': 'kiti', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|numéros",
+  "text": "numéros",
+  "erreur": "meilleur essai : {'hauteur': 258, 'duree': 1.36, 'essai': 'Numéros !', 'entendu': 'numeros', 'ressemblance': 1.0, 'phonemes_attendus': 'nymeʁo', 'phonemes_entendus': 'nimevos', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 1.5}"
+ },
+ {
+  "key": "fr|1|hennit",
+  "text": "hennit",
+  "erreur": "meilleur essai : {'hauteur': 236, 'duree': 1.12, 'essai': 'hennit', 'entendu': 'annie', 'ressemblance': 0.55, 'phonemes_attendus': 'ɛni', 'phonemes_entendus': 'en', 'fautes': [], 'ecart_phonemes': 0.33}"
+ }
+]

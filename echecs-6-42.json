@@ -1,0 +1,42 @@
+[
+ {
+  "key": "fr|1|ça fait 16.",
+  "text": "ça fait seize.",
+  "erreur": "meilleur essai : {'hauteur': 226, 'duree': 1.36, 'essai': 'ça fait seize.', 'entendu': 'Sophie says', 'ressemblance': 0.25, 'phonemes_attendus': 'safɛsɛz', 'phonemes_entendus': 'safisez', 'fautes': [], 'ecart_phonemes': 0.14}"
+ },
+ {
+  "key": "fr|1|c'est mai.",
+  "text": "c'est mai.",
+  "erreur": "meilleur essai : {'hauteur': 231, 'duree': 1.12, 'essai': \"c'est mai.\", 'entendu': \"s'aimer\", 'ressemblance': 0.38, 'phonemes_attendus': 'sɛmɛ', 'phonemes_entendus': 'simi', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|était",
+  "text": "était",
+  "erreur": "meilleur essai : {'hauteur': 251, 'duree': 1.04, 'essai': 'était…', 'entendu': 'ete', 'ressemblance': 0.5, 'phonemes_attendus': 'etɛ', 'phonemes_entendus': 'eti', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|ferai",
+  "text": "ferai",
+  "erreur": "meilleur essai : {'hauteur': 230, 'duree': 1.12, 'essai': 'ferai', 'entendu': 'pret', 'ressemblance': 0.22, 'phonemes_attendus': 'fəʁe', 'phonemes_entendus': 'føɹe', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|défis",
+  "text": "défis",
+  "erreur": "meilleur essai : {'hauteur': 229, 'duree': 1.01, 'essai': 'Écoute bien. Défis.', 'entendu': 'defi', 'ressemblance': 0.89, 'phonemes_attendus': 'defi', 'phonemes_entendus': 'defis', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 1.25}"
+ },
+ {
+  "key": "fr|1|1000",
+  "text": "mille",
+  "erreur": "meilleur essai : {'hauteur': 245, 'duree': 0.96, 'essai': 'mille.', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'mil', 'phonemes_entendus': 'min', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|aires",
+  "text": "aires",
+  "erreur": "meilleur essai : {'hauteur': 220, 'duree': 0.86, 'essai': 'Voici le mot. Aires.', 'entendu': 'r', 'ressemblance': 0.33, 'phonemes_attendus': 'ɛʁ', 'phonemes_entendus': 'ɛʁ', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|faucille",
+  "text": "faucille",
+  "erreur": "meilleur essai : {'hauteur': 261, 'duree': 1.28, 'essai': 'faucille…', 'entendu': 'pussy', 'ressemblance': 0.15, 'phonemes_attendus': 'fosij', 'phonemes_entendus': 'fusi', 'fautes': [], 'ecart_phonemes': 0.4}"
+ }
+]

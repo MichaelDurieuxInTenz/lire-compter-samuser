@@ -1,0 +1,37 @@
+[
+ {
+  "key": "fr|1|Il y a un loup.",
+  "text": "Il y a un loup.",
+  "erreur": "meilleur essai : {'hauteur': 235, 'duree': 1.04, 'essai': 'Il y a un loup.', 'entendu': \"Y'allou.\", 'ressemblance': 0.38, 'phonemes_attendus': 'iliaœ̃lu', 'phonemes_entendus': 'jan', 'fautes': [], 'ecart_phonemes': 0.86}"
+ },
+ {
+  "key": "fr|1|kilos,",
+  "text": "kilos,",
+  "erreur": "meilleur essai : {'hauteur': 222, 'duree': 0.95, 'essai': 'Voici le mot. Kilos.', 'entendu': 'kilos', 'ressemblance': 1.0, 'phonemes_attendus': 'kilo', 'phonemes_entendus': 'kilos', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 1.25}"
+ },
+ {
+  "key": "fr|1|est-ce",
+  "text": "est-ce",
+  "erreur": "meilleur essai : {'hauteur': 245, 'duree': 1.04, 'essai': 'est-ce…', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'ɛs', 'phonemes_entendus': 'es', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|billes",
+  "text": "billes",
+  "erreur": "meilleur essai : {'hauteur': 261, 'duree': 1.2, 'essai': 'billes…', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'bij', 'phonemes_entendus': 'bi', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|voyais",
+  "text": "voyais",
+  "erreur": "meilleur essai : {'hauteur': 220, 'duree': 1.28, 'essai': 'voyais', 'entendu': 'voyez', 'ressemblance': 0.55, 'phonemes_attendus': 'vwajɛ', 'phonemes_entendus': 'vɑje', 'fautes': [], 'ecart_phonemes': 0.2}"
+ },
+ {
+  "key": "fr|1|qu'autour",
+  "text": "qu'autour",
+  "erreur": "meilleur essai : {'hauteur': 238, 'duree': 1.2, 'essai': \"qu'autour\", 'entendu': 'cotour', 'ressemblance': 0.53, 'phonemes_attendus': 'kotuʁ', 'phonemes_entendus': 'kotu', 'fautes': [], 'ecart_phonemes': 0.2}"
+ },
+ {
+  "key": "fr|1|coins",
+  "text": "coins",
+  "erreur": "pas de pause après la phrase d’appel"
+ }
+]

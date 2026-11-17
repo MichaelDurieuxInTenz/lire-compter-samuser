@@ -1,0 +1,42 @@
+[
+ {
+  "key": "fr|1|cygne",
+  "text": "cygne",
+  "erreur": "meilleur essai : {'hauteur': 240, 'duree': 1.04, 'essai': 'cygne', 'entendu': 'signe', 'ressemblance': 0.6, 'phonemes_attendus': 'siɲ', 'phonemes_entendus': 'si', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|roues",
+  "text": "roues",
+  "erreur": "meilleur essai : {'hauteur': 211, 'duree': 0.82, 'essai': 'Écoute bien. Roues.', 'entendu': 'roux', 'ressemblance': 0.67, 'phonemes_attendus': 'ʁw', 'phonemes_entendus': 'ʁ', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|serons",
+  "text": "serons",
+  "erreur": "meilleur essai : {'hauteur': 232, 'duree': 1.28, 'essai': 'Serons !', 'entendu': 'sauron', 'ressemblance': 0.67, 'phonemes_attendus': 'səʁɔ̃', 'phonemes_entendus': 'suɹʊ', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|jouais",
+  "text": "jouais",
+  "erreur": "meilleur essai : {'hauteur': 221, 'duree': 1.2, 'essai': 'Jouais !', 'entendu': 'jouez', 'ressemblance': 0.55, 'phonemes_attendus': 'ʒwɛ', 'phonemes_entendus': 'dʒwe', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|quarts",
+  "text": "quarts",
+  "erreur": "meilleur essai : {'hauteur': 238, 'duree': 1.28, 'essai': '« quarts »', 'entendu': 'carte', 'ressemblance': 0.55, 'phonemes_attendus': 'kaʁ', 'phonemes_entendus': 'kaxt', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|mailles",
+  "text": "mailles",
+  "erreur": "meilleur essai : {'hauteur': 242, 'duree': 1.36, 'essai': 'Mailles !', 'entendu': 'bye', 'ressemblance': 0.2, 'phonemes_attendus': 'maj', 'phonemes_entendus': 'ma', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|gelée",
+  "text": "gelée",
+  "erreur": "meilleur essai : {'hauteur': 218, 'duree': 0.89, 'essai': 'Voici le mot. Gelée.', 'entendu': \"je l'ai\", 'ressemblance': 0.33, 'phonemes_attendus': 'ʒəle', 'phonemes_entendus': 'ʒoli', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|Le chat.",
+  "text": "Le chat.",
+  "erreur": "meilleur essai : {'hauteur': 220, 'duree': 0.78, 'essai': 'Voici le mot. Le chat.', 'entendu': 'le chat', 'ressemblance': 1.0, 'phonemes_attendus': 'ləʃa', 'phonemes_entendus': 'lytʃat', 'fautes': ['« t » final prononcé'], 'ecart_phonemes': 1.5}"
+ }
+]

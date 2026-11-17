@@ -1,0 +1,12 @@
+[
+ {
+  "key": "fr|1|loups",
+  "text": "loups",
+  "erreur": "meilleur essai : {'hauteur': 238, 'duree': 0.94, 'essai': 'Voici le mot. Loups.', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'lu', 'phonemes_entendus': 'lu', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|chut",
+  "text": "chut",
+  "erreur": "meilleur essai : {'hauteur': None, 'duree': 0.9, 'essai': 'Voici le mot. Chut.', 'phonemes_attendus': 'ʃy', 'phonemes_entendus': 'ʃyt', 'fautes': ['« t » final prononcé'], 'ecart_phonemes': 1.5}"
+ }
+]

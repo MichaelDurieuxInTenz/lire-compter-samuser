@@ -1,0 +1,22 @@
+[
+ {
+  "key": "fr|1|ronds",
+  "text": "ronds",
+  "erreur": "meilleur essai : {'hauteur': 198, 'duree': 0.87, 'essai': 'Écoute bien. Ronds.', 'entendu': 'bronc', 'ressemblance': 0.6, 'phonemes_attendus': 'ʁɔ̃', 'phonemes_entendus': 'bʁuŋ', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|eûmes",
+  "text": "eûmes",
+  "erreur": "meilleur essai : {'hauteur': 236, 'duree': 0.89, 'essai': 'Écoute bien. Eûmes.', 'entendu': 'hum', 'ressemblance': 0.5, 'phonemes_attendus': 'ym', 'phonemes_entendus': 'm', 'fautes': [], 'ecart_phonemes': 0.5}"
+ },
+ {
+  "key": "fr|1|paires",
+  "text": "paires",
+  "erreur": "meilleur essai : {'hauteur': 250, 'duree': 1.28, 'essai': 'Paires !', 'entendu': 'pere', 'ressemblance': 0.6, 'phonemes_attendus': 'pɛʁ', 'phonemes_entendus': 'pe', 'fautes': [], 'ecart_phonemes': 0.33}"
+ },
+ {
+  "key": "fr|1|ailes",
+  "text": "ailes",
+  "erreur": "meilleur essai : {'hauteur': 235, 'duree': 1.2, 'essai': 'ailes', 'entendu': 'aie', 'ressemblance': 0.75, 'phonemes_attendus': 'ɛl', 'phonemes_entendus': 'a', 'fautes': [], 'ecart_phonemes': 1.0}"
+ }
+]

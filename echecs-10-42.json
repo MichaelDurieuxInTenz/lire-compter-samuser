@@ -1,0 +1,37 @@
+[
+ {
+  "key": "fr|1|pouvais",
+  "text": "pouvais",
+  "erreur": "meilleur essai : {'hauteur': 235, 'duree': 0.88, 'essai': 'Écoute bien. Pouvais.', 'entendu': 'vous pouvez', 'ressemblance': 0.44, 'phonemes_attendus': 'puvɛ', 'phonemes_entendus': 'puve', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|ponts",
+  "text": "ponts",
+  "erreur": "meilleur essai : {'hauteur': 226, 'duree': 1.12, 'essai': 'ponts.', 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'pɔ̃', 'phonemes_entendus': 'puŋ', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|aient",
+  "text": "aient",
+  "erreur": "meilleur essai : {'hauteur': 226, 'duree': 1.04, 'essai': 'aient', 'entendu': 'aien', 'ressemblance': 0.89, 'phonemes_attendus': 'ɛ', 'phonemes_entendus': 'jən', 'fautes': [], 'ecart_phonemes': 3.0}"
+ },
+ {
+  "key": "fr|1|frais",
+  "text": "frais",
+  "erreur": "meilleur essai : {'hauteur': 244, 'duree': 1.12, 'essai': 'Frais !', 'entendu': 'pret', 'ressemblance': 0.22, 'phonemes_attendus': 'fʁɛ', 'phonemes_entendus': 'fxe', 'fautes': [], 'ecart_phonemes': 0.0}"
+ },
+ {
+  "key": "fr|1|d'aider",
+  "text": "d'aider",
+  "erreur": "meilleur essai : {'hauteur': 218, 'duree': 1.12, 'essai': \"d'aider.\", 'entendu': 'dede', 'ressemblance': 0.36, 'phonemes_attendus': 'dɛde', 'phonemes_entendus': 'ded', 'fautes': [], 'ecart_phonemes': 0.25}"
+ },
+ {
+  "key": "fr|1|prenait",
+  "text": "prenait",
+  "erreur": "meilleur essai : {'hauteur': 231, 'duree': 1.2, 'essai': 'prenait', 'entendu': 'prenez', 'ressemblance': 0.62, 'phonemes_attendus': 'pʁənɛ', 'phonemes_entendus': 'pene', 'fautes': [], 'ecart_phonemes': 0.4}"
+ },
+ {
+  "key": "fr|1|Yanis",
+  "text": "Yanis",
+  "erreur": "meilleur essai : {'hauteur': 226, 'duree': 1.2, 'essai': '« Yanis »', 'entendu': 'yannis', 'ressemblance': 0.91, 'phonemes_attendus': 'jani', 'phonemes_entendus': 'janis', 'fautes': ['« s » final prononcé'], 'ecart_phonemes': 1.25}"
+ }
+]
