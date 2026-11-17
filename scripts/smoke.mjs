@@ -543,7 +543,7 @@ async function pickDuo(page, players) {
 
 /** Aucun « null », « undefined » ou « NaN » ne doit apparaître à l'écran. */
 async function assertNoJunk(page, label) {
-  const junk = await page.evaluate(() => document.body.innerText.match(/\b(null|undefined|NaN)\b|\[object \w+\]/)?.[0]);
+  const junk = await page.evaluate(() => document.body.innerText.match(/\b(?:null|undefined|NaN)+\b|\[object \w+\]/)?.[0]);
   if (junk) fail(`${label} : « ${junk} » affiché à l'écran`);
 }
 
@@ -1613,6 +1613,19 @@ for (const game of GAMES.filter((g) => !PLAY || PLAY.includes(g.id))) {
     await shot('17-resultats');
   }
   console.log(`✔ ${game.id} (${grade}) : partie complète, ${stars} étoiles`);
+}
+// le panier à plusieurs fruits (liste de courses) : un fruit pas encore posé n'écrit rien (« null »
+// s'affichait à sa place, 1.22.3)
+if (!PLAY || PLAY.includes('panier')) {
+  await setStore(page, "store.profiles['eva-rose'].grade = 'CP'; store.profiles['eva-rose'].games.panier = { level: 4 };");
+  await openGame(page, findGame('panier'));
+  await page.waitForSelector('.build-buttons');
+  await assertNoJunk(page, 'panier à 3 fruits, vide');
+  await page.click('.add-btn[data-fruit="0"]');
+  await page.click('.add-btn[data-fruit="1"]');
+  await assertNoJunk(page, 'panier à 3 fruits, deux fruits posés');
+  if ((await page.locator('.basket .basket-singles').count()) !== 2) fail('panier à 3 fruits : deux sortes de fruits posées attendues');
+  console.log('✔ panier à 3 fruits : rien d’écrit pour le fruit pas encore posé');
 }
 if (deadEndsSeen.size) console.log(`✔ impasses : branche fausse marquée, croix et « Impasse ! Reviens en arrière. » (${[...deadEndsSeen].join(', ')})`);
 
