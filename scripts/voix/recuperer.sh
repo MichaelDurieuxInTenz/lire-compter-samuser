@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 # Récupère les sons fabriqués sur GitHub pour la branche courante (workflow « Voix naturelle »,
 # étiquette voix-sons/<branche>), les ajoute à app/voix/ et met à jour app/voix/manifest.json.
-# Usage : bash scripts/voix/recuperer.sh [branche]
+# --nouvelle-voix : les sons refaits avec une nouvelle voix (étiquette voix-nouvelle/<branche>, cumulée
+# d'une exécution à l'autre) ; ils remplacent les anciens, et tous les paquets sont refaits.
+# Usage : bash scripts/voix/recuperer.sh [branche] [--nouvelle-voix]
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-tag="voix-sons/${1:-$(git rev-parse --abbrev-ref HEAD)}"
+prefix=voix-sons
+branch=
+for arg in "$@"; do
+  if [ "$arg" = --nouvelle-voix ]; then prefix=voix-nouvelle; else branch=$arg; fi
+done
+tag="${prefix}/${branch:-$(git rev-parse --abbrev-ref HEAD)}"
 git fetch -q -f origin "refs/tags/$tag:refs/tags/$tag"
 tmp=$(mktemp -d)
 git archive "$tag" | tar -x -C "$tmp"

@@ -2186,7 +2186,7 @@ if (voiceManifest.paquets?.length) {
   const files = new Set(Object.values(voiceManifest.clips));
   // son par son (cache.keys() refuse au-delà d'environ 20 000 sons sur Chrome)
   const missing = await page.evaluate(async (list) => {
-    const cache = await caches.open('lire-et-compter-voix');
+    const cache = await caches.open('lire-et-compter-voix-2');
     const out = [];
     for (let i = 0; i < list.length; i += 200) {
       const batch = list.slice(i, i + 200);

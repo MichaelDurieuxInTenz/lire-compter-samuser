@@ -4,13 +4,21 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.22.3',
+  version: '1.23.0',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.23.0',
+    date: '2026-11-17',
+    changes: [
+      'Nouvelle voix d’Estelle : toutes les phrases ont été réenregistrées avec le nouveau modèle de Pocket TTS (Kyutai), plus clair et plus régulier, en français comme en anglais.',
+      'Les sons sont retéléchargés une fois, en arrière-plan (environ 170 Mo) ; l’ancienne voix est effacée de l’appareil.',
+    ],
+  },
   {
     version: '1.22.3',
     date: '2026-11-16',

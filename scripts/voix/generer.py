@@ -10,10 +10,16 @@
 # Le meilleur essai est gardé ; chaque son est décrit dans rapport-k.json (hauteur, volume, débit,
 # texte reconnu), les sons ratés dans echecs-k.json.
 #
+# Changement de voix (nouveau modèle) : --nouvelle-voix DOSSIER fait refaire tous les sons, sauf ceux
+# déjà refaits avec la nouvelle voix et posés dans DOSSIER (fr/…, en/…, sous leur nom de a-generer.json) ;
+# l'ancien son ne concourt pas. Le travail se fait en plusieurs exécutions (--duree-max : on s'arrête
+# à temps pour tout déposer, la suite à la prochaine exécution).
+#
 # Usage : python scripts/voix/generer.py --shard 3/8 --sortie voix-sortie [--essais 4] [--whisper small]
 import argparse
 import difflib
 import json
+import os
 import re
 import subprocess
 import tempfile
@@ -37,13 +43,22 @@ parser.add_argument('--whisper', default='small', help="modèle de reconnaissanc
 parser.add_argument('--refaire', help='liste JSON de clés à refaire même si leur son existe (le meilleur, ancien ou nouveau, est gardé)')
 parser.add_argument('--phonemes', action='store_true', help='prononciation vérifiée phonème par phonème (phonemes.py)')
 parser.add_argument('--verifier-mots', action='store_true', help='réécouter les mots déjà faits et refaire ceux qui sont mal prononcés')
+parser.add_argument('--nouvelle-voix', help='dossier des sons déjà refaits avec la nouvelle voix : tous les autres sont refaits')
+parser.add_argument('--duree-max', type=float, help='secondes : au-delà, plus aucun son n’est commencé (la suite à la prochaine exécution)')
+parser.add_argument('--limite', type=int, help='au plus ce nombre de sons par morceau (essai)')
+parser.add_argument('--monosyllabes', action='store_true',
+                    help='retravailler les sons d’une seule syllabe : deux fois plus d’essais, une note quasi parfaite exigée, le son actuel concourt')
+parser.add_argument('--exigeant', action='store_true',
+                    help='comme --monosyllabes (deux fois plus d’essais, note quasi parfaite), mais seulement pour les sons de --refaire')
+parser.add_argument('--evaluer', action='store_true', help='noter les sons déjà faits de --refaire sans rien fabriquer (comparer deux voix)')
 args = parser.parse_args()
 k, n = map(int, args.shard.split('/'))
 OUT = Path(args.sortie)
 EXISTING = ROOT / 'app/voix'
 LANGUAGES = {'fr': 'french', 'en': 'english'}
-# hauteur habituelle de la voix (Hz, médiane mesurée sur les sons de la version 1.8.1)
-PITCH = {'estelle': 254.0}
+# hauteur habituelle de la voix (Hz, médiane mesurée sur l'essai de la nouvelle voix, pocket-tts 4.0.1 :
+# 245 Hz en français, 238 Hz en anglais ; le français fait 9 sons sur 10). 254 Hz avec pocket-tts 3.
+PITCH = {'estelle': 244.0}
 PITCH_TOLERANCE = 0.15  # ± 15 % : au-delà, la voix paraît changer
 TARGET_DB = -20.0  # volume moyen des passages parlés (dBFS)
 MP3 = ['-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '32k', '-write_xing', '0', '-id3v2_version', '0']
@@ -54,8 +69,32 @@ items = json.loads(Path(args.liste).read_text(encoding='utf-8'))
 manifest = EXISTING / 'manifest.json'
 made = json.loads(manifest.read_text(encoding='utf-8')).get('clips', {}) if manifest.exists() else {}
 redo = set(json.loads(Path(args.refaire).read_text(encoding='utf-8'))) if args.refaire else set()
-todo = [e for i, e in enumerate(items) if i % n == k - 1
-        and (e['key'] in redo or (e['key'] not in made and not (EXISTING / e['file']).exists()))]
+if args.nouvelle_voix:
+    # nouvelle voix : l'ancien son ne compte plus (ni sauté, ni gardé), seul compte le son déjà refait
+    if redo or args.verifier_mots:
+        parser.error('--nouvelle-voix se lance seul (sans --refaire ni --verifier-mots)')
+    fresh = Path(args.nouvelle_voix)
+    todo = [e for i, e in enumerate(items) if i % n == k - 1 and not (fresh / e['file']).exists()]
+else:
+    todo = [e for i, e in enumerate(items) if i % n == k - 1
+            and (e['key'] in redo or (e['key'] not in made and not (EXISTING / e['file']).exists()))]
+if args.monosyllabes:
+    # une seule syllabe (d'après les phonèmes d'espeak-ng) : sans contexte, la voix les rate plus souvent
+    import phonemes as ph
+    def one_syllable(e):
+        try:
+            return len(re.findall('[aeiouyøÕẼ]+', ph._broad(ph.expected(e['text'], e['lang'])))) == 1
+        except subprocess.CalledProcessError:
+            return False
+    # en plus des sons de --refaire (qui restent à faire)
+    chosen = {e['key'] for e in todo}
+    todo += [e for i, e in enumerate(items) if i % n == k - 1 and e['key'] not in chosen
+             and len(re.findall(r"[\w'-]+", e['text'])) <= 2 and one_syllable(e)]
+    redo |= {e['key'] for e in todo}
+if args.limite:
+    todo = todo[:args.limite]
+# rapports nommés par exécution : plusieurs exécutions se cumulent sans s'écraser (--nouvelle-voix)
+RUN = f"-{os.environ['GITHUB_RUN_NUMBER']}" if os.environ.get('GITHUB_RUN_NUMBER') else ''
 print(f'morceau {k}/{n} : {len(todo)} sons à fabriquer', flush=True)
 
 
@@ -354,7 +393,12 @@ spoken = 0.0
 with tempfile.TemporaryDirectory() as tmp:
     wav = Path(tmp) / 'son.wav'
     trial = Path(tmp) / 'essai.mp3'
+    left = 0
     for i, e in enumerate(todo, 1):
+        if args.duree_max and time.time() - start > args.duree_max:
+            left = len(todo) - i + 1
+            print(f'  temps écoulé : {left} sons laissés pour la prochaine exécution', flush=True)
+            break
         lang, voice = e['lang'], e['voice']
         if lang not in models:
             models[lang] = TTSModel.load_model(language=LANGUAGES[lang])
@@ -399,7 +443,18 @@ with tempfile.TemporaryDirectory() as tmp:
                 best = (note, None, measures)
             except subprocess.CalledProcessError:
                 problems.append('ancien son illisible')
-        for attempt in ([] if best and best[0] <= 1 else attempts(text, args.essais, lang)):
+        if args.evaluer:
+            # seulement la note de l'ancien son, avec les contrôles d'aujourd'hui
+            if best:
+                report.append({'key': e['key'], 'note': round(best[0], 2), 'garde': True, **best[2]})
+            else:
+                failures.append({'key': e['key'], 'text': text, 'erreur': '; '.join(problems) or 'pas d’ancien son'})
+            continue
+        # une syllabe seule : deux séries d'essais, et on ne s'arrête qu'à une note quasi parfaite
+        strict = args.monosyllabes or args.exigeant
+        enough = 0.3 if strict else 1
+        tries = attempts(text, args.essais, lang) * (2 if strict else 1)
+        for attempt in ([] if best and best[0] <= enough else tries):
             cut = isinstance(attempt, tuple)
             attempt = attempt[1] if cut else attempt
             audio = model.generate_audio(states[(lang, voice)], attempt).numpy().reshape(-1)
@@ -439,7 +494,7 @@ with tempfile.TemporaryDirectory() as tmp:
                     continue
             if best is None or note < best[0]:
                 best = (note, audio, measures)
-            if note <= 1:
+            if note <= enough:
                 break
         if best is None or best[0] > 4:
             failures.append({'key': e['key'], 'text': text, 'erreur': '; '.join(problems) or f'meilleur essai : {best[2] if best else None}'})
@@ -459,8 +514,9 @@ with tempfile.TemporaryDirectory() as tmp:
             print(f'  {i}/{len(todo)} sons, {spoken:.0f} s de voix en {spent:.0f} s', flush=True)
 
 OUT.mkdir(parents=True, exist_ok=True)
-(OUT / f'echecs-{k}.json').write_text(json.dumps(failures, ensure_ascii=False, indent=1), encoding='utf-8')
-(OUT / f'rapport-{k}.json').write_text(json.dumps(report, ensure_ascii=False), encoding='utf-8')
+(OUT / f'echecs-{k}{RUN}.json').write_text(json.dumps(failures, ensure_ascii=False, indent=1), encoding='utf-8')
+(OUT / f'rapport-{k}{RUN}.json').write_text(json.dumps(report, ensure_ascii=False), encoding='utf-8')
 if checked:
-    (OUT / f'verification-{k}.json').write_text(json.dumps(checked, ensure_ascii=False), encoding='utf-8')
-print(f'morceau {k}/{n} : {len(todo) - len(failures)} sons fabriqués, {len(failures)} échecs', flush=True)
+    (OUT / f'verification-{k}{RUN}.json').write_text(json.dumps(checked, ensure_ascii=False), encoding='utf-8')
+print(f'morceau {k}/{n} : {len(todo) - left - len(failures)} sons fabriqués, {len(failures)} échecs'
+      + (f', {left} pour la prochaine exécution' if left else ''), flush=True)

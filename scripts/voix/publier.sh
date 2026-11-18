@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 # Dépose les MP3 (et les rapports JSON) d'un dossier sous une étiquette git (sans toucher aux branches) :
 # on les récupère ensuite avec « git fetch origin tag <étiquette> ».
-# Usage (dans GitHub Actions, avec GITHUB_TOKEN) : scripts/voix/publier.sh voix-sons/<branche> voix-sortie
+# --cumuler (changement de voix) : les sons déjà sous l'étiquette sont gardés, les nouveaux s'y ajoutent
+# (les échecs d'avant sont oubliés : ils ont été retentés).
+# Usage (dans GitHub Actions, avec GITHUB_TOKEN) : scripts/voix/publier.sh voix-sons/<branche> voix-sortie [--cumuler]
 set -euo pipefail
 tag=$1
 dir=$2
 tmp=$(mktemp -d)
+if [ "${3:-}" = --cumuler ] && git fetch -q origin "refs/tags/${tag}:refs/tags/${tag}" 2>/dev/null; then
+  git archive "$tag" | tar -x -C "$tmp"
+  rm -f "$tmp"/echecs-*.json
+  echo "${tag} : $(find "$tmp" -name '*.mp3' | wc -l) sons déjà déposés"
+fi
 (cd "$dir" && find . \( -name '*.mp3' -o -name '*.json' \) -print0 | xargs -0 -r -I{} cp --parents {} "$tmp")
 cd "$tmp"
 git init -q

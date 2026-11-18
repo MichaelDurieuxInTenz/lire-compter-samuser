@@ -9,6 +9,11 @@ name: Voix naturelle
 # branches ne s'écrasent pas) ; on les ajoute ensuite à app/voix/ avec scripts/voix/recuperer.sh.
 # Un envoi de plus de 300 fichiers ne déclenche pas les filtres de chemins : lancer alors le
 # workflow à la main (onglet Actions, ou API « workflow_dispatch » sur la branche).
+#
+# Changement de voix (nouveau modèle) : NOUVELLE_VOIX: '1' fait refaire tous les sons, en plusieurs
+# exécutions (de 5 h 30 chacune au plus) qui se cumulent sous l'étiquette « voix-nouvelle/<branche> » :
+# relancer le workflow à la main jusqu'à ce qu'il ne reste plus rien à faire, puis
+# bash scripts/voix/recuperer.sh --nouvelle-voix, et remettre NOUVELLE_VOIX: '0'.
 on:
   push:
     branches: ['claude/**', 'claude_mdu/**']
@@ -18,11 +23,23 @@ on:
 permissions:
   contents: read
 
+# une exécution à la fois par branche : deux exécutions écriraient la même étiquette
+concurrency:
+  group: voix-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NOUVELLE_VOIX: '0'
+  # '1' : les sons d'une seule syllabe sont retravaillés (deux fois plus d'essais, note quasi parfaite
+  # exigée, le son actuel concourt) ; avec a-refaire.json, les sons douteux aussi ; 'exigeant' : la même
+  # exigence, pour les seuls sons de a-refaire.json
+  MONOSYLLABES: '0'
+
 jobs:
   generer:
     name: sons ${{ matrix.morceau }}/16
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 350
     strategy:
       fail-fast: false
       matrix:
@@ -33,16 +50,32 @@ jobs:
         with:
           python-version: '3.12'
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg espeak-ng
-      # versions figées (celles de l'exécution 24) : torch (sans carte graphique) depuis l'index de PyTorch
-      # seul, puis le reste depuis PyPI seul (pas deux index pour un même paquet)
-      - run: pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
-      - run: pip install pocket-tts==3.3.0 faster-whisper==1.2.1 transformers==5.19.0 phonemizer==3.4.0
+      # versions figées (pocket-tts 4 : nouveaux modèles français et anglais, voix refaite pour la 1.23.0) :
+      # torch (sans carte graphique) depuis l'index de PyTorch seul, puis le reste depuis PyPI seul (pas
+      # deux index pour un même paquet)
+      - run: pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install pocket-tts==4.0.1 faster-whisper==1.2.1 transformers==5.23.0 phonemizer==3.6.0
+      # changement de voix : les sons déjà refaits par les exécutions précédentes sont sautés
+      - name: sons déjà refaits avec la nouvelle voix
+        if: env.NOUVELLE_VOIX == '1'
+        run: |
+          mkdir -p deja-faits
+          if git fetch -q origin "refs/tags/voix-nouvelle/$BRANCHE:refs/tags/voix-nouvelle/$BRANCHE"; then
+            git archive "voix-nouvelle/$BRANCHE" | tar -x -C deja-faits
+          fi
+          echo "$(find deja-faits -name '*.mp3' | wc -l) sons déjà refaits"
+        env:
+          BRANCHE: ${{ github.ref_name }}
       # a-refaire.json : sons douteux à refaire (l'ancien est gardé s'il reste le meilleur). Pour réécouter
       # tous les mots déjà faits et refaire les mal prononcés, ajouter --verifier-mots (fait pour la 1.9.1).
+      # --duree-max : plus aucun son commencé après 5 h 15, pour tout déposer avant la limite de 350 min
       - run: >-
           python scripts/voix/generer.py --shard ${{ matrix.morceau }}/16 --sortie voix-sortie --essais 4
-          --whisper large-v3-turbo --phonemes
-          $( [ -f scripts/voix/a-refaire.json ] && echo --refaire scripts/voix/a-refaire.json )
+          --whisper large-v3-turbo --phonemes --duree-max 18900
+          $( [ "$NOUVELLE_VOIX" = 1 ] && echo --nouvelle-voix deja-faits )
+          $( [ "$NOUVELLE_VOIX" != 1 ] && [ -f scripts/voix/a-refaire.json ] && echo --refaire scripts/voix/a-refaire.json )
+          $( [ "$NOUVELLE_VOIX" != 1 ] && [ "$MONOSYLLABES" = 1 ] && echo --monosyllabes )
+          $( [ "$NOUVELLE_VOIX" != 1 ] && [ "$MONOSYLLABES" = exigeant ] && echo --exigeant )
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always() # même si le temps est écoulé : les sons déjà fabriqués ne sont pas perdus
         with:
@@ -63,7 +96,12 @@ jobs:
           merge-multiple: true
           path: voix-sortie
       # le nom de la branche passe par une variable, jamais tel quel dans la commande
-      - run: bash scripts/voix/publier.sh "voix-sons/$BRANCHE" voix-sortie
+      - run: |
+          if [ "$NOUVELLE_VOIX" = 1 ]; then
+            bash scripts/voix/publier.sh "voix-nouvelle/$BRANCHE" voix-sortie --cumuler
+          else
+            bash scripts/voix/publier.sh "voix-sons/$BRANCHE" voix-sortie
+          fi
         env:
           BRANCHE: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ github.token }}
