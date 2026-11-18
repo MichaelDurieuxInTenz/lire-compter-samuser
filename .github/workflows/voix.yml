@@ -32,8 +32,9 @@ env:
   NOUVELLE_VOIX: '0'
   # '1' : les sons d'une seule syllabe sont retravaillés (deux fois plus d'essais, note quasi parfaite
   # exigée, le son actuel concourt) ; avec a-refaire.json, les sons douteux aussi ; 'exigeant' : la même
-  # exigence, pour les seuls sons de a-refaire.json
-  MONOSYLLABES: '0'
+  # exigence, pour les seuls sons de a-refaire.json ; 'sans-ancien' : idem, quatre séries d'essais, l'ancien son
+  # ne concourt pas (sons restés dans l'ancienne voix)
+  MONOSYLLABES: 'sans-ancien'
 
 jobs:
   generer:
@@ -76,6 +77,7 @@ jobs:
           $( [ "$NOUVELLE_VOIX" != 1 ] && [ -f scripts/voix/a-refaire.json ] && echo --refaire scripts/voix/a-refaire.json )
           $( [ "$NOUVELLE_VOIX" != 1 ] && [ "$MONOSYLLABES" = 1 ] && echo --monosyllabes )
           $( [ "$NOUVELLE_VOIX" != 1 ] && [ "$MONOSYLLABES" = exigeant ] && echo --exigeant )
+          $( [ "$NOUVELLE_VOIX" != 1 ] && [ "$MONOSYLLABES" = sans-ancien ] && echo --exigeant --sans-ancien )
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always() # même si le temps est écoulé : les sons déjà fabriqués ne sont pas perdus
         with:
