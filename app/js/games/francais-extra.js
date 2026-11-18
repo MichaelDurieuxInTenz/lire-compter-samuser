@@ -131,11 +131,11 @@ function blendSyllables(rng) {
   const said = parts.map((p) => ({ text: p, rate: 0.6 }));
   return {
     key: `syllabes-rythme:recolle:${word}`,
-    text: 'Recolle les syllabes : quel mot entends-tu ?',
-    instruction: ['Écoute les syllabes, et recolle-les. Quel mot entends-tu ?', ...said],
+    text: 'Écoute les morceaux du mot, puis touche son image.',
+    instruction: ['Écoute bien les morceaux du mot.', ...said, 'Quel mot ça fait ? Touche son image.'],
     short: { key: 'syllabes-rythme:recolle', text: 'Quel mot ?', speak: said },
     replay: said,
-    stage: { type: 'picture', emoji: '🧩' },
+    stage: { type: 'listen' }, // 🔊 : réécouter les morceaux (une image ferait croire à une réponse)
     listenOnly: true, // les syllabes ne sont qu'entendues
     choices: options.map((w) => ({ value: w, label: pictureOf(w) })),
     choiceStyle: 'pictures',

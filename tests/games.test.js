@@ -700,7 +700,8 @@ test('données anglais : chaque mot a une image, au moins 4 mots par thème', ()
   }
   for (const id of ['rimes', 'syllabes-rythme']) {
     for (const { q } of questions(findGame(id))) {
-      assert.ok(q.stage.emoji, `${id} : pas d'image pour ${q.key}`);
+      // une image, ou le bouton 🔊 d'une question à écouter (« Recolle les syllabes »)
+      assert.ok(q.stage.emoji || (q.stage.type === 'listen' && q.listenOnly), `${id} : pas d'image pour ${q.key}`);
       for (const c of q.choices) assert.ok(c.label, `${id} : choix sans image`);
     }
   }
