@@ -425,6 +425,10 @@ with tempfile.TemporaryDirectory() as tmp:
                 # la prononciation elle-même : une lettre muette dite, un « in » à l'anglaise comptent lourd
                 gap, details = ph.judge(text, lang, decode16(path))
                 measures.update(details, ecart_phonemes=round(gap, 2))
+                if is_short(text) and gap <= 0.15 and not details['fautes']:
+                    # mot court dit phonème pour phonème : Whisper, qui devine des mots, se trompe alors
+                    # (« trait » entendu « très », « cygne » écrit « signe ») ; il départage, sans exclure
+                    penalty = min(penalty, 1.0)
                 penalty += gap * (3 if is_short(text) else 1.5)
             return penalty
 

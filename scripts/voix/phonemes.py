@@ -58,6 +58,8 @@ def _broad(p):
 VOWELS = set('aeiouyøɛɔəɑœɪʊʌ') | {'̃'}
 # lettre finale muette (« souris », « chat », « doux ») → consonnes qu'on entendrait si elle était dite
 SILENT = {'s': 'sz', 't': 't', 'x': 'ksz', 'd': 'dt', 'z': 'zs', 'p': 'p'}
+# mots dont la consonne finale se dit (espeak-ng l'oublie parfois : « chut » donné « chu »)
+SOUNDED = {'chut', 'zut', 'brut', 'but', 'net', 'mat', 'fat', 'dot', 'ouest', 'sept', 'huit', 'août', 'bus', 'ours', 'fils', 'os', 'tennis', 'cactus', 'lotus', 'bonus', 'sud', 'cap'}
 
 
 def faults(text, lang, exp, got):
@@ -67,7 +69,7 @@ def faults(text, lang, exp, got):
         return out
     word = re.sub(r"[^\w'-]", '', (text.split() or [''])[-1].lower())
     last = word[-1:]
-    if last in SILENT and exp and exp[-1] in VOWELS and got[-1] in SILENT[last]:
+    if last in SILENT and word not in SOUNDED and exp and exp[-1] in VOWELS and got[-1] in SILENT[last]:
         out.append(f'« {last} » final prononcé')
     if 'ɛ̃' in exp and re.search('[iɪ]ŋ', got):
         out.append('« in » dit à l’anglaise')
