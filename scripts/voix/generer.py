@@ -50,6 +50,8 @@ parser.add_argument('--monosyllabes', action='store_true',
                     help='retravailler les sons d’une seule syllabe : deux fois plus d’essais, une note quasi parfaite exigée, le son actuel concourt')
 parser.add_argument('--exigeant', action='store_true',
                     help='comme --monosyllabes (deux fois plus d’essais, note quasi parfaite), mais seulement pour les sons de --refaire')
+parser.add_argument('--sans-ancien', action='store_true',
+                    help='sons de --refaire encore dans l’ancienne voix : l’ancien son ne concourt pas, quatre séries d’essais')
 parser.add_argument('--evaluer', action='store_true', help='noter les sons déjà faits de --refaire sans rien fabriquer (comparer deux voix)')
 args = parser.parse_args()
 k, n = map(int, args.shard.split('/'))
@@ -423,12 +425,16 @@ with tempfile.TemporaryDirectory() as tmp:
                 # la prononciation elle-même : une lettre muette dite, un « in » à l'anglaise comptent lourd
                 gap, details = ph.judge(text, lang, decode16(path))
                 measures.update(details, ecart_phonemes=round(gap, 2))
+                if is_short(text) and gap <= 0.15 and not details['fautes']:
+                    # mot court dit phonème pour phonème : Whisper, qui devine des mots, se trompe alors
+                    # (« trait » entendu « très », « cygne » écrit « signe ») ; il départage, sans exclure
+                    penalty = min(penalty, 1.0)
                 penalty += gap * (3 if is_short(text) else 1.5)
             return penalty
 
         best = None  # (note, audio, mesures) ; audio vaut None pour l'ancien son, gardé tel quel
         problems = []
-        old = existing_clip(e) if e['key'] in redo else None
+        old = existing_clip(e) if e['key'] in redo and not args.sans_ancien else None
         if old:
             # l'ancien son concourt aussi : il n'est remplacé que par un meilleur
             trial.write_bytes(old)
@@ -453,7 +459,7 @@ with tempfile.TemporaryDirectory() as tmp:
         # une syllabe seule : deux séries d'essais, et on ne s'arrête qu'à une note quasi parfaite
         strict = args.monosyllabes or args.exigeant
         enough = 0.3 if strict else 1
-        tries = attempts(text, args.essais, lang) * (2 if strict else 1)
+        tries = attempts(text, args.essais, lang) * (4 if args.sans_ancien else 2 if strict else 1)
         for attempt in ([] if best and best[0] <= enough else tries):
             cut = isinstance(attempt, tuple)
             attempt = attempt[1] if cut else attempt

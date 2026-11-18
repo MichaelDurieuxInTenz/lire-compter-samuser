@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.23.0',
+  version: '1.23.1',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.23.1',
+    date: '2026-11-18',
+    changes: [
+      'Les derniers mots courts passent eux aussi à la nouvelle voix d’Estelle (« phoque », « trait », « chut »…).',
+    ],
+  },
   {
     version: '1.23.0',
     date: '2026-11-17',
