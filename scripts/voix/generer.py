@@ -48,6 +48,8 @@ parser.add_argument('--duree-max', type=float, help='secondes : au-delà, plus a
 parser.add_argument('--limite', type=int, help='au plus ce nombre de sons par morceau (essai)')
 parser.add_argument('--monosyllabes', action='store_true',
                     help='retravailler les sons d’une seule syllabe : deux fois plus d’essais, une note quasi parfaite exigée, le son actuel concourt')
+parser.add_argument('--exigeant', action='store_true',
+                    help='comme --monosyllabes (deux fois plus d’essais, note quasi parfaite), mais seulement pour les sons de --refaire')
 parser.add_argument('--evaluer', action='store_true', help='noter les sons déjà faits de --refaire sans rien fabriquer (comparer deux voix)')
 args = parser.parse_args()
 k, n = map(int, args.shard.split('/'))
@@ -84,7 +86,10 @@ if args.monosyllabes:
             return len(re.findall('[aeiouyøÕẼ]+', ph._broad(ph.expected(e['text'], e['lang'])))) == 1
         except subprocess.CalledProcessError:
             return False
-    todo = [e for i, e in enumerate(items) if i % n == k - 1 and len(re.findall(r"[\w'-]+", e['text'])) <= 2 and one_syllable(e)]
+    # en plus des sons de --refaire (qui restent à faire)
+    chosen = {e['key'] for e in todo}
+    todo += [e for i, e in enumerate(items) if i % n == k - 1 and e['key'] not in chosen
+             and len(re.findall(r"[\w'-]+", e['text'])) <= 2 and one_syllable(e)]
     redo |= {e['key'] for e in todo}
 if args.limite:
     todo = todo[:args.limite]
@@ -446,8 +451,9 @@ with tempfile.TemporaryDirectory() as tmp:
                 failures.append({'key': e['key'], 'text': text, 'erreur': '; '.join(problems) or 'pas d’ancien son'})
             continue
         # une syllabe seule : deux séries d'essais, et on ne s'arrête qu'à une note quasi parfaite
-        enough = 0.3 if args.monosyllabes else 1
-        tries = attempts(text, args.essais, lang) * (2 if args.monosyllabes else 1)
+        strict = args.monosyllabes or args.exigeant
+        enough = 0.3 if strict else 1
+        tries = attempts(text, args.essais, lang) * (2 if strict else 1)
         for attempt in ([] if best and best[0] <= enough else tries):
             cut = isinstance(attempt, tuple)
             attempt = attempt[1] if cut else attempt
