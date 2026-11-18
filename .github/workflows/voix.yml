@@ -34,7 +34,7 @@ env:
   # exigée, le son actuel concourt) ; avec a-refaire.json, les sons douteux aussi ; 'exigeant' : la même
   # exigence, pour les seuls sons de a-refaire.json ; 'sans-ancien' : idem, quatre séries d'essais, l'ancien son
   # ne concourt pas (sons restés dans l'ancienne voix)
-  MONOSYLLABES: 'sans-ancien'
+  MONOSYLLABES: '0'
 
 jobs:
   generer:
