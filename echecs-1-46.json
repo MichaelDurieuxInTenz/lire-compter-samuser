@@ -1,0 +1,7 @@
+[
+ {
+  "key": "fr|1|qu'ont",
+  "text": "qu'ont",
+  "erreur": "meilleur essai : {'hauteur': 242, 'duree': 0.96, 'essai': \"qu'ont.\", 'entendu': '', 'ressemblance': 0.0, 'phonemes_attendus': 'kɔ̃', 'phonemes_entendus': 'ku', 'fautes': [], 'ecart_phonemes': 0.5}"
+ }
+]
