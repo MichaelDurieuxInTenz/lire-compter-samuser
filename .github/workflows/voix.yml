@@ -33,7 +33,7 @@ env:
   # '1' : les sons d'une seule syllabe sont retravaillés (deux fois plus d'essais, note quasi parfaite
   # exigée, le son actuel concourt) ; avec a-refaire.json, les sons douteux aussi ; 'exigeant' : la même
   # exigence, pour les seuls sons de a-refaire.json
-  MONOSYLLABES: 'exigeant'
+  MONOSYLLABES: '0'
 
 jobs:
   generer:
