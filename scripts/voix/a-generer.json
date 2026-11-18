@@ -60003,6 +60003,15 @@
   "file": "en/307572bc8e86069a.mp3"
  },
  {
+  "key": "fr|1|Touche son image.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Touche son image.",
+  "voice": "estelle",
+  "file": "fr/524960be1130f766.mp3"
+ },
+ {
   "key": "fr|1|Regarde la règle.",
   "lang": "fr",
   "rate": 1,
@@ -60190,6 +60199,15 @@
   "text": "ji",
   "voice": "estelle",
   "file": "fr/f9d8e61f72851869.mp3"
+ },
+ {
+  "key": "fr|1|Quel mot ça fait ?",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Quel mot ça fait ?",
+  "voice": "estelle",
+  "file": "fr/da4b7fe77b7b8aa9.mp3"
  },
  {
   "key": "fr|1|Écris la syllabe :",
@@ -60793,15 +60811,6 @@
   "text": "fleur",
   "voice": "estelle",
   "file": "fr/f28d84b7364209c3.mp3"
- },
- {
-  "key": "fr|1|Quel mot entends-tu ?",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Quel mot entends-tu ?",
-  "voice": "estelle",
-  "file": "fr/9252d70b33ea3a37.mp3"
  },
  {
   "key": "fr|1|Regarde bien l'objet.",
@@ -62784,6 +62793,15 @@
   "file": "en/0cf09d1b4315502f.mp3"
  },
  {
+  "key": "fr|1|Écoute bien les morceaux du mot.",
+  "lang": "fr",
+  "rate": 1,
+  "type": "phrase",
+  "text": "Écoute bien les morceaux du mot.",
+  "voice": "estelle",
+  "file": "fr/481f80ea44a84ad9.mp3"
+ },
+ {
   "key": "fr|1|Quelle syllabe manque à la fin ?",
   "lang": "fr",
   "rate": 1,
@@ -63385,15 +63403,6 @@
   "text": "Frappe les syllabes pour le savoir !",
   "voice": "estelle",
   "file": "fr/7ad2e03253b3a3cc.mp3"
- },
- {
-  "key": "fr|1|Écoute les syllabes, et recolle-les.",
-  "lang": "fr",
-  "rate": 1,
-  "type": "phrase",
-  "text": "Écoute les syllabes, et recolle-les.",
-  "voice": "estelle",
-  "file": "fr/0c0452db5734c833.mp3"
  },
  {
   "key": "fr|1|Quel son entends-tu à la fin du mot…",
@@ -182853,15 +182862,6 @@
   "file": "fr/f5095ebce5a41002.mp3"
  },
  {
-  "key": "fr|1|cueille 21 fleurs :",
-  "lang": "fr",
-  "rate": 1,
-  "type": "segment",
-  "text": "cueille 21 fleurs :",
-  "voice": "estelle",
-  "file": "fr/3caffbc7c12fbcec.mp3"
- },
- {
   "key": "fr|1|plus",
   "lang": "fr",
   "rate": 1,
@@ -185589,6 +185589,15 @@
   "file": "fr/935b8e3b0e52c787.mp3"
  },
  {
+  "key": "fr|1|fleurs :",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "fleurs :",
+  "voice": "estelle",
+  "file": "fr/8716c54bdefbfca7.mp3"
+ },
+ {
   "key": "fr|1|Mets la moitié de",
   "lang": "fr",
   "rate": 1,
@@ -185679,6 +185688,15 @@
   "file": "fr/06ed05a75a2b1248.mp3"
  },
  {
+  "key": "fr|1|cueille",
+  "lang": "fr",
+  "rate": 1,
+  "type": "morceau",
+  "text": "cueille",
+  "voice": "estelle",
+  "file": "fr/c762004a5a94735b.mp3"
+ },
+ {
   "key": "fr|1|Chaque lapin a",
   "lang": "fr",
   "rate": 1,
@@ -185704,15 +185722,6 @@
   "text": "mille.",
   "voice": "estelle",
   "file": "fr/855fee1ad171fc50.mp3"
- },
- {
-  "key": "fr|1|fleurs :",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "fleurs :",
-  "voice": "estelle",
-  "file": "fr/8716c54bdefbfca7.mp3"
  },
  {
   "key": "fr|1|carottes entre ses",
@@ -185794,15 +185803,6 @@
   "text": "Un vélo coûte",
   "voice": "estelle",
   "file": "fr/983df3e829ee8b75.mp3"
- },
- {
-  "key": "fr|1|cueille",
-  "lang": "fr",
-  "rate": 1,
-  "type": "morceau",
-  "text": "cueille",
-  "voice": "estelle",
-  "file": "fr/c762004a5a94735b.mp3"
  },
  {
   "key": "fr|1|fleurs,",
@@ -194517,22 +194517,22 @@
   "file": "fr/e0ce5bfaabc9a625.mp3"
  },
  {
-  "key": "fr|1|recolle-les",
+  "key": "fr|1|bien",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "recolle-les",
+  "text": "bien",
   "voice": "estelle",
-  "file": "fr/1449e1638102b370.mp3"
+  "file": "fr/0284c4074fa709c0.mp3"
  },
  {
-  "key": "fr|1|entends-tu",
+  "key": "fr|1|morceaux",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "entends-tu",
+  "text": "morceaux",
   "voice": "estelle",
-  "file": "fr/2f011777193c101e.mp3"
+  "file": "fr/dac38c98255435ab.mp3"
  },
  {
   "key": "fr|1|re",
@@ -194553,13 +194553,22 @@
   "file": "fr/a13471b031239be1.mp3"
  },
  {
-  "key": "fr|1|poi",
+  "key": "fr|1|fait",
   "lang": "fr",
   "rate": 1,
   "type": "mot",
-  "text": "poi",
+  "text": "fait",
   "voice": "estelle",
-  "file": "fr/00d93d1f04fc0eb4.mp3"
+  "file": "fr/54efa749b6e8cb13.mp3"
+ },
+ {
+  "key": "fr|1|touche",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "touche",
+  "voice": "estelle",
+  "file": "fr/82cee2585843ceb8.mp3"
  },
  {
   "key": "fr|1|son",
@@ -194569,6 +194578,15 @@
   "text": "son",
   "voice": "estelle",
   "file": "fr/b9fca95d2dc093b1.mp3"
+ },
+ {
+  "key": "fr|1|poi",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "poi",
+  "voice": "estelle",
+  "file": "fr/00d93d1f04fc0eb4.mp3"
  },
  {
   "key": "fr|1|co",
@@ -194994,15 +195012,6 @@
   "file": "fr/7206e2416a337ba0.mp3"
  },
  {
-  "key": "fr|1|bien",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "bien",
-  "voice": "estelle",
-  "file": "fr/0284c4074fa709c0.mp3"
- },
- {
   "key": "fr|1|ne",
   "lang": "fr",
   "rate": 1,
@@ -195073,15 +195082,6 @@
   "text": "mange",
   "voice": "estelle",
   "file": "fr/56d5cf70f363d212.mp3"
- },
- {
-  "key": "fr|1|fait",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "fait",
-  "voice": "estelle",
-  "file": "fr/54efa749b6e8cb13.mp3"
  },
  {
   "key": "fr|1|il",
@@ -195388,15 +195388,6 @@
   "text": "eau",
   "voice": "estelle",
   "file": "fr/f84d2347b58ead90.mp3"
- },
- {
-  "key": "fr|1|touche",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "touche",
-  "voice": "estelle",
-  "file": "fr/82cee2585843ceb8.mp3"
  },
  {
   "key": "fr|1|lettre",
@@ -195712,6 +195703,15 @@
   "text": "vient",
   "voice": "estelle",
   "file": "fr/4c2fbeee232fe257.mp3"
+ },
+ {
+  "key": "fr|1|entends-tu",
+  "lang": "fr",
+  "rate": 1,
+  "type": "mot",
+  "text": "entends-tu",
+  "voice": "estelle",
+  "file": "fr/2f011777193c101e.mp3"
  },
  {
   "key": "fr|1|début",
@@ -220210,15 +220210,6 @@
   "text": "d'œufs",
   "voice": "estelle",
   "file": "fr/c15feda3d2876438.mp3"
- },
- {
-  "key": "fr|1|morceaux",
-  "lang": "fr",
-  "rate": 1,
-  "type": "mot",
-  "text": "morceaux",
-  "voice": "estelle",
-  "file": "fr/dac38c98255435ab.mp3"
  },
  {
   "key": "fr|1|saladier",
@@ -327175,6 +327166,15 @@
   "text": "a 29 pommes.",
   "voice": "estelle",
   "file": "fr/54beb83798c4042f.mp3"
+ },
+ {
+  "key": "fr|1|cueille 21 fleurs :",
+  "lang": "fr",
+  "rate": 1,
+  "type": "segment",
+  "text": "cueille 21 fleurs :",
+  "voice": "estelle",
+  "file": "fr/3caffbc7c12fbcec.mp3"
  },
  {
   "key": "fr|1|unité,",

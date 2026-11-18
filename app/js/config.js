@@ -4,13 +4,21 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.23.1',
+  version: '1.23.2',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.23.2',
+    date: '2026-11-18',
+    changes: [
+      'Vite vu ! : le « ? » tient dans son cadre, même sur un téléphone en paysage.',
+      'Recolle les syllabes : une consigne plus claire (« Écoute les morceaux du mot, puis touche son image. ») et le bouton 🔊 pour réécouter, à la place d’une image de puzzle qui pouvait passer pour une réponse.',
+    ],
+  },
   {
     version: '1.23.1',
     date: '2026-11-18',

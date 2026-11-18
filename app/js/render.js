@@ -185,7 +185,7 @@ function scatterStage({ emoji, positions }) {
 
 /** Affiche la quantité quelques secondes puis la cache (« Vite vu ! »). */
 function flashStage({ inner, duration }, actions) {
-  const box = h('div', { class: 'flash' }, h('div', { class: 'flash-inner' }, renderStage(inner, actions)), h('div', { class: 'flash-cover' }, '?'));
+  const box = h('div', { class: 'flash' }, h('div', { class: 'flash-inner' }, renderStage(inner, actions)), h('div', { class: 'flash-cover' }, h('span', {}, '?')));
   let timer;
   const showFor = () => {
     box.classList.remove('hidden');
