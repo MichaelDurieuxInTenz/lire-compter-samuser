@@ -407,11 +407,26 @@ function homeBar() {
   return h('header', { class: 'top-bar' }, profileChip(), h('span'), barActions(starCounter()));
 }
 
+/**
+ * Croix (quitter) ou flèche (retour) de la barre du haut, dessinées en SVG : certains navigateurs
+ * (écran de voiture, Linux sans polices) n'ont pas le caractère « ✕ » et laissaient un rond vide.
+ */
+function barIcon(kind) {
+  const el = document.createElementNS(SVG_NS, 'svg');
+  el.setAttribute('viewBox', '0 0 24 24');
+  el.setAttribute('class', 'bar-icon');
+  el.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS(SVG_NS, 'path');
+  path.setAttribute('d', kind === 'close' ? 'M6 6 L18 18 M18 6 L6 18' : 'M19 12 H6 M11 6 L5 12 L11 18');
+  el.append(path);
+  return el;
+}
+
 function topBar({ onBack, backLabel = 'Retour', title, right }) {
   const text = title && !(title instanceof Node);
   // un titre écrit passe sous la barre sur un téléphone en portrait (voir .top-bar.has-title)
   return h('header', { class: text ? 'top-bar has-title' : 'top-bar' },
-    onBack ? h('button', { class: 'icon-btn', onclick: onBack, 'aria-label': backLabel }, backLabel === 'Quitter' ? '✕' : '←') : h('span'),
+    onBack ? h('button', { class: 'icon-btn', onclick: onBack, 'aria-label': backLabel }, barIcon(backLabel === 'Quitter' ? 'close' : 'back')) : h('span'),
     text ? h('h1', { class: 'top-title' }, title) : title || h('span'),
     barActions(right));
 }
