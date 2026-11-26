@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.23.4',
+  version: '1.23.5',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.23.5',
+    date: '2026-11-26',
+    changes: [
+      'Supprimer ou modifier un profil est plus simple : sur « Qui joue ? », un parent reste appuyé sur le profil, tape son code, puis choisit « Modifier » ou « Supprimer ». Un toucher bref choisit toujours le profil.',
+    ],
+  },
   {
     version: '1.23.4',
     date: '2026-11-26',
