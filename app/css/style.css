@@ -118,6 +118,7 @@ input { -webkit-user-select: text; user-select: text; }
   display: grid; place-items: center;
 }
 .icon-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
+.bar-icon { width: 0.9em; height: 0.9em; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 /* bouton unique de l'espace parents : pictogramme fin + libellé */
 .parent-btn {
   justify-self: end; display: inline-flex; align-items: center; gap: 8px;

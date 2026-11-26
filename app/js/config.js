@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.23.2',
+  version: '1.23.3',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.23.3',
+    date: '2026-11-26',
+    changes: [
+      'Le bouton pour quitter un jeu (✕) et la flèche de retour sont dessinés : ils s’affichent aussi sur les navigateurs qui n’ont pas ces caractères (écran de voiture, par exemple), au lieu d’un rond vide.',
+    ],
+  },
   {
     version: '1.23.2',
     date: '2026-11-18',
