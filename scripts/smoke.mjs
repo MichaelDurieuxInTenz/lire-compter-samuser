@@ -2037,6 +2037,22 @@ for (const id of ['noe', 'ines']) {
   if (await page.locator(`[data-child-card="${id}"]`).count()) fail(`le profil ${id} supprimé est toujours là`);
 }
 console.log('✔ petite section et CE2 : profils créés, programme et attendus dans le Suivi, puis supprimés');
+// « Qui joue ? » : un appui long sur un profil, puis le code parent, permet de le supprimer
+await addKids(page, [['Lou', 'fille', 'CE1']]);
+await goProfiles(page);
+await page.hover('[data-profile="lou"]');
+await page.mouse.down();
+await page.waitForTimeout(900);
+await page.mouse.up();
+await passGate(page, '.profile-actions');
+if ((await page.locator('.screen.profiles').count())) fail('appui long : le toucher qui le termine a aussi choisi le profil');
+await page.click('.profile-actions .delete-child');
+await page.waitForSelector('.screen.profiles');
+if (await page.locator('[data-profile="lou"]').count()) fail('appui long : le profil supprimé est toujours dans « Qui joue ? »');
+// un toucher bref choisit toujours le profil (pas de code parent)
+await page.click('[data-profile="eva-rose"]');
+await page.waitForSelector('.screen.home');
+console.log('✔ « Qui joue ? » : appui long + code parent → profil supprimé ; un toucher bref choisit');
 // remettre le prénom d'origine
 await page.click('[data-edit="eva-rose"]');
 await page.fill('[data-field="name"]', 'Eva-Rose');

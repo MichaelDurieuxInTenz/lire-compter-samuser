@@ -514,14 +514,74 @@ function profileScreen() {
     h('div', { class: `profile-list n${store.order.length}` },
       store.order.map((id, i) => {
         const kid = store.profiles[id];
-        return h('button', { class: `profile-card tint-${i % 6}`, 'data-profile': id, onclick: () => chooseProfile(id) },
+        return h('button', { class: `profile-card tint-${i % 6}`, 'data-profile': id, ...longPress(() => chooseProfile(id), () => parentGate(() => profileActionsScreen(id), undefined, undefined, profileScreen)) },
           avatar(id, 'avatar-xl'),
           h('span', { class: 'profile-name' }, frenchSpacing(kid.name)),
           h('span', { class: 'profile-grade' }, GRADES[kid.grade]),
           h('span', { class: 'profile-stars' }, '⭐ ', kid.stars));
       })),
+    h('p', { class: 'profiles-tip' }, 'Parents : restez appuyé sur un profil pour le modifier ou le supprimer.'),
     installHint(),
     appFooter()));
+}
+
+/**
+ * Un toucher choisit (onTap) ; un appui long (0,6 s), ou un clic droit, ouvre l'action des parents (onHold).
+ * Le toucher qui termine un appui long ne choisit pas en plus.
+ */
+function longPress(onTap, onHold) {
+  let timer = null;
+  let held = false;
+  let start = null;
+  const cancel = () => { clearTimeout(timer); timer = null; };
+  return {
+    onclick: (event) => {
+      if (held) { held = false; event.preventDefault(); return; }
+      onTap();
+    },
+    onpointerdown: (event) => {
+      held = false;
+      start = [event.clientX, event.clientY];
+      cancel();
+      timer = setTimeout(() => { timer = null; held = true; navigator.vibrate?.(30); onHold(); }, 600);
+    },
+    onpointermove: (event) => {
+      // le doigt glisse (défilement) : ce n'est pas un appui long
+      if (timer && start && Math.hypot(event.clientX - start[0], event.clientY - start[1]) > 12) cancel();
+    },
+    onpointerup: cancel,
+    onpointercancel: cancel,
+    onpointerleave: cancel,
+    oncontextmenu: (event) => {
+      event.preventDefault();
+      if (held) return; // l'appui long l'a déjà ouvert (Android envoie aussi un « clic droit »)
+      cancel();
+      onHold();
+    },
+  };
+}
+
+/** Après le code parent : modifier ou supprimer le profil d'un enfant, depuis « Qui joue ? ». */
+function profileActionsScreen(id) {
+  const kid = store.profiles[id];
+  if (!kid) return profileScreen();
+  show(h('main', { class: 'screen profile-actions' },
+    topBar({ onBack: profileScreen, title: kid.name }),
+    h('div', { class: 'profile-actions-body' },
+      avatar(id, 'avatar-xl'),
+      h('button', { class: 'big-btn', onclick: () => childEditScreen(id) }, 'Modifier son profil'),
+      h('button', {
+        class: 'big-btn danger delete-child',
+        onclick: () => {
+          if (!confirm(`Supprimer le profil de ${kid.name} et toute sa progression ?`)) return;
+          removeChild(store, id);
+          save();
+          applySettings();
+          if (store.order.length) profileScreen();
+          else welcomeScreen();
+        },
+      }, `Supprimer le profil de ${kid.name}`),
+      h('button', { class: 'big-btn', onclick: profileScreen }, 'Annuler'))));
 }
 
 // ---------------------------------------------------------------- Installer l'icône
@@ -4997,9 +5057,9 @@ function setGateState(state) {
  * de choisir le nouveau. Trois erreurs de suite : une attente (30 s, puis 2 min, 10 min, 30 min).
  * `mode` : 'code', 'calcul' ou 'nouveau' ; `why` : 'premier' (pas encore de code) ou 'oubli'.
  */
-function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', why = 'premier') {
-  const back = () => (store.active ? homeScreen() : profileScreen());
-  const again = (m = mode, w = why) => parentGate(next, m, w);
+function parentGate(next, mode = store.settings.parentCode ? 'code' : 'calcul', why = 'premier', onCancel = null) {
+  const back = onCancel || (() => (store.active ? homeScreen() : profileScreen()));
+  const again = (m = mode, w = why) => parentGate(next, m, w, onCancel);
   const error = h('p', { class: 'gate-error', role: 'alert' });
   const codeInput = (label) => h('input', {
     type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: CODE_LENGTH, class: 'gate-input gate-code',

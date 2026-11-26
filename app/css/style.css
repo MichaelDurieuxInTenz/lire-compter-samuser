@@ -534,6 +534,11 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
   box-shadow: 0 7px 0 var(--line), 0 0 0 4px var(--line) inset;
   transition: transform 0.08s;
 }
+/* appui long (code parent) : pas de menu « copier » ni de sélection du texte sur iPhone */
+.profile-card { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.profiles-tip { text-align: center; color: var(--muted); font-size: 0.9rem; margin: 14px 16px 0; }
+.profile-actions-body { display: flex; flex-direction: column; align-items: center; gap: 14px; max-width: 420px; margin: 24px auto; padding: 0 16px; }
+.profile-actions-body .big-btn { width: 100%; }
 .profile-card:active { transform: translateY(4px); box-shadow: 0 3px 0 var(--line), 0 0 0 4px var(--line) inset; }
 /* une couleur par enfant, selon sa place, jamais selon fille ou garçon (pas de rose ni de bleu) */
 .profile-card.tint-0 { background: linear-gradient(180deg, #e2f5ea, #fff); box-shadow: 0 7px 0 #b6e0c6, 0 0 0 4px #cbeed9 inset; }
