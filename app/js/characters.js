@@ -3,15 +3,16 @@
 // (prénom, dessin, photo) : rien n'est propre à une famille dans le code.
 // Les dessins sont en SVG (aucune image à télécharger).
 
+// couleurs par défaut sans rose ni bleu : rien n'est « de fille » ou « de garçon » (le tee-shirt se change)
 export const LOOKS = {
   fille: {
     label: 'Fille',
-    colors: { bg: '#ffd9e8', skin: '#f6c9a3', hair: '#7a4a2a', shirt: '#ff6fa8', accent: '#ff3d7f' },
+    colors: { bg: '#fff0d9', skin: '#f6c9a3', hair: '#7a4a2a', shirt: '#8b5cf6', accent: '#ffb020' },
     voice: { pitch: 1 },
   },
   garcon: {
     label: 'Garçon',
-    colors: { bg: '#d6ecff', skin: '#efbf98', hair: '#3d2b1f', shirt: '#3d9bff' },
+    colors: { bg: '#dcf3f3', skin: '#efbf98', hair: '#3d2b1f', shirt: '#22b07d' },
     voice: { pitch: 1 },
   },
 };
@@ -65,7 +66,7 @@ const DRAWINGS = {
     <path d="M34 50 C29 66 31 82 35 94 L42 94 C38 80 37 64 40 52 Z" fill="${c.hair}"/>
     <path d="M86 50 C91 66 89 82 85 94 L78 94 C82 80 83 64 80 52 Z" fill="${c.hair}"/>
     <path d="M82 31 L69 22 L71 41 Z" fill="${c.accent}"/><path d="M82 31 L95 22 L93 41 Z" fill="${c.accent}"/>
-    <circle cx="82" cy="31" r="4.5" fill="#ffb3cf"/>
+    <circle cx="82" cy="31" r="4.5" fill="#ffd57a"/>
     ${face()}`,
   garcon: (c, name) => `
     <path d="M16 120 C18 98 38 90 60 90 C82 90 102 98 104 120 Z" fill="${c.shirt}"/>
