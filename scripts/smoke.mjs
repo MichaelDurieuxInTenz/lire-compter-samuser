@@ -2053,6 +2053,8 @@ if (await page.locator('[data-profile="lou"]').count()) fail('appui long : le pr
 await page.click('[data-profile="eva-rose"]');
 await page.waitForSelector('.screen.home');
 console.log('✔ « Qui joue ? » : appui long + code parent → profil supprimé ; un toucher bref choisit');
+await openParents(page);
+await page.click('[data-tab="enfants"]');
 // remettre le prénom d'origine
 await page.click('[data-edit="eva-rose"]');
 await page.fill('[data-field="name"]', 'Eva-Rose');
