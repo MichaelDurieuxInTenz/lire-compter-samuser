@@ -512,9 +512,9 @@ function profileScreen() {
     h('header', { class: 'top-bar' }, duoButton(), h('span'), parentButton()),
     h('h1', { class: 'profiles-title' }, 'Qui joue ?'),
     h('div', { class: `profile-list n${store.order.length}` },
-      store.order.map((id) => {
+      store.order.map((id, i) => {
         const kid = store.profiles[id];
-        return h('button', { class: `profile-card look-${kid.look}`, 'data-profile': id, onclick: () => chooseProfile(id) },
+        return h('button', { class: `profile-card tint-${i % 6}`, 'data-profile': id, onclick: () => chooseProfile(id) },
           avatar(id, 'avatar-xl'),
           h('span', { class: 'profile-name' }, frenchSpacing(kid.name)),
           h('span', { class: 'profile-grade' }, GRADES[kid.grade]),
@@ -619,9 +619,9 @@ function duoPickScreen({ picked = [], message = '', speech = message } = {}) {
   let chosen = picked.filter((id) => store.profiles[id]).slice(0, max);
   const hint = h('p', { class: 'duo-hint', 'aria-live': 'polite' });
   const go = h('button', { class: 'big-btn primary duo-go', onclick: () => tryDuo(chosen) }, 'C’est parti !');
-  const cards = store.order.map((id) => {
+  const cards = store.order.map((id, i) => {
     const kid = store.profiles[id];
-    return h('button', { class: `profile-card duo-card look-${kid.look}`, 'data-pick': id, onclick: () => choose(id) },
+    return h('button', { class: `profile-card duo-card tint-${i % 6}`, 'data-pick': id, onclick: () => choose(id) },
       h('span', { class: 'duo-order', 'aria-hidden': 'true' }),
       avatar(id, 'avatar-xl'),
       h('span', { class: 'profile-name' }, frenchSpacing(kid.name)),

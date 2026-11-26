@@ -535,8 +535,13 @@ mark.hl { background: none; color: var(--accent-dark, var(--ink)); font-weight: 
   transition: transform 0.08s;
 }
 .profile-card:active { transform: translateY(4px); box-shadow: 0 3px 0 var(--line), 0 0 0 4px var(--line) inset; }
-.profile-card.look-fille { background: linear-gradient(180deg, #ffe8f1, #fff); box-shadow: 0 7px 0 #f7c2d8, 0 0 0 4px #ffd0e2 inset; }
-.profile-card.look-garcon { background: linear-gradient(180deg, #e3f1ff, #fff); box-shadow: 0 7px 0 #b9d9fb, 0 0 0 4px #cfe6ff inset; }
+/* une couleur par enfant, selon sa place, jamais selon fille ou garçon (pas de rose ni de bleu) */
+.profile-card.tint-0 { background: linear-gradient(180deg, #e2f5ea, #fff); box-shadow: 0 7px 0 #b6e0c6, 0 0 0 4px #cbeed9 inset; }
+.profile-card.tint-1 { background: linear-gradient(180deg, #fff0d9, #fff); box-shadow: 0 7px 0 #f3cf96, 0 0 0 4px #fbe0b4 inset; }
+.profile-card.tint-2 { background: linear-gradient(180deg, #dcf3f3, #fff); box-shadow: 0 7px 0 #a6dbdb, 0 0 0 4px #c3e9e9 inset; }
+.profile-card.tint-3 { background: linear-gradient(180deg, #f4f5d6, #fff); box-shadow: 0 7px 0 #d9dc97, 0 0 0 4px #e9ebbb inset; }
+.profile-card.tint-4 { background: linear-gradient(180deg, #ece8fb, #fff); box-shadow: 0 7px 0 #cdc4ef, 0 0 0 4px #dfd9f7 inset; }
+.profile-card.tint-5 { background: linear-gradient(180deg, #f2ebe1, #fff); box-shadow: 0 7px 0 #d8c8b1, 0 0 0 4px #e7dccc inset; }
 .profile-list.n1 { grid-template-columns: minmax(0, 260px); justify-content: center; }
 .profile-list.n3 .avatar-xl, .profile-list.n4 .avatar-xl, .profile-list.n5 .avatar-xl, .profile-list.n6 .avatar-xl { width: min(110px, 28vw); height: min(110px, 28vw); }
 .profile-name { overflow-wrap: anywhere; text-align: center; }

@@ -4,13 +4,20 @@
 
 export const APP = {
   name: 'Lire, compter et s’amuser\u00a0!',
-  version: '1.23.3',
+  version: '1.23.4',
   author: 'Michaël Durieux',
   contact: 'Michael.Durieux@gmail.com', // remarques, bugs, idées d'évolution
 };
 
 /** Journal des modifications, de la plus récente à la plus ancienne. */
 export const CHANGELOG = [
+  {
+    version: '1.23.4',
+    date: '2026-11-26',
+    changes: [
+      'Plus de rose pour les filles ni de bleu pour les garçons : chaque enfant a sa couleur selon sa place (vert, abricot, turquoise…), et les personnages dessinés ont des couleurs neutres (le tee-shirt se change toujours dans les réglages).',
+    ],
+  },
   {
     version: '1.23.3',
     date: '2026-11-26',
